@@ -5684,7 +5684,7 @@ export default {
           </h3>
 
           <p data-i18n="deliveryText">
-            Orders are prepared for shipment after ordering. Delivery time depends on destination and shipping method. If you are planning for the 2027 eclipse, ordering early is recommended rather than waiting until the final weeks.
+            Shipping costs, dispatch timing and delivery estimates are confirmed by email before any order is accepted. We do not currently publish a guaranteed delivery window.
           </p>
 
         </div>
@@ -7379,7 +7379,7 @@ export default {
           "How long does delivery take?",
 
         faq5a:
-          "Delivery time depends on the destination and shipping method. Because the 2027 eclipse is a major event, we recommend ordering well ahead of August 2 rather than relying on last-minute delivery.",
+          "Shipping costs and estimated delivery timing depend on the destination and available shipping method. We confirm them by email before accepting an order; no guaranteed delivery window is currently published.",
 
         faq6q:
           "What happens after I place an order?",
@@ -7634,7 +7634,7 @@ export default {
           "Hoe lang duurt de levering?",
 
         faq5a:
-          "De levertijd hangt af van de bestemming en verzendmethode. Omdat de eclips van 2027 een groot evenement wordt, raden we aan ruim vóór 2 augustus te bestellen.",
+          "Verzendkosten en de verwachte levertijd hangen af van de bestemming en beschikbare verzendmethode. We bevestigen die per e-mail voordat we een bestelling aanvaarden; momenteel is er geen gegarandeerde leveringstermijn.",
 
         faq6q:
           "Wat gebeurt er nadat ik bestel?",
@@ -7889,7 +7889,7 @@ export default {
           "Combien de temps prend la livraison ?",
 
         faq5a:
-          "Le délai dépend de la destination et du mode d'expédition. Pour l'éclipse de 2027, nous recommandons de commander bien avant le 2 août.",
+          "Les frais d’expédition et le délai estimé dépendent de la destination et du mode d’expédition disponible. Nous les confirmons par e-mail avant d’accepter une commande ; aucun délai garanti n’est actuellement publié.",
 
         faq6q:
           "Que se passe-t-il après ma commande ?",
@@ -8144,7 +8144,7 @@ export default {
           "¿Cuánto tarda el envío?",
 
         faq5a:
-          "El plazo depende del destino y del método de envío. Para el eclipse de 2027 recomendamos realizar el pedido con suficiente antelación al 2 de agosto.",
+          "Los gastos de envío y el plazo estimado dependen del destino y del método disponible. Los confirmamos por correo electrónico antes de aceptar un pedido; actualmente no se publica un plazo garantizado.",
 
         faq6q:
           "¿Qué ocurre después de hacer un pedido?",
