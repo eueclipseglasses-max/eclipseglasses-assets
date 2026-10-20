@@ -5062,7 +5062,7 @@ export default {
     <div class="hero-photo">
 
       <img
-        src="https://science.nasa.gov/wp-content/uploads/2024/04/2024-actual-keegan-barber-v2.png?w=1600"
+        src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/hero.jpg"
         alt="Total solar eclipse photographed by NASA"
         loading="eager"
       >
