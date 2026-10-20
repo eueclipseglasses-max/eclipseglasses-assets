@@ -4892,6 +4892,28 @@ export default {
       .visual-card img, .visual-arrow { transition: none !important; }
     }
 
+
+    .hero-countdown { display:inline-flex; align-items:center; gap:13px; margin:2px 0 23px; }
+    .countdown-number { color:var(--gold2); font-family:"Manrope",sans-serif; font-size:38px; font-weight:700; line-height:1; letter-spacing:-.06em; font-variant-numeric:tabular-nums; }
+    .countdown-copy { display:flex; flex-direction:column; gap:4px; padding-left:13px; border-left:1px solid rgba(226,196,127,.38); }
+    .countdown-label { color:#d5d0c5; font-size:9px; font-weight:700; letter-spacing:.12em; }
+    .countdown-date { color:var(--muted2); font-size:9px; letter-spacing:.08em; }
+    .price-option { border-radius:12px !important; border-color:rgba(255,255,255,.085); background:#101010; }
+    .price-option.active { background:rgba(201,164,93,.065); border-color:rgba(226,196,127,.68); }
+    .product-image { background:#101010; border-radius:18px; border-color:rgba(255,255,255,.09); }
+    .safety-card,.info-card { background:#101010; border-radius:16px; }
+    .bulk .container { border-radius:20px; padding:clamp(22px,3vw,34px); }
+    .field { border-radius:11px; }
+    .footer-column a { transition:color .18s ease; }
+    .footer-column a:hover { color:var(--gold2); }
+    @media(max-width:600px) {
+      .hero-countdown { gap:11px; margin:0 0 20px; }
+      .countdown-number { font-size:34px; }
+      .countdown-copy { padding-left:11px; }
+      .countdown-label { font-size:8px; }
+      .bulk .container { padding:18px; }
+    }
+
 </style>
 
 </head>
@@ -5056,6 +5078,13 @@ export default {
 
         </div>
 
+        <div class="hero-countdown" aria-label="Countdown to eclipse day">
+          <span class="countdown-number" id="eclipseDays">—</span>
+          <span class="countdown-copy">
+            <span class="countdown-label" data-i18n="countdownLabel">DAYS TO ECLIPSE DAY</span>
+            <span class="countdown-date">02 AUG 2027</span>
+          </span>
+        </div>
 
         <div class="hero-actions">
 
@@ -7340,6 +7369,9 @@ export default {
         learnEclipse:
           "Learn about the eclipse",
 
+        countdownLabel:
+          "DAYS TO ECLIPSE DAY",
+
         heroNote:
           "The next major total solar eclipse visible from southern Spain.",
 
@@ -7616,6 +7648,9 @@ export default {
 
         learnEclipse:
           "Meer over de eclips",
+
+        countdownLabel:
+          "DAGEN TOT DE ECLIPSDAG",
 
         heroNote:
           "De volgende grote totale zonsverduistering zichtbaar vanuit Zuid-Spanje.",
@@ -7894,6 +7929,9 @@ export default {
         learnEclipse:
           "Découvrir l'éclipse",
 
+        countdownLabel:
+          "JOURS AVANT L’ÉCLIPSE",
+
         heroNote:
           "La prochaine grande éclipse solaire totale visible depuis le sud de l'Espagne.",
 
@@ -8170,6 +8208,9 @@ export default {
 
         learnEclipse:
           "Sobre el eclipse",
+
+        countdownLabel:
+          "DÍAS PARA EL DÍA DEL ECLIPSE",
 
         heroNote:
           "El próximo gran eclipse solar total visible desde el sur de España.",
@@ -8527,6 +8568,15 @@ export default {
       document.body.classList.remove("motion-ready");
     }
 
+
+    function updateEclipseCountdown() {
+      const counter = document.getElementById("eclipseDays");
+      if (!counter) return;
+      const days = Math.max(0, Math.ceil((new Date(2027, 7, 2).getTime() - Date.now()) / 86400000));
+      counter.textContent = new Intl.NumberFormat(document.documentElement.lang || "en").format(days);
+    }
+    updateEclipseCountdown();
+    window.setInterval(updateEclipseCountdown, 60000);
 
     renderCart();
 
