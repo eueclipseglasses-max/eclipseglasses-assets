@@ -3336,6 +3336,166 @@ export default {
 
     }
 
+    .site-footer {
+      padding: 0;
+      background: linear-gradient(180deg, #0b0b0b 0%, #080808 100%);
+      border-top: 1px solid rgba(201,164,93,.22);
+    }
+
+    .footer-main {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.7fr) repeat(3, minmax(130px, 1fr));
+      gap: 38px;
+      padding-top: 54px;
+      padding-bottom: 48px;
+    }
+
+    .footer-wordmark {
+      display: inline-block;
+      color: var(--cream);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-decoration: none;
+    }
+
+    .footer-wordmark span {
+      color: #c9a45d;
+    }
+
+    .footer-wordmark small {
+      color: var(--muted2);
+      font-size: 10px;
+      letter-spacing: .08em;
+    }
+
+    .footer-brand p {
+      max-width: 290px;
+      margin: 17px 0 22px;
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.8;
+    }
+
+    .footer-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--cream);
+      font-size: 12px;
+      text-decoration: none;
+    }
+
+    .footer-icon {
+      display: inline-grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      border: 1px solid rgba(201,164,93,.42);
+      border-radius: 50%;
+      color: #c9a45d;
+    }
+
+    .footer-column {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 13px;
+    }
+
+    .footer-column h3 {
+      margin: 3px 0 7px;
+      color: var(--cream);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .footer-column a {
+      color: var(--muted2);
+      font-size: 12px;
+      line-height: 1.5;
+      text-decoration: none;
+      transition: color .2s ease;
+    }
+
+    .footer-column a:hover,
+    .footer-email:hover,
+    .footer-bottom a:hover {
+      color: #e2c47f;
+    }
+
+    .footer-social {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .social-glyph {
+      display: inline-grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 8px;
+      color: var(--cream);
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      padding-top: 20px;
+      padding-bottom: 22px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      color: #77736b;
+      font-size: 10px;
+    }
+
+    .footer-bottom a {
+      color: #aaa79f;
+      text-decoration: none;
+    }
+
+    @media (max-width: 800px) {
+      .footer-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 32px 24px;
+        padding-top: 40px;
+        padding-bottom: 36px;
+      }
+
+      .footer-brand {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 460px) {
+      .footer-main {
+        grid-template-columns: 1fr 1fr;
+        gap: 28px 18px;
+      }
+
+      .footer-column h3 {
+        font-size: 10px;
+        line-height: 1.6;
+      }
+
+      .footer-column a {
+        font-size: 11px;
+      }
+
+      .footer-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
 
     .footer-links {
 
@@ -6196,39 +6356,52 @@ export default {
   </section>
 
 
-  <footer>
+  <footer class="site-footer">
 
-    <div class="container footer-inner">
+    <div class="container footer-main">
 
-      <div>
-        © 2026 EclipseGlasses.eu
+      <div class="footer-brand">
+        <a class="footer-wordmark" href="#" aria-label="EclipseGlasses.eu home">ECLIPSE<span>GLASSES</span><small>.EU</small></a>
+        <p data-i18n="footerTagline">Solar eclipse glasses for individuals, groups and organisations.</p>
+        <a class="footer-email" href="mailto:orders@eclipseglasses.eu">
+          <span class="footer-icon" aria-hidden="true">↗</span>
+          orders@eclipseglasses.eu
+        </a>
       </div>
 
-
-      <div class="footer-links">
-
-        <a href="#eclipse">
-          2027 Eclipse
-        </a>
-
-        <a href="#safety">
-          Safety
-        </a>
-
-        <a href="#information">
-          Delivery & info
-        </a>
-
-        <a href="#faq">
-          FAQ
-        </a>
-
-        <a href="#bulk">
-          Bulk orders
-        </a>
-
+      <div class="footer-column">
+        <h3 data-i18n="footerContact">Contact</h3>
+        <a href="mailto:orders@eclipseglasses.eu" data-i18n="footerContact">Contact</a>
+        <a href="#faq" data-i18n="navFaq">FAQ</a>
+        <a href="#information" data-i18n="deliveryTitle">Delivery & info</a>
       </div>
 
+      <div class="footer-column">
+        <h3 data-i18n="footerBusiness">Business & bulk orders</h3>
+        <a href="#bulk" data-i18n="footerBusiness">Business & bulk orders</a>
+        <a href="#shop" data-i18n="navShop">Shop</a>
+        <a href="#safety" data-i18n="navSafety">Safety</a>
+      </div>
+
+      <div class="footer-column">
+        <h3>Follow & references</h3>
+        <!-- LAUNCH TODO: replace the Instagram homepage with the official EclipseGlasses.eu profile URL once the account is live. -->
+        <a class="footer-social" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
+          <span class="social-glyph" aria-hidden="true">◎</span>
+          <span data-i18n="footerInstagram">Instagram</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+        <a href="https://svs.gsfc.nasa.gov/14572/" target="_blank" rel="noopener noreferrer">
+          <span data-i18n="footerReferences">Image credits</span> <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+      <span>© 2026 EclipseGlasses.eu</span>
+      <span data-i18n="footerCopyright">Independent eclipse glasses project · Europe</span>
+      <a href="mailto:orders@eclipseglasses.eu">orders@eclipseglasses.eu</a>
     </div>
 
   </footer>
@@ -7227,6 +7400,24 @@ export default {
         navSafety:
           "Safety",
 
+        footerTagline:
+          "Solar eclipse glasses for individuals, groups and organisations.",
+
+        footerContact:
+          "Contact",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Image credits",
+
+        footerBusiness:
+          "Business & bulk orders",
+
+        footerCopyright:
+          "Independent eclipse glasses project · Europe",
+
         navFaq:
           "FAQ",
 
@@ -7481,6 +7672,24 @@ export default {
 
         navSafety:
           "Veiligheid",
+
+        footerTagline:
+          "Eclipsbrillen voor particulieren, groepen en organisaties.",
+
+        footerContact:
+          "Contact",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Beeldvermelding",
+
+        footerBusiness:
+          "Zakelijke & grote bestellingen",
+
+        footerCopyright:
+          "Onafhankelijk eclipsbrillenproject · Europa",
 
         navFaq:
           "FAQ",
@@ -7737,6 +7946,24 @@ export default {
         navSafety:
           "Sécurité",
 
+        footerTagline:
+          "Lunettes d’observation solaire pour particuliers, groupes et organisations.",
+
+        footerContact:
+          "Contact",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Crédits des images",
+
+        footerBusiness:
+          "Commandes professionnelles et en gros",
+
+        footerCopyright:
+          "Projet indépendant de lunettes solaires · Europe",
+
         navFaq:
           "FAQ",
 
@@ -7991,6 +8218,24 @@ export default {
 
         navSafety:
           "Seguridad",
+
+        footerTagline:
+          "Gafas de observación solar para particulares, grupos y organizaciones.",
+
+        footerContact:
+          "Contacto",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Créditos de imágenes",
+
+        footerBusiness:
+          "Pedidos profesionales y al por mayor",
+
+        footerCopyright:
+          "Proyecto independiente de gafas solares · Europa",
 
         navFaq:
           "FAQ",
