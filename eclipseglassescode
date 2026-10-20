@@ -3782,7 +3782,61 @@ export default {
 
     }
 
-  </style>
+  
+
+    /* EclipseGlasses custom pointer — desktop only */
+    @media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+      body.eg-custom-cursor,
+      body.eg-custom-cursor a,
+      body.eg-custom-cursor button,
+      body.eg-custom-cursor input,
+      body.eg-custom-cursor select,
+      body.eg-custom-cursor textarea,
+      body.eg-custom-cursor summary,
+      body.eg-custom-cursor [role="button"] {
+        cursor: none !important;
+      }
+
+      .eg-cursor {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: var(--gold, #c9a45d);
+        border: 1px solid rgba(255,255,255,.55);
+        pointer-events: none;
+        z-index: 99999;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition:
+          width .18s ease,
+          height .18s ease,
+          background-color .18s ease,
+          opacity .18s ease;
+        will-change: left, top, width, height;
+      }
+
+      .eg-cursor.is-visible {
+        opacity: 1;
+      }
+
+      .eg-cursor.is-hovering {
+        width: 36px;
+        height: 36px;
+        background: var(--cream, #f4f1e9);
+        border-color: var(--gold, #c9a45d);
+      }
+
+      .eg-cursor.is-pressing {
+        width: 22px;
+        height: 22px;
+        background: var(--gold2, #e2c47f);
+      }
+    }
+
+</style>
 
 </head>
 
@@ -7063,6 +7117,49 @@ export default {
       savedLanguage
     );
 
+
+    // Custom gold/cream cursor on mouse devices; native cursor remains on touch devices.
+    if (
+      window.matchMedia &&
+      window.matchMedia("(pointer: fine) and (prefers-reduced-motion: no-preference)").matches
+    ) {
+      const egCursor = document.createElement("div");
+      egCursor.className = "eg-cursor";
+      egCursor.setAttribute("aria-hidden", "true");
+      document.body.appendChild(egCursor);
+      document.body.classList.add("eg-custom-cursor");
+
+      let cursorVisible = false;
+      const moveCursor = (event) => {
+        egCursor.style.left = event.clientX + "px";
+        egCursor.style.top = event.clientY + "px";
+        if (!cursorVisible) {
+          egCursor.classList.add("is-visible");
+          cursorVisible = true;
+        }
+      };
+
+      document.addEventListener("pointermove", moveCursor, { passive: true });
+      document.addEventListener("pointerover", (event) => {
+        if (event.target.closest("a, button, input, select, textarea, summary, [role='button']")) {
+          egCursor.classList.add("is-hovering");
+        }
+      });
+      document.addEventListener("pointerout", (event) => {
+        if (
+          event.target.closest("a, button, input, select, textarea, summary, [role='button']") &&
+          (!event.relatedTarget || !event.target.closest("a, button, input, select, textarea, summary, [role='button']").contains(event.relatedTarget))
+        ) {
+          egCursor.classList.remove("is-hovering");
+        }
+      });
+      document.addEventListener("pointerdown", () => egCursor.classList.add("is-pressing"));
+      document.addEventListener("pointerup", () => egCursor.classList.remove("is-pressing"));
+      document.addEventListener("pointerleave", () => egCursor.classList.remove("is-visible"));
+      document.addEventListener("pointerenter", () => {
+        if (cursorVisible) egCursor.classList.add("is-visible");
+      });
+    }
 
     renderCart();
 
