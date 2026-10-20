@@ -6265,8 +6265,9 @@ export default {
       <div class="footer-column">
         <h3 data-i18n="footerContact">Contact</h3>
         <a href="mailto:orders@eclipseglasses.eu">orders@eclipseglasses.eu</a>
+        <a href="#eclipse" data-i18n="navEclipse">2027 Eclipse</a>
         <a href="#faq" data-i18n="navFaq">FAQ</a>
-        <a href="#information" data-i18n="deliveryTitle">Delivery & info</a>
+        <a href="#information" data-i18n="footerDelivery">Delivery & info</a>
       </div>
 
       <div class="footer-column">
@@ -7314,6 +7315,30 @@ export default {
         footerCopyright:
           "Independent eclipse glasses project · Europe",
 
+        footerTagline:
+          "Solar eclipse glasses for individuals, groups and organisations.",
+
+        footerContact:
+          "Contact",
+
+        footerDelivery:
+          "Delivery & info",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Image credits",
+
+        footerBusiness:
+          "Business & bulk orders",
+
+        footerFollow:
+          "Follow & references",
+
+        footerCopyright:
+          "Independent eclipse glasses project · Europe",
+
         navFaq:
           "FAQ",
 
@@ -7572,6 +7597,30 @@ export default {
 
         footerContact:
           "Contact",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Beeldvermelding",
+
+        footerBusiness:
+          "Zakelijke & grote bestellingen",
+
+        footerFollow:
+          "Volg & referenties",
+
+        footerCopyright:
+          "Onafhankelijk eclipsbrillenproject · Europa",
+
+        footerTagline:
+          "Eclipsbrillen voor particulieren, groepen en organisaties.",
+
+        footerContact:
+          "Contact",
+
+        footerDelivery:
+          "Levering & info",
 
         footerInstagram:
           "Instagram",
@@ -7862,6 +7911,30 @@ export default {
         footerCopyright:
           "Projet indépendant de lunettes solaires · Europe",
 
+        footerTagline:
+          "Lunettes d’observation solaire pour particuliers, groupes et organisations.",
+
+        footerContact:
+          "Contact",
+
+        footerDelivery:
+          "Livraison & infos",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Crédits des images",
+
+        footerBusiness:
+          "Commandes professionnelles et en gros",
+
+        footerFollow:
+          "Réseaux & références",
+
+        footerCopyright:
+          "Projet indépendant de lunettes solaires · Europe",
+
         navFaq:
           "FAQ",
 
@@ -8120,6 +8193,30 @@ export default {
 
         footerContact:
           "Contacto",
+
+        footerInstagram:
+          "Instagram",
+
+        footerReferences:
+          "Créditos de imágenes",
+
+        footerBusiness:
+          "Pedidos profesionales y al por mayor",
+
+        footerFollow:
+          "Redes y referencias",
+
+        footerCopyright:
+          "Proyecto independiente de gafas solares · Europa",
+
+        footerTagline:
+          "Gafas de observación solar para particulares, grupos y organizaciones.",
+
+        footerContact:
+          "Contacto",
+
+        footerDelivery:
+          "Envío e información",
 
         footerInstagram:
           "Instagram",
