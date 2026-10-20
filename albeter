@@ -4725,13 +4725,13 @@ export default {
       object-fit: cover;
       transition: transform .8s cubic-bezier(.2,.7,.2,1), filter .5s ease;
       /* Let the eclipse colours do the visual work: vivid, but still photographic. */
-      filter: saturate(1.14) contrast(1.035) brightness(1.025);
+      filter: saturate(.82);
     }
     .visual-card-wide img { object-position: center; }
     .visual-card::after {
       content: "";
       position: absolute;
-      inset: 43% 0 0;
+      inset: 35% 0 0;
       z-index: 1;
       pointer-events: none;
       /* Keep more of the original image visible; fade only where the captions sit. */
@@ -4786,7 +4786,7 @@ export default {
       line-height: 1.6;
     }
     @media (hover: hover) and (pointer: fine) {
-      .visual-card:hover img { transform: scale(1.045); filter: saturate(1.24) contrast(1.05) brightness(1.035); }
+      .visual-card:hover img { transform: scale(1.045); filter: saturate(1.08); }
       .visual-card:hover .visual-arrow { transform: translate(2px,-2px); color: var(--gold2); }
     }
 
@@ -5062,7 +5062,7 @@ export default {
     <div class="hero-photo">
 
       <img
-        src="https://svs.gsfc.nasa.gov/vis/a010000/a014500/a014572/DallasTotality_VanessaThomas_WhiteLight_YouTube.00001_print.jpg"
+        src="https://science.nasa.gov/wp-content/uploads/2024/04/2024-actual-keegan-barber-v2.png?w=1600"
         alt="Total solar eclipse photographed by NASA"
         loading="eager"
       >
@@ -5410,15 +5410,15 @@ export default {
 
       <div class="visual-gallery">
         <figure class="visual-card visual-card-wide reveal">
-          <img src="https://svs.gsfc.nasa.gov/vis/a030000/a030800/a030893/jefferson-city_totality_rd.jpg" alt="The solar corona visible around the Moon during a total solar eclipse" loading="lazy" decoding="async">
+          <img src="https://science.nasa.gov/wp-content/uploads/2024/04/2024-prediction-v2.png?w=1600" alt="The solar corona visible around the Moon during a total solar eclipse" loading="lazy" decoding="async">
           <figcaption><span class="visual-index">01</span><span><strong data-i18n="visualCaptionOne">The corona</strong><small>NASA / Rami Daud</small></span><span class="visual-arrow" aria-hidden="true">↗</span></figcaption>
         </figure>
         <figure class="visual-card reveal">
-          <img src="https://svs.gsfc.nasa.gov/vis/a030000/a030800/a030893/eclipsecomposite_pho_lrg.jpg" alt="Composite photograph showing the phases of a solar eclipse leading to totality" loading="lazy" decoding="async">
+          <img src="https://svs.gsfc.nasa.gov/vis/a010000/a014500/a014572/DallasTotality_VanessaThomas_WhiteLight_YouTube.00001_print.jpg" alt="Composite photograph showing the phases of a solar eclipse leading to totality" loading="lazy" decoding="async">
           <figcaption><span class="visual-index">02</span><span><strong data-i18n="visualCaptionTwo">The progression</strong><small>NASA / Aubrey Gemignani</small></span><span class="visual-arrow" aria-hidden="true">↗</span></figcaption>
         </figure>
         <figure class="visual-card reveal">
-          <img src="https://svs.gsfc.nasa.gov/vis/a030000/a030800/a030893/36548089062_ee492455d1_o.jpg" alt="Bright solar corona surrounding the dark Moon during totality" loading="lazy" decoding="async">
+          <img src="https://science.nasa.gov/wp-content/uploads/2024/04/2024-actual-keegan-barber-v2.png?w=1600" alt="Bright solar corona surrounding the dark Moon during totality" loading="lazy" decoding="async">
           <figcaption><span class="visual-index">03</span><span><strong data-i18n="visualCaptionThree">The moment</strong><small>NASA / Aubrey Gemignani</small></span><span class="visual-arrow" aria-hidden="true">↗</span></figcaption>
         </figure>
       </div>
