@@ -1,0 +1,7193 @@
+export default {
+  async fetch(request, env) {
+
+    const url = new URL(request.url);
+
+
+    /*
+    ============================================================
+    ADMIN DASHBOARD
+    ============================================================
+    */
+
+    if (url.pathname === "/admin") {
+
+      const auth = request.headers.get("Authorization");
+
+      if (!auth || !auth.startsWith("Basic ")) {
+
+        return new Response("Authentication required.", {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="EclipseGlasses Admin"',
+            "content-type": "text/plain; charset=UTF-8"
+          }
+        });
+
+      }
+
+      let username = "";
+      let password = "";
+
+      try {
+
+        const decoded =
+          atob(auth.slice(6));
+
+        const separator =
+          decoded.indexOf(":");
+
+        username =
+          decoded.slice(0, separator);
+
+        password =
+          decoded.slice(separator + 1);
+
+      } catch {
+
+        return new Response("Authentication required.", {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="EclipseGlasses Admin"',
+            "content-type": "text/plain; charset=UTF-8"
+          }
+        });
+
+      }
+
+
+      if (
+        username !== "admin" ||
+        !env.ADMIN_PASSWORD ||
+        password !== env.ADMIN_PASSWORD
+      ) {
+
+        return new Response("Invalid username or password.", {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="EclipseGlasses Admin"',
+            "content-type": "text/plain; charset=UTF-8"
+          }
+        });
+
+      }
+
+
+      if (!env.DB) {
+
+        return new Response(
+          "D1 database is not connected.",
+          {
+            status: 500,
+            headers: {
+              "content-type": "text/plain; charset=UTF-8"
+            }
+          }
+        );
+
+      }
+
+
+      try {
+
+        const result =
+          await env.DB
+            .prepare(
+              `SELECT
+                id,
+                quote_number,
+                created_at,
+                name,
+                email,
+                quantity,
+                message,
+                status
+               FROM quotes
+               ORDER BY id DESC`
+            )
+            .all();
+
+
+        const quotes =
+          result.results || [];
+
+
+        const totalQuotes =
+          quotes.length;
+
+
+        const newQuotes =
+          quotes.filter(
+            quote =>
+              String(quote.status || "new").toLowerCase() === "new"
+          ).length;
+
+
+        let rows = "";
+
+
+        if (!quotes.length) {
+
+          rows =
+            '<tr>' +
+              '<td colspan="7" style="padding:50px;text-align:center;color:#777;">' +
+                'No quote requests yet.' +
+              '</td>' +
+            '</tr>';
+
+        } else {
+
+          quotes.forEach(quote => {
+
+            const status =
+              String(
+                quote.status || "new"
+              ).toLowerCase();
+
+            const statusClass =
+              status === "new"
+                ? "status-new"
+                : "status-other";
+
+
+            const created =
+              quote.created_at
+                ? new Date(
+                    quote.created_at
+                  ).toLocaleString(
+                    "en-GB",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short"
+                    }
+                  )
+                : "—";
+
+
+            const safeQuote =
+              escapeHTMLServer(
+                quote.quote_number
+              );
+
+            const safeName =
+              escapeHTMLServer(
+                quote.name
+              );
+
+            const safeEmail =
+              escapeHTMLServer(
+                quote.email
+              );
+
+            const safeQuantity =
+              escapeHTMLServer(
+                String(quote.quantity)
+              );
+
+            const safeMessage =
+              escapeHTMLServer(
+                quote.message ||
+                "No message provided."
+              ).replace(
+                /\n/g,
+                "<br>"
+              );
+
+            const safeStatus =
+              escapeHTMLServer(
+                status
+              );
+
+
+            rows +=
+
+              '<tr>' +
+
+                '<td>' +
+                  '<div class="quote-number">' +
+                    safeQuote +
+                  '</div>' +
+                  '<div class="date">' +
+                    escapeHTMLServer(created) +
+                  '</div>' +
+                '</td>' +
+
+                '<td>' +
+                  '<div class="customer-name">' +
+                    safeName +
+                  '</div>' +
+                  '<a class="email" href="mailto:' +
+                    safeEmail +
+                  '">' +
+                    safeEmail +
+                  '</a>' +
+                '</td>' +
+
+                '<td class="quantity">' +
+                  safeQuantity +
+                  ' pairs' +
+                '</td>' +
+
+                '<td>' +
+                  '<span class="status ' +
+                    statusClass +
+                  '">' +
+                    safeStatus +
+                  '</span>' +
+                '</td>' +
+
+                '<td>' +
+                  '<details>' +
+                    '<summary>View message</summary>' +
+                    '<div class="message">' +
+                      safeMessage +
+                    '</div>' +
+                  '</details>' +
+                '</td>' +
+
+                '<td>' +
+                  '<a class="reply" href="mailto:' +
+                    safeEmail +
+                    '?subject=' +
+                    encodeURIComponent(
+                      "Re: EclipseGlasses.eu quote " +
+                      String(quote.quote_number || "")
+                    ) +
+                  '">' +
+                    'Reply' +
+                  '</a>' +
+                '</td>' +
+
+              '</tr>';
+
+          });
+
+        }
+
+
+        const adminHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="robots"
+    content="noindex,nofollow"
+  >
+
+  <title>EclipseGlasses Admin</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #080808;
+      color: #f4f1e9;
+      font-family: Arial, sans-serif;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: #0d0d0d;
+    }
+
+    .topbar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 22px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .logo span {
+      color: #c9a45d;
+    }
+
+    .admin-label {
+      color: #77746d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 55px 30px 80px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 30px;
+      margin-bottom: 35px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 42px;
+      letter-spacing: -.045em;
+    }
+
+    .subtitle {
+      color: #88857e;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .refresh {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f1e9;
+      color: #080808;
+      text-decoration: none;
+      padding: 11px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 35px;
+    }
+
+    .stat {
+      background: #101010;
+      padding: 24px;
+    }
+
+    .stat-label {
+      color: #77746d;
+      text-transform: uppercase;
+      letter-spacing: .10em;
+      font-size: 9px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(255,255,255,.10);
+      background: #0d0d0d;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1000px;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 17px;
+      color: #77746d;
+      background: #111;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      font-size: 9px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+
+    td {
+      padding: 19px 17px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,.018);
+    }
+
+    .quote-number {
+      color: #e2c47f;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .date {
+      color: #66635e;
+      font-size: 10px;
+      margin-top: 5px;
+    }
+
+    .customer-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .email {
+      color: #aaa79f;
+      text-decoration: none;
+      font-size: 11px;
+    }
+
+    .email:hover {
+      color: #e2c47f;
+    }
+
+    .quantity {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .status-new {
+      color: #e2c47f;
+      background: rgba(201,164,93,.12);
+      border: 1px solid rgba(201,164,93,.25);
+    }
+
+    .status-other {
+      color: #aaa79f;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    details {
+      max-width: 330px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: #aaa79f;
+      font-size: 11px;
+    }
+
+    summary:hover {
+      color: #e2c47f;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      background: #151515;
+      border: 1px solid rgba(255,255,255,.06);
+      color: #aaa79f;
+      font-size: 11px;
+      line-height: 1.7;
+      word-break: break-word;
+    }
+
+    .reply {
+      display: inline-block;
+      color: #f4f1e9;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 8px 11px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .reply:hover {
+      border-color: rgba(201,164,93,.5);
+      color: #e2c47f;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      color: #55534e;
+      font-size: 10px;
+    }
+
+    @media (max-width: 700px) {
+
+      .topbar-inner {
+        padding: 18px;
+      }
+
+      .container {
+        padding: 35px 18px 60px;
+      }
+
+      .heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <div class="topbar-inner">
+
+      <div class="logo">
+        ECLIPSE<span>GLASSES</span>
+      </div>
+
+      <div class="admin-label">
+        Private admin
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="heading">
+
+      <div>
+
+        <h1>
+          Quote requests
+        </h1>
+
+        <div class="subtitle">
+          Your EclipseGlasses.eu bulk enquiries.
+        </div>
+
+      </div>
+
+      <a
+        class="refresh"
+        href="/admin"
+      >
+        Refresh
+      </a>
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <div class="stat-label">
+          Total requests
+        </div>
+
+        <div class="stat-value">
+          ${totalQuotes}
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-label">
+          New requests
+        </div>
+
+        <div class="stat-value">
+          ${newQuotes}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Quote
+            </th>
+
+            <th>
+              Customer
+            </th>
+
+            <th>
+              Quantity
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Message
+            </th>
+
+            <th>
+              Action
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${rows}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <div class="footer-note">
+      This dashboard is protected by HTTP authentication. Customer information is private.
+    </div>
+
+  </main>
+
+</body>
+</html>`;
+
+
+        return new Response(
+          adminHTML,
+          {
+            headers: {
+              "content-type":
+                "text/html; charset=UTF-8",
+              "cache-control":
+                "no-store",
+              "x-robots-tag":
+                "noindex, nofollow"
+            }
+          }
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Admin dashboard error:",
+          error
+        );
+
+        return new Response(
+          "Unable to load quote requests.",
+          {
+            status: 500,
+            headers: {
+              "content-type":
+                "text/plain; charset=UTF-8"
+            }
+          }
+        );
+
+      }
+
+    }
+
+
+    /*
+    ============================================================
+    QUOTE REQUEST API
+    ============================================================
+    */
+
+    if (
+      url.pathname === "/api/quote" &&
+      request.method === "POST"
+    ) {
+
+      try {
+
+        if (!env.DB) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "The quote database is not connected yet."
+            },
+            500
+          );
+
+        }
+
+        let data;
+
+        try {
+
+          data =
+            await request.json();
+
+        } catch {
+
+          return jsonResponse(
+            {
+              success: false,
+              error: "Invalid request."
+            },
+            400
+          );
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        SPAM HONEYPOT
+        --------------------------------------------------------
+        */
+
+        if (
+          data.website &&
+          String(data.website).trim() !== ""
+        ) {
+
+          return jsonResponse({
+            success: true,
+            quoteNumber: "OK"
+          });
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        CLEAN INPUT
+        --------------------------------------------------------
+        */
+
+        const name =
+          cleanText(
+            data.name,
+            120
+          );
+
+        const email =
+          cleanText(
+            data.email,
+            180
+          ).toLowerCase();
+
+        const quantity =
+          Number.parseInt(
+            data.quantity,
+            10
+          );
+
+        const message =
+          cleanText(
+            data.message,
+            3000
+          );
+
+
+        /*
+        --------------------------------------------------------
+        VALIDATION
+        --------------------------------------------------------
+        */
+
+        if (
+          !name ||
+          name.length < 2
+        ) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "Please enter your name or company name."
+            },
+            400
+          );
+
+        }
+
+
+        if (
+          !email ||
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            email
+          )
+        ) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "Please enter a valid email address."
+            },
+            400
+          );
+
+        }
+
+
+        if (
+          !Number.isInteger(quantity) ||
+          quantity < 51 ||
+          quantity > 1000000
+        ) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "Please enter a quantity of at least 51 pairs."
+            },
+            400
+          );
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        UNIQUE QUOTE NUMBER
+        --------------------------------------------------------
+        */
+
+        const quoteNumber =
+          "QR-" +
+          new Date()
+            .toISOString()
+            .slice(0, 10)
+            .replace(/-/g, "") +
+          "-" +
+          crypto
+            .randomUUID()
+            .slice(0, 6)
+            .toUpperCase();
+
+
+        const createdAt =
+          new Date().toISOString();
+
+
+        /*
+        --------------------------------------------------------
+        SAVE TO D1
+        --------------------------------------------------------
+        */
+
+        await env.DB
+          .prepare(
+            `INSERT INTO quotes
+              (
+                quote_number,
+                created_at,
+                name,
+                email,
+                quantity,
+                message,
+                status
+              )
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+          )
+          .bind(
+            quoteNumber,
+            createdAt,
+            name,
+            email,
+            quantity,
+            message,
+            "new"
+          )
+          .run();
+
+
+        /*
+        --------------------------------------------------------
+        SEND EMAIL NOTIFICATION
+        --------------------------------------------------------
+        */
+
+        let emailSent = false;
+
+
+        if (env.EMAIL) {
+
+          const safeName =
+            escapeHTMLServer(
+              name
+            );
+
+          const safeEmail =
+            escapeHTMLServer(
+              email
+            );
+
+          const safeQuantity =
+            escapeHTMLServer(
+              String(quantity)
+            );
+
+          const safeMessage =
+            escapeHTMLServer(
+              message ||
+              "No additional message."
+            ).replace(
+              /\n/g,
+              "<br>"
+            );
+
+
+          const emailSubject =
+            "New EclipseGlasses.eu quote request — " +
+            quoteNumber;
+
+
+          const emailHTML =
+            "<!DOCTYPE html>" +
+            "<html>" +
+            "<body style=\"margin:0;background:#f4f1e9;font-family:Arial,sans-serif;color:#111;\">" +
+
+              "<div style=\"max-width:650px;margin:40px auto;background:#ffffff;border:1px solid #ddd;\">" +
+
+                "<div style=\"padding:28px;background:#080808;color:#ffffff;\">" +
+
+                  "<div style=\"font-size:20px;font-weight:700;letter-spacing:-0.03em;\">" +
+                    "ECLIPSE<span style=\"color:#c9a45d;\">GLASSES</span>" +
+                  "</div>" +
+
+                  "<div style=\"margin-top:10px;color:#c9a45d;font-size:12px;text-transform:uppercase;letter-spacing:.12em;\">" +
+                    "New quote request" +
+                  "</div>" +
+
+                "</div>" +
+
+
+                "<div style=\"padding:30px;\">" +
+
+                  "<div style=\"font-size:13px;color:#777;margin-bottom:8px;\">" +
+                    "Quote number" +
+                  "</div>" +
+
+                  "<div style=\"font-size:24px;font-weight:700;margin-bottom:28px;\">" +
+                    escapeHTMLServer(
+                      quoteNumber
+                    ) +
+                  "</div>" +
+
+
+                  "<table style=\"width:100%;border-collapse:collapse;font-size:14px;\">" +
+
+                    "<tr>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;color:#777;width:140px;\">" +
+                        "Name / company" +
+                      "</td>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;font-weight:600;\">" +
+                        safeName +
+                      "</td>" +
+
+                    "</tr>" +
+
+
+                    "<tr>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;color:#777;\">" +
+                        "Email" +
+                      "</td>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;\">" +
+                        safeEmail +
+                      "</td>" +
+
+                    "</tr>" +
+
+
+                    "<tr>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;color:#777;\">" +
+                        "Quantity" +
+                      "</td>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;font-weight:600;\">" +
+                        safeQuantity +
+                        " pairs" +
+                      "</td>" +
+
+                    "</tr>" +
+
+                  "</table>" +
+
+
+                  "<div style=\"margin-top:28px;font-size:13px;color:#777;margin-bottom:8px;\">" +
+                    "Message" +
+                  "</div>" +
+
+
+                  "<div style=\"padding:18px;background:#f7f7f7;border-radius:5px;font-size:14px;line-height:1.7;\">" +
+                    safeMessage +
+                  "</div>" +
+
+
+                  "<div style=\"margin-top:30px;\">" +
+
+                    "<a href=\"mailto:" +
+                      safeEmail +
+                      "?subject=Re:%20EclipseGlasses.eu%20quote%20" +
+                      encodeURIComponent(
+                        quoteNumber
+                      ) +
+                    "\" style=\"display:inline-block;background:#080808;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:4px;font-size:13px;font-weight:600;\">" +
+                      "Reply to customer" +
+                    "</a>" +
+
+                  "</div>" +
+
+                "</div>" +
+
+              "</div>" +
+
+            "</body>" +
+            "</html>";
+
+
+          const emailText =
+            "NEW ECLIPSEGLASSES.EU QUOTE REQUEST\n\n" +
+
+            "Quote number: " +
+            quoteNumber +
+
+            "\n\n" +
+
+            "Name / company: " +
+            name +
+
+            "\n" +
+
+            "Email: " +
+            email +
+
+            "\n" +
+
+            "Quantity: " +
+            quantity +
+            " pairs\n\n" +
+
+            "Message:\n" +
+
+            (
+              message ||
+              "No additional message."
+            ) +
+
+            "\n\n" +
+
+            "Reply directly to: " +
+            email;
+
+
+          try {
+
+            await env.EMAIL.send({
+
+              from:
+                "orders@eclipseglasses.eu",
+
+              to:
+                "orders@eclipseglasses.eu",
+
+              replyTo:
+                email,
+
+              subject:
+                emailSubject,
+
+              html:
+                emailHTML,
+
+              text:
+                emailText
+
+            });
+
+
+            emailSent = true;
+
+
+          } catch (emailError) {
+
+            console.error(
+              "Quote email failed:",
+              emailError
+            );
+
+          }
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        RESPONSE
+        --------------------------------------------------------
+        */
+
+        return jsonResponse({
+
+          success: true,
+
+          quoteNumber:
+            quoteNumber,
+
+          emailSent:
+            emailSent
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Quote request error:",
+          error
+        );
+
+
+        return jsonResponse(
+          {
+            success: false,
+            error:
+              "Something went wrong while submitting your request."
+          },
+          500
+        );
+
+      }
+
+    }
+
+
+    /*
+    ============================================================
+    MAIN WEBSITE
+    ============================================================
+    */
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <link
+  rel="icon"
+  href="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/favicon.png?v=1"
+  >
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Solar eclipse glasses for the August 2, 2027 total solar eclipse in southern Spain."
+  >
+
+  <title>
+    Eclipse Glasses — August 2, 2027
+  </title>
+
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <style>
+
+    :root {
+
+      --black: #080808;
+      --black2: #101010;
+      --black3: #151515;
+
+      --gold: #c9a45d;
+      --gold2: #e2c47f;
+
+      --cream: #f4f1e9;
+
+      --muted: #aaa79f;
+      --muted2: #77746d;
+
+      --line: rgba(255,255,255,.10);
+      --line2: rgba(255,255,255,.06);
+
+      --white: #ffffff;
+
+    }
+
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+
+    body {
+
+      background:
+        var(--black);
+
+      color:
+        var(--cream);
+
+      font-family:
+        "Inter",
+        sans-serif;
+
+      line-height:
+        1.6;
+
+      -webkit-font-smoothing:
+        antialiased;
+
+      overflow-x:
+        hidden;
+
+    }
+
+
+    a {
+
+      color:
+        inherit;
+
+      text-decoration:
+        none;
+
+    }
+
+
+    button,
+    input,
+    select,
+    textarea {
+
+      font:
+        inherit;
+
+    }
+
+
+    button {
+      cursor: pointer;
+    }
+
+
+    .container {
+
+      width:
+        min(
+          1180px,
+          calc(100% - 40px)
+        );
+
+      margin:
+        0 auto;
+
+    }
+
+
+    .nav {
+
+      position:
+        fixed;
+
+      top:
+        0;
+
+      left:
+        0;
+
+      width:
+        100%;
+
+      z-index:
+        100;
+
+      background:
+        rgba(8,8,8,.82);
+
+      backdrop-filter:
+        blur(18px);
+
+      -webkit-backdrop-filter:
+        blur(18px);
+
+      border-bottom:
+        1px solid var(--line2);
+
+    }
+
+
+    .nav-inner {
+
+      height:
+        76px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        30px;
+
+    }
+
+
+    .logo {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-weight:
+        800;
+
+      letter-spacing:
+        -.045em;
+
+      font-size:
+        19px;
+
+      white-space:
+        nowrap;
+
+    }
+
+
+    .logo span {
+      color:
+        var(--gold);
+    }
+
+
+    .nav-links {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        32px;
+
+      margin-left:
+        auto;
+
+    }
+
+
+    .nav-links a {
+
+      font-size:
+        13px;
+
+      font-weight:
+        500;
+
+      color:
+        #bdb9b0;
+
+      transition:
+        color .2s ease;
+
+    }
+
+
+    .nav-links a:hover {
+      color:
+        var(--white);
+    }
+
+
+    .nav-right {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        12px;
+
+    }
+
+
+    .language {
+
+      appearance:
+        none;
+
+      border:
+        1px solid var(--line);
+
+      background:
+        rgba(255,255,255,.025);
+
+      color:
+        #c7c3bb;
+
+      padding:
+        9px 28px 9px 11px;
+
+      border-radius:
+        5px;
+
+      font-size:
+        12px;
+
+      cursor:
+        pointer;
+
+    }
+
+
+    .cart-button {
+
+      border:
+        1px solid var(--line);
+
+      background:
+        transparent;
+
+      color:
+        var(--cream);
+
+      padding:
+        10px 14px;
+
+      border-radius:
+        5px;
+
+      font-size:
+        12px;
+
+      font-weight:
+        600;
+
+      transition:
+        all .2s ease;
+
+    }
+
+
+    .cart-button:hover {
+
+      border-color:
+        rgba(201,164,93,.5);
+
+      background:
+        rgba(201,164,93,.06);
+
+    }
+
+
+    .hero {
+
+      position:
+        relative;
+
+      min-height:
+        820px;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      overflow:
+        hidden;
+
+      border-bottom:
+        1px solid var(--line2);
+
+      background:
+        #080808;
+
+    }
+
+
+    .hero-photo {
+
+      position:
+        absolute;
+
+      inset:
+        0;
+
+      pointer-events:
+        none;
+
+      overflow:
+        hidden;
+
+      z-index:
+        1;
+
+    }
+
+
+    .hero-photo img {
+
+      position:
+        absolute;
+
+      right:
+        -2%;
+
+      top:
+        50%;
+
+      transform:
+        translateY(-50%);
+
+      width:
+        78%;
+
+      height:
+        100%;
+
+      object-fit:
+        cover;
+
+      object-position:
+        center center;
+
+      opacity:
+        1;
+
+      filter:
+        none;
+
+      z-index:
+        1;
+
+      display:
+        block;
+
+    }
+
+
+    .hero-photo::before {
+
+      content:
+        "";
+
+      position:
+        absolute;
+
+      inset:
+        0;
+
+      background:
+        linear-gradient(
+          90deg,
+          #080808 0%,
+          rgba(8,8,8,.98) 13%,
+          rgba(8,8,8,.88) 27%,
+          rgba(8,8,8,.48) 48%,
+          rgba(8,8,8,.10) 72%,
+          rgba(8,8,8,.05) 100%
+        );
+
+      z-index:
+        2;
+
+    }
+
+
+    .hero-photo::after {
+
+      content:
+        "";
+
+      position:
+        absolute;
+
+      inset:
+        0;
+
+      background:
+        linear-gradient(
+          180deg,
+          #080808 0%,
+          rgba(8,8,8,.20) 13%,
+          transparent 28%,
+          transparent 74%,
+          #080808 100%
+        );
+
+      z-index:
+        3;
+
+    }
+
+
+    .hero-content {
+
+      position:
+        relative;
+
+      z-index:
+        5;
+
+      width:
+        620px;
+
+      padding:
+        150px 0 120px;
+
+    }
+
+
+    .eyebrow {
+
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      gap:
+        9px;
+
+      color:
+        var(--gold2);
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .15em;
+
+      font-size:
+        10px;
+
+      font-weight:
+        700;
+
+      margin-bottom:
+        25px;
+
+    }
+
+
+    .eyebrow::before {
+
+      content:
+        "";
+
+      width:
+        25px;
+
+      height:
+        1px;
+
+      background:
+        var(--gold);
+
+    }
+
+
+    .hero h1 {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        clamp(
+          48px,
+          6vw,
+          76px
+        );
+
+      line-height:
+        .99;
+
+      letter-spacing:
+        -.055em;
+
+      font-weight:
+        700;
+
+      max-width:
+        760px;
+
+      margin-bottom:
+        28px;
+
+    }
+
+
+    .hero h1 span {
+      color:
+        var(--gold2);
+    }
+
+
+    .hero-copy {
+
+      max-width:
+        540px;
+
+      color:
+        #aaa79f;
+
+      font-size:
+        17px;
+
+      line-height:
+        1.75;
+
+      margin-bottom:
+        30px;
+
+    }
+
+
+    .hero-pills {
+
+      display:
+        flex;
+
+      flex-wrap:
+        wrap;
+
+      gap:
+        8px;
+
+      margin-bottom:
+        36px;
+
+    }
+
+
+    .pill {
+
+      border:
+        1px solid var(--line);
+
+      background:
+        rgba(255,255,255,.025);
+
+      color:
+        #c5c1b8;
+
+      padding:
+        7px 11px;
+
+      border-radius:
+        4px;
+
+      font-size:
+        11px;
+
+      font-weight:
+        500;
+
+    }
+
+
+    .hero-actions {
+
+      display:
+        flex;
+
+      gap:
+        10px;
+
+      flex-wrap:
+        wrap;
+
+    }
+
+
+    .button {
+
+      display:
+        inline-flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        center;
+
+      min-height:
+        48px;
+
+      padding:
+        0 20px;
+
+      border-radius:
+        5px;
+
+      font-size:
+        13px;
+
+      font-weight:
+        600;
+
+      transition:
+        all .2s ease;
+
+      border:
+        1px solid transparent;
+
+    }
+
+
+    .button-primary {
+
+      background:
+        var(--cream);
+
+      color:
+        var(--black);
+
+    }
+
+
+    .button-primary:hover {
+
+      background:
+        var(--white);
+
+      transform:
+        translateY(-1px);
+
+    }
+
+
+    .button-secondary {
+
+      border-color:
+        var(--line);
+
+      color:
+        var(--cream);
+
+      background:
+        rgba(255,255,255,.02);
+
+    }
+
+
+    .button-secondary:hover {
+
+      border-color:
+        rgba(255,255,255,.22);
+
+      background:
+        rgba(255,255,255,.05);
+
+    }
+
+
+    .hero-note {
+
+      margin-top:
+        24px;
+
+      color:
+        var(--muted2);
+
+      font-size:
+        11px;
+
+    }
+
+
+    section {
+      scroll-margin-top:
+        90px;
+    }
+
+
+    .section {
+
+      padding:
+        120px 0;
+
+      border-bottom:
+        1px solid var(--line2);
+
+    }
+
+
+    .section-heading {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        flex-end;
+
+      gap:
+        50px;
+
+      margin-bottom:
+        60px;
+
+    }
+
+
+    .section-label {
+
+      color:
+        var(--gold);
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .14em;
+
+      font-size:
+        10px;
+
+      font-weight:
+        700;
+
+      margin-bottom:
+        15px;
+
+    }
+
+
+    .section-title {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        clamp(
+          34px,
+          4vw,
+          52px
+        );
+
+      line-height:
+        1.05;
+
+      letter-spacing:
+        -.045em;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .section-description {
+
+      max-width:
+        430px;
+
+      color:
+        var(--muted);
+
+      font-size:
+        14px;
+
+      line-height:
+        1.8;
+
+    }
+
+
+    .shop-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        .9fr 1.1fr;
+
+      gap:
+        70px;
+
+      align-items:
+        center;
+
+    }
+
+
+    .product-image {
+
+      aspect-ratio:
+        1 / 1;
+
+      background:
+        #111;
+
+      border:
+        1px solid var(--line);
+
+      border-radius:
+        6px;
+
+      overflow:
+        hidden;
+
+    }
+
+
+    .product-image img {
+
+      width:
+        100%;
+
+      height:
+        100%;
+
+      object-fit:
+        cover;
+
+      display:
+        block;
+
+      transition:
+        transform .5s ease;
+
+    }
+
+
+    .product-image:hover img {
+      transform:
+        scale(1.025);
+    }
+
+
+    .product-info h3 {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        30px;
+
+      letter-spacing:
+        -.035em;
+
+      margin-bottom:
+        10px;
+
+    }
+
+
+    .product-description {
+
+      color:
+        var(--muted);
+
+      font-size:
+        14px;
+
+      line-height:
+        1.8;
+
+      margin-bottom:
+        30px;
+
+      max-width:
+        520px;
+
+    }
+
+
+    .price-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      border-top:
+        1px solid var(--line);
+
+      border-left:
+        1px solid var(--line);
+
+      margin-bottom:
+        25px;
+
+    }
+
+
+    .price-option {
+
+      padding:
+        17px;
+
+      border-right:
+        1px solid var(--line);
+
+      border-bottom:
+        1px solid var(--line);
+
+      cursor:
+        pointer;
+
+      transition:
+        background .2s ease;
+
+    }
+
+
+    .price-option:hover {
+      background:
+        rgba(255,255,255,.025);
+    }
+
+
+    .price-option.active {
+
+      background:
+        rgba(201,164,93,.07);
+
+      box-shadow:
+        inset 0 0 0 1px rgba(201,164,93,.35);
+
+    }
+
+
+    .price-quantity {
+
+      display:
+        block;
+
+      font-size:
+        12px;
+
+      color:
+        #bbb7ae;
+
+      margin-bottom:
+        3px;
+
+    }
+
+
+    .price-value {
+
+      display:
+        block;
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        18px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .price-per {
+
+      display:
+        block;
+
+      color:
+        var(--muted2);
+
+      font-size:
+        10px;
+
+      margin-top:
+        2px;
+
+    }
+
+
+    .quantity-row {
+
+      display:
+        flex;
+
+      gap:
+        10px;
+
+    }
+
+
+    .quantity-input {
+
+      width:
+        90px;
+
+      height:
+        48px;
+
+      border:
+        1px solid var(--line);
+
+      background:
+        #0e0e0e;
+
+      color:
+        var(--cream);
+
+      border-radius:
+        5px;
+
+      text-align:
+        center;
+
+      outline:
+        none;
+
+    }
+
+
+    .quantity-input:focus {
+      border-color:
+        rgba(201,164,93,.5);
+    }
+
+
+    .add-button {
+      flex:
+        1;
+    }
+
+
+    .shipping-note {
+
+      color:
+        var(--muted2);
+
+      font-size:
+        10px;
+
+      margin-top:
+        14px;
+
+    }
+
+
+    .eclipse-overview {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        .75fr 1.25fr;
+
+      gap:
+        80px;
+
+    }
+
+
+    .eclipse-intro {
+
+      color:
+        var(--muted);
+
+      font-size:
+        15px;
+
+      line-height:
+        1.9;
+
+    }
+
+
+    .facts {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(2, 1fr);
+
+      border-top:
+        1px solid var(--line);
+
+      border-left:
+        1px solid var(--line);
+
+    }
+
+
+    .fact {
+
+      padding:
+        26px;
+
+      border-right:
+        1px solid var(--line);
+
+      border-bottom:
+        1px solid var(--line);
+
+    }
+
+
+    .fact-label {
+
+      color:
+        var(--muted2);
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .11em;
+
+      font-size:
+        9px;
+
+      font-weight:
+        700;
+
+      margin-bottom:
+        9px;
+
+    }
+
+
+    .fact-value {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        21px;
+
+      font-weight:
+        700;
+
+      letter-spacing:
+        -.025em;
+
+    }
+
+
+    .fact-sub {
+
+      color:
+        var(--muted);
+
+      font-size:
+        11px;
+
+      margin-top:
+        3px;
+
+    }
+
+
+    .locations {
+      margin-top:
+        65px;
+    }
+
+
+    .locations-title {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        22px;
+
+      margin-bottom:
+        20px;
+
+    }
+
+
+    .location-table {
+
+      border-top:
+        1px solid var(--line);
+
+    }
+
+
+    .location-row {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        1fr 1fr 1fr;
+
+      padding:
+        18px 0;
+
+      border-bottom:
+        1px solid var(--line2);
+
+      font-size:
+        13px;
+
+    }
+
+
+    .location-row.header {
+
+      color:
+        var(--muted2);
+
+      text-transform:
+        uppercase;
+
+      letter-spacing:
+        .09em;
+
+      font-size:
+        9px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .location-row:not(.header) div:nth-child(2) {
+      color:
+        var(--gold2);
+    }
+
+
+    .safety-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap:
+        1px;
+
+      background:
+        var(--line);
+
+      border:
+        1px solid var(--line);
+
+    }
+
+
+    .safety-card {
+
+      background:
+        var(--black);
+
+      padding:
+        35px;
+
+    }
+
+
+    .safety-number {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      color:
+        var(--gold);
+
+      font-size:
+        12px;
+
+      margin-bottom:
+        28px;
+
+    }
+
+
+    .safety-card h3 {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        20px;
+
+      margin-bottom:
+        13px;
+
+    }
+
+
+    .safety-card p {
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      line-height:
+        1.8;
+
+    }
+
+
+    .info-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        repeat(3, 1fr);
+
+      gap:
+        1px;
+
+      background:
+        var(--line);
+
+      border:
+        1px solid var(--line);
+
+    }
+
+
+    .info-card {
+
+      background:
+        var(--black);
+
+      padding:
+        35px;
+
+      min-height:
+        240px;
+
+    }
+
+
+    .info-icon {
+
+      color:
+        var(--gold);
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        13px;
+
+      font-weight:
+        700;
+
+      margin-bottom:
+        27px;
+
+    }
+
+
+    .info-card h3 {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        21px;
+
+      margin-bottom:
+        13px;
+
+    }
+
+
+    .info-card p {
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      line-height:
+        1.8;
+
+    }
+
+
+    .info-card a {
+
+      color:
+        var(--gold2);
+
+      border-bottom:
+        1px solid rgba(226,196,127,.25);
+
+    }
+
+
+    .info-card a:hover {
+      border-color:
+        var(--gold2);
+    }
+
+
+    .bulk {
+      background:
+        #0c0c0c;
+    }
+
+
+    .bulk-grid {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        1fr 1fr;
+
+      gap:
+        80px;
+
+      align-items:
+        start;
+
+    }
+
+
+    .bulk-copy p {
+
+      color:
+        var(--muted);
+
+      font-size:
+        14px;
+
+      line-height:
+        1.9;
+
+      max-width:
+        500px;
+
+    }
+
+
+    .bulk-form {
+
+      display:
+        grid;
+
+      gap:
+        12px;
+
+    }
+
+
+    .field {
+
+      width:
+        100%;
+
+      border:
+        1px solid var(--line);
+
+      background:
+        #101010;
+
+      color:
+        var(--cream);
+
+      padding:
+        14px;
+
+      border-radius:
+        4px;
+
+      outline:
+        none;
+
+      font-size:
+        13px;
+
+    }
+
+
+    .field:focus {
+
+      border-color:
+        rgba(201,164,93,.5);
+
+    }
+
+
+    textarea.field {
+
+      min-height:
+        130px;
+
+      resize:
+        vertical;
+
+    }
+
+
+    .quote-status {
+
+      display:
+        none;
+
+      padding:
+        15px 16px;
+
+      border:
+        1px solid rgba(201,164,93,.30);
+
+      background:
+        rgba(201,164,93,.07);
+
+      color:
+        var(--cream);
+
+      border-radius:
+        4px;
+
+      font-size:
+        13px;
+
+      line-height:
+        1.6;
+
+    }
+
+
+    .quote-status.show {
+      display:
+        block;
+    }
+
+
+    .quote-status.error {
+
+      border-color:
+        rgba(220,80,80,.35);
+
+      background:
+        rgba(220,80,80,.08);
+
+    }
+
+
+    .quote-status strong {
+      color:
+        var(--gold2);
+    }
+
+
+    .honeypot {
+
+      position:
+        absolute !important;
+
+      left:
+        -10000px !important;
+
+      width:
+        1px !important;
+
+      height:
+        1px !important;
+
+      opacity:
+        0 !important;
+
+      pointer-events:
+        none !important;
+
+    }
+
+
+    .faq-list {
+
+      border-top:
+        1px solid var(--line);
+
+    }
+
+
+    .faq-item {
+
+      border-bottom:
+        1px solid var(--line);
+
+    }
+
+
+    .faq-question {
+
+      width:
+        100%;
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      justify-content:
+        space-between;
+
+      gap:
+        30px;
+
+      background:
+        transparent;
+
+      border:
+        0;
+
+      color:
+        var(--cream);
+
+      text-align:
+        left;
+
+      padding:
+        24px 0;
+
+      font-size:
+        14px;
+
+      font-weight:
+        600;
+
+    }
+
+
+    .faq-plus {
+
+      color:
+        var(--gold);
+
+      font-size:
+        20px;
+
+      font-weight:
+        400;
+
+      transition:
+        transform .25s ease;
+
+    }
+
+
+    .faq-answer {
+
+      max-height:
+        0;
+
+      overflow:
+        hidden;
+
+      transition:
+        max-height .3s ease;
+
+    }
+
+
+    .faq-answer-inner {
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      line-height:
+        1.8;
+
+      padding:
+        0 50px 25px 0;
+
+      max-width:
+        800px;
+
+    }
+
+
+    .faq-item.open .faq-plus {
+      transform:
+        rotate(45deg);
+    }
+
+
+    .final-cta {
+
+      padding:
+        130px 0;
+
+      text-align:
+        center;
+
+      position:
+        relative;
+
+      overflow:
+        hidden;
+
+    }
+
+
+    .final-cta::before {
+
+      content:
+        "";
+
+      position:
+        absolute;
+
+      width:
+        500px;
+
+      height:
+        500px;
+
+      left:
+        50%;
+
+      top:
+        50%;
+
+      transform:
+        translate(
+          -50%,
+          -50%
+        );
+
+      background:
+        radial-gradient(
+          circle,
+          rgba(201,164,93,.08) 0%,
+          rgba(201,164,93,.025) 32%,
+          transparent 70%
+        );
+
+      pointer-events:
+        none;
+
+    }
+
+
+    .final-cta-content {
+
+      position:
+        relative;
+
+      z-index:
+        2;
+
+    }
+
+
+    .final-cta h2 {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        clamp(
+          38px,
+          5vw,
+          64px
+        );
+
+      line-height:
+        1;
+
+      letter-spacing:
+        -.055em;
+
+      margin-bottom:
+        20px;
+
+    }
+
+
+    .final-cta p {
+
+      color:
+        var(--muted);
+
+      font-size:
+        14px;
+
+      margin-bottom:
+        30px;
+
+    }
+
+
+    footer {
+
+      border-top:
+        1px solid var(--line);
+
+      padding:
+        35px 0;
+
+    }
+
+
+    .footer-inner {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      gap:
+        30px;
+
+      color:
+        var(--muted2);
+
+      font-size:
+        11px;
+
+    }
+
+
+    .footer-links {
+
+      display:
+        flex;
+
+      gap:
+        20px;
+
+      flex-wrap:
+        wrap;
+
+    }
+
+
+    .footer-links a:hover {
+      color:
+        var(--cream);
+    }
+
+
+    .cart-overlay {
+
+      position:
+        fixed;
+
+      inset:
+        0;
+
+      background:
+        rgba(0,0,0,.65);
+
+      z-index:
+        200;
+
+      opacity:
+        0;
+
+      pointer-events:
+        none;
+
+      transition:
+        opacity .25s ease;
+
+      backdrop-filter:
+        blur(4px);
+
+    }
+
+
+    .cart-overlay.open {
+
+      opacity:
+        1;
+
+      pointer-events:
+        auto;
+
+    }
+
+
+    .cart-drawer {
+
+      position:
+        fixed;
+
+      top:
+        0;
+
+      right:
+        0;
+
+      width:
+        min(
+          440px,
+          100%
+        );
+
+      height:
+        100%;
+
+      background:
+        #0d0d0d;
+
+      border-left:
+        1px solid var(--line);
+
+      z-index:
+        201;
+
+      transform:
+        translateX(100%);
+
+      transition:
+        transform .3s ease;
+
+      display:
+        flex;
+
+      flex-direction:
+        column;
+
+    }
+
+
+    .cart-drawer.open {
+      transform:
+        translateX(0);
+    }
+
+
+    .cart-header {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      padding:
+        25px;
+
+      border-bottom:
+        1px solid var(--line);
+
+    }
+
+
+    .cart-header h3 {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        19px;
+
+    }
+
+
+    .close-cart {
+
+      border:
+        0;
+
+      background:
+        transparent;
+
+      color:
+        var(--muted);
+
+      font-size:
+        25px;
+
+      line-height:
+        1;
+
+    }
+
+
+    .cart-items {
+
+      flex:
+        1;
+
+      overflow-y:
+        auto;
+
+      padding:
+        20px 25px;
+
+    }
+
+
+    .cart-empty {
+
+      color:
+        var(--muted);
+
+      font-size:
+        13px;
+
+      text-align:
+        center;
+
+      padding:
+        60px 0;
+
+    }
+
+
+    .cart-item {
+
+      display:
+        grid;
+
+      grid-template-columns:
+        1fr auto;
+
+      gap:
+        20px;
+
+      padding:
+        18px 0;
+
+      border-bottom:
+        1px solid var(--line2);
+
+    }
+
+
+    .cart-item-name {
+
+      font-weight:
+        600;
+
+      font-size:
+        13px;
+
+    }
+
+
+    .cart-item-detail {
+
+      color:
+        var(--muted);
+
+      font-size:
+        11px;
+
+      margin-top:
+        4px;
+
+    }
+
+
+    .cart-item-price {
+
+      font-size:
+        13px;
+
+      font-weight:
+        600;
+
+      text-align:
+        right;
+
+    }
+
+
+    .cart-controls {
+
+      display:
+        flex;
+
+      align-items:
+        center;
+
+      gap:
+        7px;
+
+      margin-top:
+        12px;
+
+    }
+
+
+    .cart-control {
+
+      width:
+        27px;
+
+      height:
+        27px;
+
+      border:
+        1px solid var(--line);
+
+      background:
+        transparent;
+
+      color:
+        var(--cream);
+
+      border-radius:
+        3px;
+
+    }
+
+
+    .remove-item {
+
+      border:
+        0;
+
+      background:
+        transparent;
+
+      color:
+        var(--muted2);
+
+      font-size:
+        10px;
+
+      margin-left:
+        6px;
+
+    }
+
+
+    .cart-footer {
+
+      border-top:
+        1px solid var(--line);
+
+      padding:
+        22px 25px;
+
+    }
+
+
+    .cart-total {
+
+      display:
+        flex;
+
+      justify-content:
+        space-between;
+
+      align-items:
+        center;
+
+      margin-bottom:
+        17px;
+
+    }
+
+
+    .cart-total span:first-child {
+
+      color:
+        var(--muted);
+
+      font-size:
+        12px;
+
+    }
+
+
+    .cart-total span:last-child {
+
+      font-family:
+        "Manrope",
+        sans-serif;
+
+      font-size:
+        22px;
+
+      font-weight:
+        700;
+
+    }
+
+
+    .checkout-button {
+      width:
+        100%;
+    }
+
+
+    .checkout-note {
+
+      color:
+        var(--muted2);
+
+      text-align:
+        center;
+
+      font-size:
+        9px;
+
+      margin-top:
+        11px;
+
+    }
+
+
+    @media (max-width: 900px) {
+
+      .nav-links {
+        display:
+          none;
+      }
+
+      .hero {
+        min-height:
+          760px;
+      }
+
+      .hero-photo img {
+
+        right:
+          -25%;
+
+        width:
+          125%;
+
+        height:
+          100%;
+
+        opacity:
+          1;
+
+        object-position:
+          center center;
+
+      }
+
+      .hero-photo::before {
+
+        background:
+          linear-gradient(
+            90deg,
+            var(--black) 0%,
+            rgba(8,8,8,.88) 32%,
+            rgba(8,8,8,.48) 58%,
+            rgba(8,8,8,.12) 100%
+          );
+
+      }
+
+      .hero-photo::after {
+
+        background:
+          linear-gradient(
+            180deg,
+            var(--black) 0%,
+            rgba(8,8,8,.08) 18%,
+            transparent 45%,
+            transparent 74%,
+            var(--black) 100%
+          );
+
+      }
+
+      .hero-content {
+
+        width:
+          100%;
+
+        padding:
+          150px 0 100px;
+
+      }
+
+      .shop-grid,
+      .eclipse-overview,
+      .bulk-grid {
+
+        grid-template-columns:
+          1fr;
+
+        gap:
+          45px;
+
+      }
+
+      .safety-grid,
+      .info-grid {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+      .section-heading {
+
+        display:
+          block;
+
+      }
+
+      .section-description {
+
+        margin-top:
+          20px;
+
+      }
+
+    }
+
+
+    @media (max-width: 600px) {
+
+      .container {
+
+        width:
+          min(
+            100% - 28px,
+            1180px
+          );
+
+      }
+
+      .nav-inner {
+
+        height:
+          68px;
+
+      }
+
+      .logo {
+
+        font-size:
+          16px;
+
+      }
+
+      .language {
+        display:
+          none;
+      }
+
+      .cart-button {
+
+        padding:
+          9px 11px;
+
+      }
+
+      .hero {
+
+        min-height:
+          730px;
+
+      }
+
+      .hero-photo img {
+
+        right:
+          -45%;
+
+        width:
+          150%;
+
+      }
+
+      .hero h1 {
+
+        font-size:
+          48px;
+
+      }
+
+      .hero-copy {
+
+        font-size:
+          15px;
+
+      }
+
+      .section {
+
+        padding:
+          85px 0;
+
+      }
+
+      .section-title {
+
+        font-size:
+          38px;
+
+      }
+
+      .facts {
+
+        grid-template-columns:
+          1fr;
+
+      }
+
+      .location-row {
+
+        grid-template-columns:
+          1.1fr .9fr 1fr;
+
+        font-size:
+          11px;
+
+      }
+
+      .price-grid {
+
+        grid-template-columns:
+          1fr 1fr;
+
+      }
+
+      .quantity-row {
+
+        flex-direction:
+          column;
+
+      }
+
+      .quantity-input {
+
+        width:
+          100%;
+
+      }
+
+      .footer-inner {
+
+        flex-direction:
+          column;
+
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+  <nav class="nav">
+
+    <div class="container nav-inner">
+
+      <a
+        href="#"
+        class="logo"
+      >
+        ECLIPSE<span>GLASSES</span>
+      </a>
+
+
+      <div class="nav-links">
+
+        <a
+          href="#shop"
+          data-i18n="navShop"
+        >
+          Shop
+        </a>
+
+        <a
+          href="#eclipse"
+          data-i18n="navEclipse"
+        >
+          2027 Eclipse
+        </a>
+
+        <a
+          href="#safety"
+          data-i18n="navSafety"
+        >
+          Safety
+        </a>
+
+        <a
+          href="#faq"
+          data-i18n="navFaq"
+        >
+          FAQ
+        </a>
+
+      </div>
+
+
+      <div class="nav-right">
+
+        <select
+          class="language"
+          id="language"
+        >
+
+          <option value="en">
+            EN
+          </option>
+
+          <option value="nl">
+            NL
+          </option>
+
+          <option value="fr">
+            FR
+          </option>
+
+          <option value="es">
+            ES
+          </option>
+
+        </select>
+
+
+        <button
+          class="cart-button"
+          onclick="openCart()"
+        >
+
+          Cart
+          (
+          <span id="cartCount">
+            0
+          </span>
+          )
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </nav>
+
+
+  <header class="hero">
+
+
+    <div class="hero-photo">
+
+      <img
+        src="https://svs.gsfc.nasa.gov/vis/a010000/a014500/a014572/DallasTotality_VanessaThomas_WhiteLight_YouTube.00001_print.jpg"
+        alt="Total solar eclipse photographed by NASA"
+        loading="eager"
+      >
+
+    </div>
+
+
+    <div class="container">
+
+      <div class="hero-content">
+
+
+        <div
+          class="eyebrow"
+          data-i18n="heroEyebrow"
+        >
+          Solar eclipse glasses
+        </div>
+
+
+        <h1 data-i18n="heroTitle">
+
+          Be ready for
+          <span>
+            August 2, 2027.
+          </span>
+
+        </h1>
+
+
+        <p
+          class="hero-copy"
+          data-i18n="heroCopy"
+        >
+          Purpose-made solar viewing glasses for the total solar eclipse crossing southern Spain.
+        </p>
+
+
+        <div class="hero-pills">
+
+          <span class="pill">
+            02.08.2027
+          </span>
+
+          <span
+            class="pill"
+            data-i18n="pillTotal"
+          >
+            Total solar eclipse
+          </span>
+
+          <span class="pill">
+            Spain
+          </span>
+
+        </div>
+
+
+        <div class="hero-actions">
+
+          <a
+            href="#shop"
+            class="button button-primary"
+            data-i18n="shopGlasses"
+          >
+            Shop glasses
+          </a>
+
+
+          <a
+            href="#eclipse"
+            class="button button-secondary"
+            data-i18n="learnEclipse"
+          >
+            Learn about the eclipse
+          </a>
+
+        </div>
+
+
+        <div
+          class="hero-note"
+          data-i18n="heroNote"
+        >
+          The next major total solar eclipse visible from southern Spain.
+        </div>
+
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <section
+    class="section"
+    id="shop"
+  >
+
+    <div class="container">
+
+
+      <div class="section-heading">
+
+        <div>
+
+          <div
+            class="section-label"
+            data-i18n="shopLabel"
+          >
+            Shop
+          </div>
+
+
+          <h2
+            class="section-title"
+            data-i18n="shopTitle"
+          >
+            Be there for totality.
+          </h2>
+
+        </div>
+
+
+        <p
+          class="section-description"
+          data-i18n="shopDescription"
+        >
+          Order individually or prepare for a group. Quantity pricing is applied automatically.
+        </p>
+
+      </div>
+
+
+      <div class="shop-grid">
+
+
+        <div class="product-image">
+
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58am2lANYXVkeZ3riQkUjAmvOr7y--Zy5aIoIxpg7o1pC258Ycjjfl20&s=10"
+            alt="Solar eclipse glasses"
+            loading="lazy"
+          >
+
+        </div>
+
+
+        <div class="product-info">
+
+
+          <h3 data-i18n="productTitle">
+            Solar Eclipse Glasses
+          </h3>
+
+
+          <p
+            class="product-description"
+            data-i18n="productDescription"
+          >
+            Simple, lightweight solar viewing glasses designed for safe observation of the Sun during eclipse phases.
+          </p>
+
+
+          <div class="price-grid">
+
+
+            <div
+              class="price-option active"
+              data-qty="1"
+            >
+
+              <span class="price-quantity">
+                1 pair
+              </span>
+
+              <span class="price-value">
+                €4.95
+              </span>
+
+              <span class="price-per">
+                €4.95 / pair
+              </span>
+
+            </div>
+
+
+            <div
+              class="price-option"
+              data-qty="5"
+            >
+
+              <span class="price-quantity">
+                5 pairs
+              </span>
+
+              <span class="price-value">
+                €19.95
+              </span>
+
+              <span class="price-per">
+                €3.99 / pair
+              </span>
+
+            </div>
+
+
+            <div
+              class="price-option"
+              data-qty="10"
+            >
+
+              <span class="price-quantity">
+                10 pairs
+              </span>
+
+              <span class="price-value">
+                €34.95
+              </span>
+
+              <span class="price-per">
+                €3.50 / pair
+              </span>
+
+            </div>
+
+
+            <div
+              class="price-option"
+              data-qty="25"
+            >
+
+              <span class="price-quantity">
+                25 pairs
+              </span>
+
+              <span class="price-value">
+                €69.95
+              </span>
+
+              <span class="price-per">
+                €2.80 / pair
+              </span>
+
+            </div>
+
+
+            <div
+              class="price-option"
+              data-qty="50"
+            >
+
+              <span class="price-quantity">
+                50 pairs
+              </span>
+
+              <span class="price-value">
+                €119.95
+              </span>
+
+              <span class="price-per">
+                €2.40 / pair
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="quantity-row">
+
+            <input
+              id="quantity"
+              class="quantity-input"
+              type="number"
+              min="1"
+              value="1"
+              aria-label="Quantity"
+            >
+
+
+            <button
+              class="button button-primary add-button"
+              onclick="addToCart()"
+            >
+
+              <span data-i18n="addCart">
+                Add to cart
+              </span>
+
+            </button>
+
+          </div>
+
+
+          <div
+            class="shipping-note"
+            data-i18n="shippingNote"
+          >
+            Shipping details are provided during ordering.
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section
+    class="section"
+    id="eclipse"
+  >
+
+    <div class="container">
+
+
+      <div class="section-heading">
+
+        <div>
+
+          <div
+            class="section-label"
+            data-i18n="eclipseLabel"
+          >
+            The event
+          </div>
+
+
+          <h2
+            class="section-title"
+            data-i18n="eclipseTitle"
+          >
+            August 2, 2027.
+          </h2>
+
+        </div>
+
+
+        <p
+          class="section-description"
+          data-i18n="eclipseDescription"
+        >
+          A total solar eclipse will cross southern Spain before continuing across North Africa and the Middle East.
+        </p>
+
+      </div>
+
+
+      <div class="eclipse-overview">
+
+
+        <div class="eclipse-intro">
+
+          <p data-i18n="eclipseIntro">
+            On August 2, 2027, the Moon will pass directly between Earth and the Sun, completely covering the solar disk for observers inside the path of totality.
+          </p>
+
+
+          <br>
+
+
+          <p data-i18n="eclipseIntro2">
+            Southern Spain is one of the most accessible places in Europe to experience the event. The exact duration of totality depends on your location within the path.
+          </p>
+
+        </div>
+
+
+        <div class="facts">
+
+
+          <div class="fact">
+
+            <div class="fact-label">
+              Date
+            </div>
+
+            <div class="fact-value">
+              02 Aug 2027
+            </div>
+
+            <div class="fact-sub">
+              Monday
+            </div>
+
+          </div>
+
+
+          <div class="fact">
+
+            <div class="fact-label">
+              Type
+            </div>
+
+            <div class="fact-value">
+              Total
+            </div>
+
+            <div class="fact-sub">
+              Solar eclipse
+            </div>
+
+          </div>
+
+
+          <div class="fact">
+
+            <div class="fact-label">
+              Maximum duration
+            </div>
+
+            <div class="fact-value">
+              ~6m 23s
+            </div>
+
+            <div class="fact-sub">
+              Global maximum
+            </div>
+
+          </div>
+
+
+          <div class="fact">
+
+            <div class="fact-label">
+              Spain
+            </div>
+
+            <div class="fact-value">
+              Path of totality
+            </div>
+
+            <div class="fact-sub">
+              Southern Spain
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="locations">
+
+        <h3
+          class="locations-title"
+          data-i18n="locationsTitle"
+        >
+          Example locations
+        </h3>
+
+
+        <div class="location-table">
+
+
+          <div class="location-row header">
+
+            <div>
+              Location
+            </div>
+
+            <div>
+              Totality
+            </div>
+
+            <div>
+              Region
+            </div>
+
+          </div>
+
+
+          <div class="location-row">
+
+            <div>
+              Cádiz
+            </div>
+
+            <div>
+              ~2m 54s
+            </div>
+
+            <div>
+              Andalusia
+            </div>
+
+          </div>
+
+
+          <div class="location-row">
+
+            <div>
+              Málaga
+            </div>
+
+            <div>
+              ~1m 48s
+            </div>
+
+            <div>
+              Andalusia
+            </div>
+
+          </div>
+
+
+          <div class="location-row">
+
+            <div>
+              Ceuta
+            </div>
+
+            <div>
+              ~4m 48s
+            </div>
+
+            <div>
+              Spain
+            </div>
+
+          </div>
+
+
+          <div class="location-row">
+
+            <div>
+              Melilla
+            </div>
+
+            <div>
+              ~4m 34s
+            </div>
+
+            <div>
+              Spain
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section
+    class="section"
+    id="safety"
+  >
+
+    <div class="container">
+
+
+      <div class="section-heading">
+
+        <div>
+
+          <div
+            class="section-label"
+            data-i18n="safetyLabel"
+          >
+            Safety
+          </div>
+
+
+          <h2
+            class="section-title"
+            data-i18n="safetyTitle"
+          >
+            Your eyes first.
+          </h2>
+
+        </div>
+
+
+        <p
+          class="section-description"
+          data-i18n="safetyDescription"
+        >
+          Looking directly at the Sun without appropriate protection can cause permanent eye injury.
+        </p>
+
+      </div>
+
+
+      <div class="safety-grid">
+
+
+        <div class="safety-card">
+
+          <div class="safety-number">
+            01
+          </div>
+
+          <h3 data-i18n="safetyOneTitle">
+            Use proper solar viewers
+          </h3>
+
+          <p data-i18n="safetyOne">
+            Ordinary sunglasses are not sufficient for looking directly at the Sun. Use dedicated solar viewing glasses.
+          </p>
+
+        </div>
+
+
+        <div class="safety-card">
+
+          <div class="safety-number">
+            02
+          </div>
+
+          <h3 data-i18n="safetyTwoTitle">
+            Inspect before use
+          </h3>
+
+          <p data-i18n="safetyTwo">
+            Do not use glasses that are scratched, torn, punctured or otherwise damaged.
+          </p>
+
+        </div>
+
+
+        <div class="safety-card">
+
+          <div class="safety-number">
+            03
+          </div>
+
+          <h3 data-i18n="safetyThreeTitle">
+            Totality is different
+          </h3>
+
+          <p data-i18n="safetyThree">
+            Only during the brief period of true totality can the Sun be viewed without solar filters. Before and after totality, protection is required.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section
+    class="section"
+    id="information"
+  >
+
+    <div class="container">
+
+
+      <div class="section-heading">
+
+        <div>
+
+          <div
+            class="section-label"
+            data-i18n="infoLabel"
+          >
+            Good to know
+          </div>
+
+
+          <h2
+            class="section-title"
+            data-i18n="infoTitle"
+          >
+            Everything before eclipse day.
+          </h2>
+
+        </div>
+
+
+        <p
+          class="section-description"
+          data-i18n="infoDescription"
+        >
+          A few practical details to make ordering and preparing for August 2, 2027 straightforward.
+        </p>
+
+      </div>
+
+
+      <div class="info-grid">
+
+
+        <div class="info-card">
+
+          <div class="info-icon">
+            01 / DELIVERY
+          </div>
+
+          <h3 data-i18n="deliveryTitle">
+            Delivery & ordering
+          </h3>
+
+          <p data-i18n="deliveryText">
+            Orders are prepared for shipment after ordering. Delivery time depends on destination and shipping method. If you are planning for the 2027 eclipse, ordering early is recommended rather than waiting until the final weeks.
+          </p>
+
+        </div>
+
+
+        <div class="info-card">
+
+          <div class="info-icon">
+            02 / ABOUT
+          </div>
+
+          <h3 data-i18n="aboutTitle">
+            About EclipseGlasses.eu
+          </h3>
+
+          <p data-i18n="aboutText">
+            EclipseGlasses.eu is an independent project focused on making preparation for the 2027 total solar eclipse simple: clear information, straightforward quantities and glasses for individuals, groups and businesses.
+          </p>
+
+        </div>
+
+
+        <div class="info-card">
+
+          <div class="info-icon">
+            03 / GROUPS
+          </div>
+
+          <h3 data-i18n="groupsTitle">
+            Planning for a group?
+          </h3>
+
+          <p data-i18n="groupsText">
+            Hotels, schools, tour operators, astronomy clubs and event organisers can request larger quantities. For orders above 50 pairs, use our <a href="#bulk">bulk order form</a>.
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section
+    class="section bulk"
+    id="bulk"
+  >
+
+    <div class="container">
+
+
+      <div class="bulk-grid">
+
+
+        <div class="bulk-copy">
+
+          <div
+            class="section-label"
+            data-i18n="bulkLabel"
+          >
+            Groups & businesses
+          </div>
+
+
+          <h2
+            class="section-title"
+            data-i18n="bulkTitle"
+          >
+            Ordering for more than 50?
+          </h2>
+
+
+          <br>
+
+
+          <p data-i18n="bulkDescription">
+            Schools, hotels, travel companies, astronomy groups, event organisers and retailers can request a custom quotation for larger quantities.
+          </p>
+
+
+          <br>
+
+
+          <p data-i18n="bulkDescription2">
+            Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.
+          </p>
+
+        </div>
+
+
+        <form
+          class="bulk-form"
+          onsubmit="submitBulk(event)"
+        >
+
+
+          <input
+            id="bulkName"
+            class="field"
+            type="text"
+            placeholder="Name / company"
+            required
+            maxlength="120"
+          >
+
+
+          <input
+            id="bulkEmail"
+            class="field"
+            type="email"
+            placeholder="Email"
+            required
+            maxlength="180"
+          >
+
+
+          <input
+            id="bulkQuantity"
+            class="field"
+            type="number"
+            min="51"
+            max="1000000"
+            placeholder="Quantity"
+            required
+          >
+
+
+          <textarea
+            id="bulkMessage"
+            class="field"
+            placeholder="Tell us what you need..."
+            maxlength="3000"
+          ></textarea>
+
+
+          <input
+            id="bulkWebsite"
+            class="honeypot"
+            type="text"
+            tabindex="-1"
+            autocomplete="off"
+            aria-hidden="true"
+          >
+
+
+          <button
+            id="quoteSubmitButton"
+            class="button button-primary"
+            type="submit"
+          >
+
+            <span data-i18n="requestQuote">
+              Request a quote
+            </span>
+
+          </button>
+
+
+          <div
+            id="quoteStatus"
+            class="quote-status"
+            role="status"
+            aria-live="polite"
+          ></div>
+
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section
+    class="section"
+    id="faq"
+  >
+
+    <div class="container">
+
+
+      <div class="section-heading">
+
+        <div>
+
+          <div class="section-label">
+            FAQ
+          </div>
+
+
+          <h2
+            class="section-title"
+            data-i18n="faqTitle"
+          >
+            Questions, answered.
+          </h2>
+
+        </div>
+
+      </div>
+
+
+      <div class="faq-list">
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq1q">
+              When is the 2027 eclipse?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq1a"
+            >
+              The total solar eclipse takes place on Monday, August 2, 2027.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq2q">
+              Where can I see totality?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq2a"
+            >
+              The path of totality crosses southern Spain, North Africa, Saudi Arabia and Yemen. Southern Spain is one of the most accessible European viewing areas.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq3q">
+              Can I use ordinary sunglasses?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq3a"
+            >
+              No. Ordinary sunglasses do not provide sufficient protection for direct solar viewing.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq4q">
+              Do you offer larger quantities?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq4a"
+            >
+              Yes. Contact us through the bulk order form for orders above 50 pairs.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq5q">
+              How long does delivery take?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq5a"
+            >
+              Delivery time depends on the destination and shipping method. Because the 2027 eclipse is a major event, we recommend ordering well ahead of August 2 rather than relying on last-minute delivery.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq6q">
+              What happens after I place an order?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq6a"
+            >
+              Your cart is saved in your browser. For now, the checkout button prepares an order email so you can confirm the order directly with us.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq7q">
+              Can I order for a hotel, school or event?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq7a"
+            >
+              Yes. Larger group orders are welcome. Use the bulk order form and tell us your approximate quantity, destination and intended use.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <button class="faq-question">
+
+            <span data-i18n="faq8q">
+              What if my glasses arrive damaged?
+            </span>
+
+            <span class="faq-plus">
+              +
+            </span>
+
+          </button>
+
+
+          <div class="faq-answer">
+
+            <div
+              class="faq-answer-inner"
+              data-i18n="faq8a"
+            >
+              Do not use damaged eclipse glasses. Contact us with your order details and photographs of the damaged items so the issue can be reviewed.
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <section class="final-cta">
+
+    <div class="container final-cta-content">
+
+      <div class="section-label">
+        02.08.2027
+      </div>
+
+
+      <h2 data-i18n="finalTitle">
+        Don't miss totality.
+      </h2>
+
+
+      <p data-i18n="finalDescription">
+        Get your eclipse glasses before the crowds arrive.
+      </p>
+
+
+      <a
+        href="#shop"
+        class="button button-primary"
+        data-i18n="finalButton"
+      >
+        Shop eclipse glasses
+      </a>
+
+    </div>
+
+  </section>
+
+
+  <footer>
+
+    <div class="container footer-inner">
+
+      <div>
+        © 2026 EclipseGlasses.eu
+      </div>
+
+
+      <div class="footer-links">
+
+        <a href="#eclipse">
+          2027 Eclipse
+        </a>
+
+        <a href="#safety">
+          Safety
+        </a>
+
+        <a href="#information">
+          Delivery & info
+        </a>
+
+        <a href="#faq">
+          FAQ
+        </a>
+
+        <a href="#bulk">
+          Bulk orders
+        </a>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <div
+    class="cart-overlay"
+    id="cartOverlay"
+    onclick="closeCart()"
+  ></div>
+
+
+  <aside
+    class="cart-drawer"
+    id="cartDrawer"
+  >
+
+
+    <div class="cart-header">
+
+      <h3 data-i18n="cartTitle">
+        Your cart
+      </h3>
+
+
+      <button
+        class="close-cart"
+        onclick="closeCart()"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <div
+      class="cart-items"
+      id="cartItems"
+    ></div>
+
+
+    <div class="cart-footer">
+
+
+      <div class="cart-total">
+
+        <span data-i18n="cartTotal">
+          Total
+        </span>
+
+        <span id="cartTotal">
+          €0.00
+        </span>
+
+      </div>
+
+
+      <button
+        class="button button-primary checkout-button"
+        onclick="checkout()"
+      >
+
+        <span data-i18n="checkout">
+          Order by email
+        </span>
+
+      </button>
+
+
+      <div
+        class="checkout-note"
+        data-i18n="checkoutNote"
+      >
+        Your order request will open in your email app.
+      </div>
+
+    </div>
+
+  </aside>
+
+
+  <script>
+
+
+    const PRICE_TIERS = [
+
+      {
+        min: 50,
+        price: 119.95 / 50
+      },
+
+      {
+        min: 25,
+        price: 69.95 / 25
+      },
+
+      {
+        min: 10,
+        price: 34.95 / 10
+      },
+
+      {
+        min: 5,
+        price: 19.95 / 5
+      },
+
+      {
+        min: 1,
+        price: 4.95
+      }
+
+    ];
+
+
+    let cart =
+      JSON.parse(
+        localStorage.getItem(
+          "eclipse_cart"
+        ) || "[]"
+      );
+
+
+    function getUnitPrice(quantity) {
+
+      for (
+        const tier of PRICE_TIERS
+      ) {
+
+        if (
+          quantity >= tier.min
+        ) {
+
+          return tier.price;
+
+        }
+
+      }
+
+      return 4.95;
+
+    }
+
+
+    function getCartCount() {
+
+      return cart.reduce(
+        (
+          sum,
+          item
+        ) =>
+          sum +
+          item.quantity,
+        0
+      );
+
+    }
+
+
+    function saveCart() {
+
+      localStorage.setItem(
+        "eclipse_cart",
+        JSON.stringify(cart)
+      );
+
+      renderCart();
+
+    }
+
+
+    function addToCart() {
+
+      const quantityInput =
+        document.getElementById(
+          "quantity"
+        );
+
+
+      let quantity =
+        parseInt(
+          quantityInput.value,
+          10
+        );
+
+
+      if (
+        !quantity ||
+        quantity < 1
+      ) {
+
+        quantity = 1;
+
+      }
+
+
+      const existing =
+        cart.find(
+          item =>
+            item.id ===
+            "solar-glasses"
+        );
+
+
+      if (existing) {
+
+        existing.quantity +=
+          quantity;
+
+      } else {
+
+        cart.push({
+
+          id:
+            "solar-glasses",
+
+          name:
+            "Solar Eclipse Glasses",
+
+          quantity:
+            quantity
+
+        });
+
+      }
+
+
+      saveCart();
+      openCart();
+
+    }
+
+
+    function changeQuantity(
+      index,
+      amount
+    ) {
+
+      if (!cart[index]) {
+        return;
+      }
+
+
+      cart[index].quantity +=
+        amount;
+
+
+      if (
+        cart[index].quantity <= 0
+      ) {
+
+        cart.splice(
+          index,
+          1
+        );
+
+      }
+
+
+      saveCart();
+
+    }
+
+
+    function removeItem(index) {
+
+      cart.splice(
+        index,
+        1
+      );
+
+      saveCart();
+
+    }
+
+
+    function renderCart() {
+
+      const container =
+        document.getElementById(
+          "cartItems"
+        );
+
+
+      const count =
+        document.getElementById(
+          "cartCount"
+        );
+
+
+      const totalElement =
+        document.getElementById(
+          "cartTotal"
+        );
+
+
+      count.textContent =
+        getCartCount();
+
+
+      if (!cart.length) {
+
+        container.innerHTML =
+          '<div class="cart-empty">' +
+            'Your cart is empty.' +
+          '</div>';
+
+
+        totalElement.textContent =
+          "€0.00";
+
+
+        return;
+
+      }
+
+
+      let total = 0;
+      let cartHTML = "";
+
+
+      cart.forEach(
+        (
+          item,
+          index
+        ) => {
+
+
+          const unitPrice =
+            getUnitPrice(
+              item.quantity
+            );
+
+
+          const itemTotal =
+            unitPrice *
+            item.quantity;
+
+
+          total +=
+            itemTotal;
+
+
+          cartHTML +=
+
+            '<div class="cart-item">' +
+
+              '<div>' +
+
+                '<div class="cart-item-name">' +
+                  escapeHTML(
+                    item.name
+                  ) +
+                '</div>' +
+
+                '<div class="cart-item-detail">' +
+                  '€' +
+                  unitPrice.toFixed(2) +
+                  ' / pair' +
+                '</div>' +
+
+                '<div class="cart-controls">' +
+
+                  '<button ' +
+                    'class="cart-control" ' +
+                    'onclick="changeQuantity(' +
+                      index +
+                      ', -1)"' +
+                  '>−</button>' +
+
+                  '<span>' +
+                    item.quantity +
+                  '</span>' +
+
+                  '<button ' +
+                    'class="cart-control" ' +
+                    'onclick="changeQuantity(' +
+                      index +
+                      ', 1)"' +
+                  '>+</button>' +
+
+                  '<button ' +
+                    'class="remove-item" ' +
+                    'onclick="removeItem(' +
+                      index +
+                    ')"' +
+                  '>' +
+                    'Remove' +
+                  '</button>' +
+
+                '</div>' +
+
+              '</div>' +
+
+              '<div class="cart-item-price">' +
+                '€' +
+                itemTotal.toFixed(2) +
+              '</div>' +
+
+            '</div>';
+
+        }
+      );
+
+
+      container.innerHTML =
+        cartHTML;
+
+
+      totalElement.textContent =
+        "€" +
+        total.toFixed(2);
+
+    }
+
+
+    function escapeHTML(value) {
+
+      return String(value)
+
+        .replace(
+          /&/g,
+          "&amp;"
+        )
+
+        .replace(
+          /</g,
+          "&lt;"
+        )
+
+        .replace(
+          />/g,
+          "&gt;"
+        )
+
+        .replace(
+          /"/g,
+          "&quot;"
+        )
+
+        .replace(
+          /'/g,
+          "&#039;"
+        );
+
+    }
+
+
+    function openCart() {
+
+      document
+        .getElementById(
+          "cartDrawer"
+        )
+        .classList.add(
+          "open"
+        );
+
+
+      document
+        .getElementById(
+          "cartOverlay"
+        )
+        .classList.add(
+          "open"
+        );
+
+
+      document.body.style.overflow =
+        "hidden";
+
+    }
+
+
+    function closeCart() {
+
+      document
+        .getElementById(
+          "cartDrawer"
+        )
+        .classList.remove(
+          "open"
+        );
+
+
+      document
+        .getElementById(
+          "cartOverlay"
+        )
+        .classList.remove(
+          "open"
+        );
+
+
+      document.body.style.overflow =
+        "";
+
+    }
+
+
+    /*
+    ============================================================
+    EMAIL CHECKOUT
+    ============================================================
+    */
+
+    function checkout() {
+
+      if (!cart.length) {
+        return;
+      }
+
+
+      let total = 0;
+      let orderLines = "";
+
+
+      cart.forEach(
+        item => {
+
+          const unitPrice =
+            getUnitPrice(
+              item.quantity
+            );
+
+
+          const itemTotal =
+            unitPrice *
+            item.quantity;
+
+
+          total +=
+            itemTotal;
+
+
+          orderLines +=
+
+            item.name +
+            " — " +
+            item.quantity +
+            " pairs — €" +
+            itemTotal.toFixed(2) +
+            "\\n";
+
+        }
+      );
+
+
+      const subject =
+        encodeURIComponent(
+          "EclipseGlasses.eu order enquiry"
+        );
+
+
+      const body =
+        encodeURIComponent(
+
+          "Hello,\\n\\n" +
+
+          "I would like to order the following:\\n\\n" +
+
+          orderLines +
+
+          "\\n" +
+
+          "Product total: €" +
+
+          total.toFixed(2) +
+
+          "\\n\\n" +
+
+          "Please let me know the shipping cost and the next steps.\\n\\n" +
+
+          "Thank you."
+
+        );
+
+
+      window.location.href =
+        "mailto:orders@eclipseglasses.eu" +
+        "?subject=" +
+        subject +
+        "&body=" +
+        body;
+
+    }
+
+
+    /*
+    ============================================================
+    PRICE SELECTION
+    ============================================================
+    */
+
+    document
+      .querySelectorAll(
+        ".price-option"
+      )
+      .forEach(
+        option => {
+
+          option.addEventListener(
+            "click",
+            () => {
+
+
+              document
+                .querySelectorAll(
+                  ".price-option"
+                )
+                .forEach(
+                  item => {
+
+                    item.classList.remove(
+                      "active"
+                    );
+
+                  }
+                );
+
+
+              option.classList.add(
+                "active"
+              );
+
+
+              document
+                .getElementById(
+                  "quantity"
+                )
+                .value =
+                option.dataset.qty;
+
+            }
+          );
+
+        }
+      );
+
+
+    /*
+    ============================================================
+    FAQ
+    ============================================================
+    */
+
+    document
+      .querySelectorAll(
+        ".faq-question"
+      )
+      .forEach(
+        button => {
+
+          button.addEventListener(
+            "click",
+            () => {
+
+
+              const item =
+                button.parentElement;
+
+
+              const answer =
+                item.querySelector(
+                  ".faq-answer"
+                );
+
+
+              const isOpen =
+                item.classList.contains(
+                  "open"
+                );
+
+
+              document
+                .querySelectorAll(
+                  ".faq-item.open"
+                )
+                .forEach(
+                  openItem => {
+
+                    openItem.classList.remove(
+                      "open"
+                    );
+
+
+                    openItem
+                      .querySelector(
+                        ".faq-answer"
+                      )
+                      .style.maxHeight =
+                      null;
+
+                  }
+                );
+
+
+              if (!isOpen) {
+
+                item.classList.add(
+                  "open"
+                );
+
+
+                answer.style.maxHeight =
+                  answer.scrollHeight +
+                  "px";
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+
+    /*
+    ============================================================
+    BULK QUOTE REQUEST
+    ============================================================
+    */
+
+    async function submitBulk(
+      event
+    ) {
+
+      event.preventDefault();
+
+
+      const form =
+        event.target;
+
+
+      const button =
+        document.getElementById(
+          "quoteSubmitButton"
+        );
+
+
+      const status =
+        document.getElementById(
+          "quoteStatus"
+        );
+
+
+      const name =
+        document
+          .getElementById(
+            "bulkName"
+          )
+          .value
+          .trim();
+
+
+      const email =
+        document
+          .getElementById(
+            "bulkEmail"
+          )
+          .value
+          .trim();
+
+
+      const quantity =
+        document
+          .getElementById(
+            "bulkQuantity"
+          )
+          .value
+          .trim();
+
+
+      const message =
+        document
+          .getElementById(
+            "bulkMessage"
+          )
+          .value
+          .trim();
+
+
+      const website =
+        document
+          .getElementById(
+            "bulkWebsite"
+          )
+          .value
+          .trim();
+
+
+      status.classList.remove(
+        "show"
+      );
+
+
+      status.classList.remove(
+        "error"
+      );
+
+
+      if (
+        !name ||
+        !email ||
+        !quantity
+      ) {
+
+        return;
+
+      }
+
+
+      button.disabled =
+        true;
+
+
+      button.style.opacity =
+        "0.65";
+
+
+      const originalButtonText =
+        button.innerHTML;
+
+
+      button.innerHTML =
+        "<span>Sending...</span>";
+
+
+      try {
+
+
+        const response =
+          await fetch(
+            "/api/quote",
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+              body:
+                JSON.stringify({
+
+                  name:
+                    name,
+
+                  email:
+                    email,
+
+                  quantity:
+                    quantity,
+
+                  message:
+                    message,
+
+                  website:
+                    website
+
+                })
+
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          !response.ok ||
+          !result.success
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Something went wrong."
+          );
+
+        }
+
+
+        status.innerHTML =
+
+          "<strong>Quote request received.</strong><br>" +
+
+          "Your reference number is <strong>" +
+
+          escapeHTML(
+            result.quoteNumber
+          ) +
+
+          "</strong>. " +
+
+          "We'll get back to you as soon as possible.";
+
+
+        status.classList.add(
+          "show"
+        );
+
+
+        form.reset();
+
+
+        document
+          .getElementById(
+            "bulkQuantity"
+          )
+          .value =
+          "";
+
+
+      } catch (error) {
+
+
+        console.error(
+          "Quote submission error:",
+          error
+        );
+
+
+        status.textContent =
+          error.message ||
+          "Something went wrong. Please try again.";
+
+
+        status.classList.add(
+          "show"
+        );
+
+
+        status.classList.add(
+          "error"
+        );
+
+
+      } finally {
+
+
+        button.disabled =
+          false;
+
+
+        button.style.opacity =
+          "";
+
+
+        button.innerHTML =
+          originalButtonText;
+
+      }
+
+    }
+
+
+    /*
+    ============================================================
+    TRANSLATIONS
+    ============================================================
+    */
+
+    const translations = {
+
+
+      en: {
+
+        navShop:
+          "Shop",
+
+        navEclipse:
+          "2027 Eclipse",
+
+        navSafety:
+          "Safety",
+
+        navFaq:
+          "FAQ",
+
+
+        heroEyebrow:
+          "Solar eclipse glasses",
+
+        heroTitle:
+          "Be ready for August 2, 2027.",
+
+        heroCopy:
+          "Purpose-made solar viewing glasses for the total solar eclipse crossing southern Spain.",
+
+        pillTotal:
+          "Total solar eclipse",
+
+        shopGlasses:
+          "Shop glasses",
+
+        learnEclipse:
+          "Learn about the eclipse",
+
+        heroNote:
+          "The next major total solar eclipse visible from southern Spain.",
+
+
+        shopLabel:
+          "Shop",
+
+        shopTitle:
+          "Be there for totality.",
+
+        shopDescription:
+          "Order individually or prepare for a group. Quantity pricing is applied automatically.",
+
+        productTitle:
+          "Solar Eclipse Glasses",
+
+        productDescription:
+          "Simple, lightweight solar viewing glasses designed for safe observation of the Sun during eclipse phases.",
+
+        addCart:
+          "Add to cart",
+
+        shippingNote:
+          "Shipping details are provided during ordering.",
+
+
+        eclipseLabel:
+          "The event",
+
+        eclipseTitle:
+          "August 2, 2027.",
+
+        eclipseDescription:
+          "A total solar eclipse will cross southern Spain before continuing across North Africa and the Middle East.",
+
+        eclipseIntro:
+          "On August 2, 2027, the Moon will pass directly between Earth and the Sun, completely covering the solar disk for observers inside the path of totality.",
+
+        eclipseIntro2:
+          "Southern Spain is one of the most accessible places in Europe to experience the event. The exact duration of totality depends on your location within the path.",
+
+        locationsTitle:
+          "Example locations",
+
+
+        safetyLabel:
+          "Safety",
+
+        safetyTitle:
+          "Your eyes first.",
+
+        safetyDescription:
+          "Looking directly at the Sun without appropriate protection can cause permanent eye injury.",
+
+        safetyOneTitle:
+          "Use proper solar viewers",
+
+        safetyOne:
+          "Ordinary sunglasses are not sufficient for looking directly at the Sun. Use dedicated solar viewing glasses.",
+
+        safetyTwoTitle:
+          "Inspect before use",
+
+        safetyTwo:
+          "Do not use glasses that are scratched, torn, punctured or otherwise damaged.",
+
+        safetyThreeTitle:
+          "Totality is different",
+
+        safetyThree:
+          "Only during the brief period of true totality can the Sun be viewed without solar filters. Before and after totality, protection is required.",
+
+
+        infoLabel:
+          "Good to know",
+
+        infoTitle:
+          "Everything before eclipse day.",
+
+        infoDescription:
+          "A few practical details to make ordering and preparing for August 2, 2027 straightforward.",
+
+        deliveryTitle:
+          "Delivery & ordering",
+
+        deliveryText:
+          "Orders are prepared for shipment after ordering. Delivery time depends on destination and shipping method. If you are planning for the 2027 eclipse, ordering early is recommended rather than waiting until the final weeks.",
+
+        aboutTitle:
+          "About EclipseGlasses.eu",
+
+        aboutText:
+          "EclipseGlasses.eu is an independent project focused on making preparation for the 2027 total solar eclipse simple: clear information, straightforward quantities and glasses for individuals, groups and businesses.",
+
+        groupsTitle:
+          "Planning for a group?",
+
+        groupsText:
+          "Hotels, schools, tour operators, astronomy clubs and event organisers can request larger quantities. For orders above 50 pairs, use our bulk order form.",
+
+
+        bulkLabel:
+          "Groups & businesses",
+
+        bulkTitle:
+          "Ordering for more than 50?",
+
+        bulkDescription:
+          "Schools, hotels, travel companies, astronomy groups, event organisers and retailers can request a custom quotation for larger quantities.",
+
+        bulkDescription2:
+          "Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.",
+
+        requestQuote:
+          "Request a quote",
+
+
+        faqTitle:
+          "Questions, answered.",
+
+        faq1q:
+          "When is the 2027 eclipse?",
+
+        faq1a:
+          "The total solar eclipse takes place on Monday, August 2, 2027.",
+
+        faq2q:
+          "Where can I see totality?",
+
+        faq2a:
+          "The path of totality crosses southern Spain, North Africa, Saudi Arabia and Yemen. Southern Spain is one of the most accessible European viewing areas.",
+
+        faq3q:
+          "Can I use ordinary sunglasses?",
+
+        faq3a:
+          "No. Ordinary sunglasses do not provide sufficient protection for direct solar viewing.",
+
+        faq4q:
+          "Do you offer larger quantities?",
+
+        faq4a:
+          "Yes. Contact us through the bulk order form for orders above 50 pairs.",
+
+        faq5q:
+          "How long does delivery take?",
+
+        faq5a:
+          "Delivery time depends on the destination and shipping method. Because the 2027 eclipse is a major event, we recommend ordering well ahead of August 2 rather than relying on last-minute delivery.",
+
+        faq6q:
+          "What happens after I place an order?",
+
+        faq6a:
+          "Your cart is saved in your browser. For now, the checkout button prepares an order email so you can confirm the order directly with us.",
+
+        faq7q:
+          "Can I order for a hotel, school or event?",
+
+        faq7a:
+          "Yes. Larger group orders are welcome. Use the bulk order form and tell us your approximate quantity, destination and intended use.",
+
+        faq8q:
+          "What if my glasses arrive damaged?",
+
+        faq8a:
+          "Do not use damaged eclipse glasses. Contact us with your order details and photographs of the damaged items so the issue can be reviewed.",
+
+
+        finalTitle:
+          "Don't miss totality.",
+
+        finalDescription:
+          "Get your eclipse glasses before the crowds arrive.",
+
+        finalButton:
+          "Shop eclipse glasses",
+
+
+        cartTitle:
+          "Your cart",
+
+        cartTotal:
+          "Total",
+
+        checkout:
+          "Order by email",
+
+        checkoutNote:
+          "Your order request will open in your email app."
+
+      },
+
+
+      nl: {
+
+        navShop:
+          "Shop",
+
+        navEclipse:
+          "Eclips 2027",
+
+        navSafety:
+          "Veiligheid",
+
+        navFaq:
+          "FAQ",
+
+
+        heroEyebrow:
+          "Zonne-eclipsbrillen",
+
+        heroTitle:
+          "Wees klaar voor 2 augustus 2027.",
+
+        heroCopy:
+          "Zonne-eclipsbrillen voor de totale zonsverduistering die over Zuid-Spanje trekt.",
+
+        pillTotal:
+          "Totale zonsverduistering",
+
+        shopGlasses:
+          "Brillen kopen",
+
+        learnEclipse:
+          "Meer over de eclips",
+
+        heroNote:
+          "De volgende grote totale zonsverduistering zichtbaar vanuit Zuid-Spanje.",
+
+
+        shopLabel:
+          "Shop",
+
+        shopTitle:
+          "Beleef de totaliteit.",
+
+        shopDescription:
+          "Bestel individueel of bereid je voor op een groep. Staffelkortingen worden automatisch toegepast.",
+
+        productTitle:
+          "Zonne-eclipsbrillen",
+
+        productDescription:
+          "Lichte zonne-eclipsbrillen voor het veilig bekijken van de zon tijdens de verschillende fasen van een eclips.",
+
+        addCart:
+          "Toevoegen aan winkelwagen",
+
+        shippingNote:
+          "Verzendinformatie wordt tijdens het bestellen meegedeeld.",
+
+
+        eclipseLabel:
+          "Het evenement",
+
+        eclipseTitle:
+          "2 augustus 2027.",
+
+        eclipseDescription:
+          "Een totale zonsverduistering trekt over Zuid-Spanje en vervolgens over Noord-Afrika en het Midden-Oosten.",
+
+        eclipseIntro:
+          "Op 2 augustus 2027 komt de maan rechtstreeks tussen de aarde en de zon te staan en bedekt ze de zon volledig voor waarnemers binnen de totaliteitszone.",
+
+        eclipseIntro2:
+          "Zuid-Spanje is een van de meest toegankelijke plaatsen in Europa om dit evenement mee te maken. De exacte duur van de totaliteit hangt af van je locatie.",
+
+        locationsTitle:
+          "Voorbeeldlocaties",
+
+
+        safetyLabel:
+          "Veiligheid",
+
+        safetyTitle:
+          "Bescherm je ogen.",
+
+        safetyDescription:
+          "Rechtstreeks naar de zon kijken zonder geschikte bescherming kan blijvend oogletsel veroorzaken.",
+
+        safetyOneTitle:
+          "Gebruik geschikte eclipsbrillen",
+
+        safetyOne:
+          "Een gewone zonnebril is niet voldoende om rechtstreeks naar de zon te kijken. Gebruik een geschikte zonne-eclipsbril.",
+
+        safetyTwoTitle:
+          "Controleer voor gebruik",
+
+        safetyTwo:
+          "Gebruik geen bril die gekrast, gescheurd, doorboord of anderszins beschadigd is.",
+
+        safetyThreeTitle:
+          "Totaliteit is anders",
+
+        safetyThree:
+          "Alleen tijdens de korte periode van volledige totaliteit kan de zon zonder filter worden bekeken. Voor en na de totaliteit is bescherming nodig.",
+
+
+        infoLabel:
+          "Goed om te weten",
+
+        infoTitle:
+          "Alles voor de eclipsdag.",
+
+        infoDescription:
+          "Een paar praktische details om je bestelling en voorbereiding op 2 augustus 2027 eenvoudig te maken.",
+
+        deliveryTitle:
+          "Levering & bestellen",
+
+        deliveryText:
+          "Bestellingen worden na bestelling klaargemaakt voor verzending. De levertijd hangt af van bestemming en verzendmethode. Voor de eclips van 2027 raden we aan om ruim op tijd te bestellen.",
+
+        aboutTitle:
+          "Over EclipseGlasses.eu",
+
+        aboutText:
+          "EclipseGlasses.eu is een onafhankelijk project dat de voorbereiding op de totale zonsverduistering van 2027 eenvoudig wil maken: duidelijke informatie, eenvoudige hoeveelheden en brillen voor particulieren, groepen en bedrijven.",
+
+        groupsTitle:
+          "Plan je voor een groep?",
+
+        groupsText:
+          "Hotels, scholen, touroperators, sterrenkundeverenigingen en evenementenorganisatoren kunnen grotere hoeveelheden aanvragen. Voor meer dan 50 brillen kun je het formulier voor bulkbestellingen gebruiken.",
+
+
+        bulkLabel:
+          "Groepen & bedrijven",
+
+        bulkTitle:
+          "Meer dan 50 nodig?",
+
+        bulkDescription:
+          "Scholen, hotels, reisorganisaties, astronomiegroepen, evenementenorganisatoren en retailers kunnen een offerte aanvragen.",
+
+        bulkDescription2:
+          "Vertel ons hoeveel je nodig hebt, waar de bestelling naartoe moet en waarvoor je de brillen voorbereidt. Daarna kunnen we de bestelling rechtstreeks bespreken.",
+
+        requestQuote:
+          "Offerte aanvragen",
+
+
+        faqTitle:
+          "Veelgestelde vragen.",
+
+        faq1q:
+          "Wanneer is de eclips van 2027?",
+
+        faq1a:
+          "De totale zonsverduistering vindt plaats op maandag 2 augustus 2027.",
+
+        faq2q:
+          "Waar kan ik totaliteit zien?",
+
+        faq2a:
+          "De totaliteitszone loopt door Zuid-Spanje, Noord-Afrika, Saudi-Arabië en Jemen.",
+
+        faq3q:
+          "Kan ik een gewone zonnebril gebruiken?",
+
+        faq3a:
+          "Nee. Een gewone zonnebril biedt onvoldoende bescherming om rechtstreeks naar de zon te kijken.",
+
+        faq4q:
+          "Kan ik grotere aantallen bestellen?",
+
+        faq4a:
+          "Ja. Gebruik het formulier voor bulkbestellingen boven 50 brillen.",
+
+        faq5q:
+          "Hoe lang duurt de levering?",
+
+        faq5a:
+          "De levertijd hangt af van de bestemming en verzendmethode. Omdat de eclips van 2027 een groot evenement wordt, raden we aan ruim vóór 2 augustus te bestellen.",
+
+        faq6q:
+          "Wat gebeurt er nadat ik bestel?",
+
+        faq6a:
+          "Je winkelwagen bewaart momenteel je gekozen hoeveelheid in deze browser. De knop voor bestellen opent een e-mail waarmee je de bestelling rechtstreeks kunt bevestigen.",
+
+        faq7q:
+          "Kan ik bestellen voor een hotel, school of evenement?",
+
+        faq7a:
+          "Ja. Grotere groepsbestellingen zijn welkom. Vermeld in het bulkformulier ongeveer hoeveel je nodig hebt, waar de bestelling naartoe moet en waarvoor ze bedoeld is.",
+
+        faq8q:
+          "Wat als mijn brillen beschadigd aankomen?",
+
+        faq8a:
+          "Gebruik beschadigde eclipsbrillen niet. Neem contact met ons op met je bestelgegevens en foto's van de beschadigde artikelen zodat we het probleem kunnen bekijken.",
+
+
+        finalTitle:
+          "Mis de totaliteit niet.",
+
+        finalDescription:
+          "Bestel je eclipsbrillen voordat de drukte begint.",
+
+        finalButton:
+          "Eclipsbrillen kopen",
+
+
+        cartTitle:
+          "Je winkelwagen",
+
+        cartTotal:
+          "Totaal",
+
+        checkout:
+          "Bestellen via e-mail",
+
+        checkoutNote:
+          "Je bestelling wordt geopend in je e-mailprogramma."
+
+      },
+
+
+      fr: {
+
+        navShop:
+          "Boutique",
+
+        navEclipse:
+          "Éclipse 2027",
+
+        navSafety:
+          "Sécurité",
+
+        navFaq:
+          "FAQ",
+
+
+        heroEyebrow:
+          "Lunettes d'éclipse",
+
+        heroTitle:
+          "Soyez prêt pour le 2 août 2027.",
+
+        heroCopy:
+          "Lunettes spécialement conçues pour observer l'éclipse solaire totale qui traversera le sud de l'Espagne.",
+
+        pillTotal:
+          "Éclipse solaire totale",
+
+        shopGlasses:
+          "Acheter",
+
+        learnEclipse:
+          "Découvrir l'éclipse",
+
+        heroNote:
+          "La prochaine grande éclipse solaire totale visible depuis le sud de l'Espagne.",
+
+
+        shopLabel:
+          "Boutique",
+
+        shopTitle:
+          "Soyez là pour la totalité.",
+
+        shopDescription:
+          "Commandez à l'unité ou pour un groupe. Les tarifs dégressifs sont appliqués automatiquement.",
+
+        productTitle:
+          "Lunettes d'éclipse solaire",
+
+        productDescription:
+          "Lunettes légères conçues pour observer le Soleil en toute sécurité pendant les différentes phases de l'éclipse.",
+
+        addCart:
+          "Ajouter au panier",
+
+        shippingNote:
+          "Les informations de livraison sont fournies lors de la commande.",
+
+
+        eclipseLabel:
+          "L'événement",
+
+        eclipseTitle:
+          "2 août 2027.",
+
+        eclipseDescription:
+          "Une éclipse solaire totale traversera le sud de l'Espagne avant de poursuivre sa route à travers l'Afrique du Nord et le Moyen-Orient.",
+
+        eclipseIntro:
+          "Le 2 août 2027, la Lune passera directement entre la Terre et le Soleil, masquant complètement le disque solaire pour les observateurs situés dans la bande de totalité.",
+
+        eclipseIntro2:
+          "Le sud de l'Espagne est l'une des régions européennes les plus accessibles pour observer l'événement.",
+
+        locationsTitle:
+          "Quelques lieux",
+
+
+        safetyLabel:
+          "Sécurité",
+
+        safetyTitle:
+          "Protégez vos yeux.",
+
+        safetyDescription:
+          "Regarder directement le Soleil sans protection adaptée peut provoquer des lésions oculaires permanentes.",
+
+        safetyOneTitle:
+          "Utilisez des lunettes adaptées",
+
+        safetyOne:
+          "Les lunettes de soleil ordinaires ne suffisent pas pour regarder directement le Soleil.",
+
+        safetyTwoTitle:
+          "Vérifiez-les avant utilisation",
+
+        safetyTwo:
+          "N'utilisez pas de lunettes rayées, déchirées, perforées ou endommagées.",
+
+        safetyThreeTitle:
+          "La totalité est différente",
+
+        safetyThree:
+          "Seule la courte période de totalité permet d'observer le Soleil sans filtre solaire. Avant et après, une protection est nécessaire.",
+
+
+        infoLabel:
+          "Bon à savoir",
+
+        infoTitle:
+          "Tout savoir avant le jour de l'éclipse.",
+
+        infoDescription:
+          "Quelques informations pratiques pour commander et préparer le 2 août 2027.",
+
+        deliveryTitle:
+          "Livraison & commande",
+
+        deliveryText:
+          "Les commandes sont préparées pour l'expédition après leur réception. Le délai dépend de la destination et du mode d'expédition. Pour l'éclipse de 2027, nous recommandons de commander suffisamment à l'avance.",
+
+        aboutTitle:
+          "À propos d'EclipseGlasses.eu",
+
+        aboutText:
+          "EclipseGlasses.eu est un projet indépendant destiné à simplifier la préparation de l'éclipse solaire totale de 2027 : informations claires, quantités simples et lunettes pour particuliers, groupes et entreprises.",
+
+        groupsTitle:
+          "Vous préparez un groupe ?",
+
+        groupsText:
+          "Hôtels, écoles, agences de voyage, clubs d'astronomie et organisateurs d'événements peuvent demander de plus grandes quantités. Pour plus de 50 paires, utilisez notre formulaire de commande en gros.",
+
+
+        bulkLabel:
+          "Groupes & entreprises",
+
+        bulkTitle:
+          "Plus de 50 unités ?",
+
+        bulkDescription:
+          "Écoles, hôtels, agences de voyage, groupes d'astronomie et entreprises peuvent demander un devis personnalisé.",
+
+        bulkDescription2:
+          "Indiquez la quantité souhaitée, la destination et l'utilisation prévue. Nous pourrons ensuite discuter directement de la commande.",
+
+        requestQuote:
+          "Demander un devis",
+
+
+        faqTitle:
+          "Questions fréquentes.",
+
+        faq1q:
+          "Quand aura lieu l'éclipse de 2027 ?",
+
+        faq1a:
+          "L'éclipse solaire totale aura lieu le lundi 2 août 2027.",
+
+        faq2q:
+          "Où puis-je voir la totalité ?",
+
+        faq2a:
+          "La bande de totalité traversera le sud de l'Espagne, l'Afrique du Nord, l'Arabie saoudite et le Yémen.",
+
+        faq3q:
+          "Puis-je utiliser des lunettes de soleil normales ?",
+
+        faq3a:
+          "Non. Les lunettes de soleil ordinaires ne protègent pas suffisamment pour regarder directement le Soleil.",
+
+        faq4q:
+          "Proposez-vous de grandes quantités ?",
+
+        faq4a:
+          "Oui. Utilisez le formulaire de commande en gros pour les commandes de plus de 50 unités.",
+
+        faq5q:
+          "Combien de temps prend la livraison ?",
+
+        faq5a:
+          "Le délai dépend de la destination et du mode d'expédition. Pour l'éclipse de 2027, nous recommandons de commander bien avant le 2 août.",
+
+        faq6q:
+          "Que se passe-t-il après ma commande ?",
+
+        faq6a:
+          "Votre panier enregistre la quantité choisie dans votre navigateur. Le bouton de commande ouvre ensuite un e-mail afin que vous puissiez confirmer directement votre commande.",
+
+        faq7q:
+          "Puis-je commander pour un hôtel, une école ou un événement ?",
+
+        faq7a:
+          "Oui. Les commandes de groupe sont les bienvenues. Indiquez la quantité approximative, la destination et l'utilisation prévue dans le formulaire.",
+
+        faq8q:
+          "Que faire si mes lunettes arrivent endommagées ?",
+
+        faq8a:
+          "N'utilisez pas de lunettes d'éclipse endommagées. Contactez-nous avec les informations de commande et des photos des articles concernés afin que nous puissions examiner le problème.",
+
+
+        finalTitle:
+          "Ne manquez pas la totalité.",
+
+        finalDescription:
+          "Commandez vos lunettes avant l'arrivée des foules.",
+
+        finalButton:
+          "Acheter des lunettes",
+
+
+        cartTitle:
+          "Votre panier",
+
+        cartTotal:
+          "Total",
+
+        checkout:
+          "Commander par e-mail",
+
+        checkoutNote:
+          "Votre commande sera ouverte dans votre application e-mail."
+
+      },
+
+
+      es: {
+
+        navShop:
+          "Tienda",
+
+        navEclipse:
+          "Eclipse 2027",
+
+        navSafety:
+          "Seguridad",
+
+        navFaq:
+          "FAQ",
+
+
+        heroEyebrow:
+          "Gafas para eclipse solar",
+
+        heroTitle:
+          "Prepárate para el 2 de agosto de 2027.",
+
+        heroCopy:
+          "Gafas diseñadas para observar de forma segura el eclipse solar total que cruzará el sur de España.",
+
+        pillTotal:
+          "Eclipse solar total",
+
+        shopGlasses:
+          "Comprar gafas",
+
+        learnEclipse:
+          "Sobre el eclipse",
+
+        heroNote:
+          "El próximo gran eclipse solar total visible desde el sur de España.",
+
+
+        shopLabel:
+          "Tienda",
+
+        shopTitle:
+          "Vive la totalidad.",
+
+        shopDescription:
+          "Compra unidades individuales o prepara un pedido para un grupo. Los precios por cantidad se aplican automáticamente.",
+
+        productTitle:
+          "Gafas para eclipse solar",
+
+        productDescription:
+          "Gafas ligeras diseñadas para observar el Sol de forma segura durante las distintas fases del eclipse.",
+
+        addCart:
+          "Añadir al carrito",
+
+        shippingNote:
+          "La información de envío se proporciona durante el pedido.",
+
+
+        eclipseLabel:
+          "El evento",
+
+        eclipseTitle:
+          "2 de agosto de 2027.",
+
+        eclipseDescription:
+          "Un eclipse solar total cruzará el sur de España antes de continuar por el norte de África y Oriente Medio.",
+
+        eclipseIntro:
+          "El 2 de agosto de 2027, la Luna pasará directamente entre la Tierra y el Sol, cubriendo completamente el disco solar para los observadores dentro de la zona de totalidad.",
+
+        eclipseIntro2:
+          "El sur de España es uno de los lugares más accesibles de Europa para disfrutar del evento.",
+
+        locationsTitle:
+          "Algunos lugares",
+
+
+        safetyLabel:
+          "Seguridad",
+
+        safetyTitle:
+          "Protege tus ojos.",
+
+        safetyDescription:
+          "Mirar directamente al Sol sin protección adecuada puede causar daños oculares permanentes.",
+
+        safetyOneTitle:
+          "Utiliza protección solar adecuada",
+
+        safetyOne:
+          "Las gafas de sol normales no son suficientes para mirar directamente al Sol.",
+
+        safetyTwoTitle:
+          "Comprueba las gafas",
+
+        safetyTwo:
+          "No utilices gafas rayadas, rotas, perforadas o dañadas.",
+
+        safetyThreeTitle:
+          "La totalidad es diferente",
+
+        safetyThree:
+          "Solo durante el breve periodo de totalidad se puede observar el Sol sin filtro solar. Antes y después se necesita protección.",
+
+
+        infoLabel:
+          "Información útil",
+
+        infoTitle:
+          "Todo antes del día del eclipse.",
+
+        infoDescription:
+          "Algunos detalles prácticos para preparar el 2 de agosto de 2027.",
+
+        deliveryTitle:
+          "Envío y pedidos",
+
+        deliveryText:
+          "Los pedidos se preparan para el envío después de realizarse. El plazo depende del destino y del método de envío. Para el eclipse de 2027 recomendamos pedir con suficiente antelación.",
+
+        aboutTitle:
+          "Sobre EclipseGlasses.eu",
+
+        aboutText:
+          "EclipseGlasses.eu es un proyecto independiente centrado en facilitar la preparación del eclipse solar total de 2027: información clara, cantidades sencillas y gafas para particulares, grupos y empresas.",
+
+        groupsTitle:
+          "¿Preparas un grupo?",
+
+        groupsText:
+          "Hoteles, colegios, operadores turísticos, clubes de astronomía y organizadores de eventos pueden solicitar cantidades mayores. Para más de 50 gafas, utiliza nuestro formulario de pedidos grandes.",
+
+
+        bulkLabel:
+          "Grupos y empresas",
+
+        bulkTitle:
+          "¿Más de 50 unidades?",
+
+        bulkDescription:
+          "Colegios, hoteles, agencias de viajes, grupos de astronomía y empresas pueden solicitar un presupuesto personalizado.",
+
+        bulkDescription2:
+          "Indica la cantidad que necesitas, el destino y para qué estás preparando el pedido. Después podremos hablar directamente sobre la solicitud.",
+
+        requestQuote:
+          "Solicitar presupuesto",
+
+
+        faqTitle:
+          "Preguntas frecuentes.",
+
+        faq1q:
+          "¿Cuándo es el eclipse de 2027?",
+
+        faq1a:
+          "El eclipse solar total tendrá lugar el lunes 2 de agosto de 2027.",
+
+        faq2q:
+          "¿Dónde puedo ver la totalidad?",
+
+        faq2a:
+          "La zona de totalidad atravesará el sur de España, el norte de África, Arabia Saudí y Yemen.",
+
+        faq3q:
+          "¿Puedo utilizar gafas de sol normales?",
+
+        faq3a:
+          "No. Las gafas de sol normales no ofrecen protección suficiente para mirar directamente al Sol.",
+
+        faq4q:
+          "¿Ofrecéis grandes cantidades?",
+
+        faq4a:
+          "Sí. Utiliza el formulario de pedidos grandes para pedidos superiores a 50 unidades.",
+
+        faq5q:
+          "¿Cuánto tarda el envío?",
+
+        faq5a:
+          "El plazo depende del destino y del método de envío. Para el eclipse de 2027 recomendamos realizar el pedido con suficiente antelación al 2 de agosto.",
+
+        faq6q:
+          "¿Qué ocurre después de hacer un pedido?",
+
+        faq6a:
+          "El carrito guarda la cantidad seleccionada en tu navegador. El botón de pedido abre un correo electrónico para que puedas confirmar directamente tu pedido.",
+
+        faq7q:
+          "¿Puedo pedir para un hotel, colegio o evento?",
+
+        faq7a:
+          "Sí. Los pedidos para grupos son bienvenidos. Indica la cantidad aproximada, el destino y el uso previsto en el formulario.",
+
+        faq8q:
+          "¿Qué pasa si las gafas llegan dañadas?",
+
+        faq8a:
+          "No utilices gafas de eclipse dañadas. Contacta con nosotros con los datos del pedido y fotografías de los artículos dañados para que podamos revisar el problema.",
+
+
+        finalTitle:
+          "No te pierdas la totalidad.",
+
+        finalDescription:
+          "Consigue tus gafas antes de que lleguen las multitudes.",
+
+        finalButton:
+          "Comprar gafas",
+
+
+        cartTitle:
+          "Tu carrito",
+
+        cartTotal:
+          "Total",
+
+        checkout:
+          "Pedir por email",
+
+        checkoutNote:
+          "Tu pedido se abrirá en tu aplicación de correo."
+
+      }
+
+    };
+
+
+    function applyLanguage(
+      language
+    ) {
+
+      const dictionary =
+        translations[language] ||
+        translations.en;
+
+
+      document
+        .querySelectorAll(
+          "[data-i18n]"
+        )
+        .forEach(
+          element => {
+
+            const key =
+              element.dataset.i18n;
+
+
+            if (
+              dictionary[key]
+            ) {
+
+              element.textContent =
+                dictionary[key];
+
+            }
+
+          }
+        );
+
+
+      localStorage.setItem(
+        "eclipse_language",
+        language
+      );
+
+    }
+
+
+    document
+      .getElementById(
+        "language"
+      )
+      .addEventListener(
+        "change",
+        event => {
+
+          applyLanguage(
+            event.target.value
+          );
+
+        }
+      );
+
+
+    const savedLanguage =
+      localStorage.getItem(
+        "eclipse_language"
+      ) ||
+      "en";
+
+
+    document
+      .getElementById(
+        "language"
+      )
+      .value =
+      savedLanguage;
+
+
+    applyLanguage(
+      savedLanguage
+    );
+
+
+    renderCart();
+
+  </script>
+
+</body>
+</html>`;
+
+
+    return new Response(
+      html,
+      {
+        headers: {
+
+          "content-type":
+            "text/html; charset=UTF-8",
+
+          "cache-control":
+            "public, max-age=0, must-revalidate"
+
+        }
+      }
+    );
+
+  }
+
+};
+
+
+/*
+============================================================
+SERVER HELPERS
+============================================================
+*/
+
+
+function cleanText(
+  value,
+  maxLength
+) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+
+    .replace(
+      /\u0000/g,
+      ""
+    )
+
+    .trim()
+
+    .slice(
+      0,
+      maxLength
+    );
+
+}
+
+
+function escapeHTMLServer(
+  value
+) {
+
+  return String(value)
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function jsonResponse(
+  data,
+  status = 200
+) {
+
+  return new Response(
+    JSON.stringify(data),
+    {
+
+      status:
+        status,
+
+      headers: {
+
+        "content-type":
+          "application/json; charset=UTF-8",
+
+        "cache-control":
+          "no-store"
+
+      }
+
+    }
+  );
+
+}
