@@ -2249,6 +2249,49 @@ export default {
     }
 
 
+    .order-confidence {
+      display: grid;
+      gap: 0;
+      margin: 24px 0 26px;
+      border-top: 1px solid var(--line);
+    }
+
+    .order-confidence-item {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 13px;
+      align-items: start;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .confidence-mark {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid rgba(201,164,93,.35);
+      border-radius: 50%;
+      color: var(--gold2);
+      font-size: 10px;
+      letter-spacing: .04em;
+    }
+
+    .order-confidence-item strong {
+      display: block;
+      color: var(--cream);
+      font-size: 12px;
+      font-weight: 600;
+      margin: 1px 0 4px;
+    }
+
+    .order-confidence-item p {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.7;
+      max-width: 480px;
+    }
+
     .price-grid {
 
       display:
@@ -4999,9 +5042,32 @@ export default {
             class="product-description"
             data-i18n="productDescription"
           >
-            Simple, lightweight solar viewing glasses designed for safe observation of the Sun during eclipse phases.
+            Solar viewing glasses for planning ahead for the August 2027 eclipse.
           </p>
 
+          <div class="order-confidence" aria-label="Ordering information">
+            <div class="order-confidence-item">
+              <span class="confidence-mark" aria-hidden="true">01</span>
+              <div>
+                <strong data-i18n="confidencePriceTitle">Clear product pricing</strong>
+                <p data-i18n="confidencePriceText">The prices shown are for the glasses only. Shipping is quoted separately before an order is confirmed.</p>
+              </div>
+            </div>
+            <div class="order-confidence-item">
+              <span class="confidence-mark" aria-hidden="true">02</span>
+              <div>
+                <strong data-i18n="confidenceSafetyTitle">Safety information matters</strong>
+                <p data-i18n="confidenceSafetyText">Product-specific safety documentation is being verified. Ask us for the applicable documentation before relying on this product for solar viewing.</p>
+              </div>
+            </div>
+            <div class="order-confidence-item">
+              <span class="confidence-mark" aria-hidden="true">03</span>
+              <div>
+                <strong data-i18n="confidenceOrderTitle">No surprise order confirmation</strong>
+                <p data-i18n="confidenceOrderText">Your email is an order enquiry, not a completed purchase. We will confirm availability, shipping and next steps directly.</p>
+              </div>
+            </div>
+          </div>
 
           <div class="price-grid">
 
@@ -6172,7 +6238,7 @@ export default {
         class="checkout-note"
         data-i18n="checkoutNote"
       >
-        Your order request will open in your email app.
+        This opens an email enquiry. Your order is not confirmed until we reply with availability and shipping details.
       </div>
 
     </div>
@@ -6657,7 +6723,7 @@ export default {
 
           "Hello,\\n\\n" +
 
-          "I would like to order the following:\\n\\n" +
+          "I would like to enquire about ordering the following items. I understand this email is not a confirmed purchase:\\n\\n" +
 
           orderLines +
 
@@ -6669,7 +6735,7 @@ export default {
 
           "\\n\\n" +
 
-          "Please let me know the shipping cost and the next steps.\\n\\n" +
+          "Please confirm product availability, applicable product safety documentation, shipping cost, any applicable taxes and the next steps before I commit to the order.\\n\\n" +
 
           "Thank you."
 
@@ -7070,6 +7136,24 @@ export default {
 
       en: {
 
+        confidenceOrderText:
+          "Your email is an order enquiry, not a completed purchase. We will confirm availability, shipping and next steps directly.",
+
+        confidenceOrderTitle:
+          "No surprise order confirmation",
+
+        confidenceSafetyText:
+          "Product-specific safety documentation is being verified. Ask us for the applicable documentation before relying on this product for solar viewing.",
+
+        confidenceSafetyTitle:
+          "Safety information matters",
+
+        confidencePriceText:
+          "The prices shown are for the glasses only. Shipping is quoted separately before an order is confirmed.",
+
+        confidencePriceTitle:
+          "Clear product pricing",
+
         navShop:
           "Shop",
 
@@ -7118,13 +7202,13 @@ export default {
           "Solar Eclipse Glasses",
 
         productDescription:
-          "Simple, lightweight solar viewing glasses designed for safe observation of the Sun during eclipse phases.",
+          "Solar viewing glasses to help you prepare for the August 2027 eclipse.",
 
         addCart:
           "Add to cart",
 
         shippingNote:
-          "Shipping details are provided during ordering.",
+          "Product prices are shown above. Shipping costs and availability are confirmed by email before an order is accepted.",
 
 
         visualLabel: "The experience",
@@ -7263,7 +7347,7 @@ export default {
           "What happens after I place an order?",
 
         faq6a:
-          "Your cart is saved in your browser. For now, the checkout button prepares an order email so you can confirm the order directly with us.",
+          "Your cart is saved in your browser. The button prepares an email enquiry; it does not take payment or confirm a purchase. We will reply to confirm availability, shipping costs and the next steps.",
 
         faq7q:
           "Can I order for a hotel, school or event?",
@@ -7295,15 +7379,33 @@ export default {
           "Total",
 
         checkout:
-          "Order by email",
+          "Enquire by email",
 
         checkoutNote:
-          "Your order request will open in your email app."
+          "This opens an email enquiry. Your order is not confirmed until we reply with availability and shipping details."
 
       },
 
 
       nl: {
+
+        confidenceOrderText:
+          "Je e-mail is een bestelaanvraag, geen voltooide aankoop. We bevestigen rechtstreeks de beschikbaarheid, verzending en volgende stappen.",
+
+        confidenceOrderTitle:
+          "Geen onverwachte orderbevestiging",
+
+        confidenceSafetyText:
+          "De productspecifieke veiligheidsdocumentatie wordt momenteel nagekeken. Vraag ons naar de toepasselijke documenten voordat je op dit product vertrouwt om naar de zon te kijken.",
+
+        confidenceSafetyTitle:
+          "Veiligheidsinformatie is belangrijk",
+
+        confidencePriceText:
+          "De getoonde prijzen gelden alleen voor de brillen. Verzendkosten worden meegedeeld voordat een bestelling wordt bevestigd.",
+
+        confidencePriceTitle:
+          "Duidelijke productprijzen",
 
         navShop:
           "Shop",
@@ -7353,13 +7455,13 @@ export default {
           "Zonne-eclipsbrillen",
 
         productDescription:
-          "Lichte zonne-eclipsbrillen voor het veilig bekijken van de zon tijdens de verschillende fasen van een eclips.",
+          "Zonne-eclipsbrillen om je voor te bereiden op de zonsverduistering van augustus 2027.",
 
         addCart:
           "Toevoegen aan winkelwagen",
 
         shippingNote:
-          "Verzendinformatie wordt tijdens het bestellen meegedeeld.",
+          "De productprijzen staan hierboven. Verzendkosten en beschikbaarheid worden per e-mail bevestigd voordat een bestelling wordt aanvaard.",
 
 
         visualLabel: "De ervaring",
@@ -7498,7 +7600,7 @@ export default {
           "Wat gebeurt er nadat ik bestel?",
 
         faq6a:
-          "Je winkelwagen bewaart momenteel je gekozen hoeveelheid in deze browser. De knop voor bestellen opent een e-mail waarmee je de bestelling rechtstreeks kunt bevestigen.",
+          "Je winkelmandje wordt in je browser bewaard. De knop maakt een bestelaanvraag per e-mail aan; er wordt geen betaling uitgevoerd en er wordt geen aankoop bevestigd. We antwoorden met beschikbaarheid, verzendkosten en de volgende stappen.",
 
         faq7q:
           "Kan ik bestellen voor een hotel, school of evenement?",
@@ -7530,15 +7632,33 @@ export default {
           "Totaal",
 
         checkout:
-          "Bestellen via e-mail",
+          "Bestelaanvraag per e-mail",
 
         checkoutNote:
-          "Je bestelling wordt geopend in je e-mailprogramma."
+          "Dit opent een bestelaanvraag per e-mail. Je bestelling is pas bevestigd nadat we beschikbaarheid en verzendkosten hebben geantwoord."
 
       },
 
 
       fr: {
+
+        confidenceOrderText:
+          "Votre e-mail est une demande de commande, pas un achat finalisé. Nous confirmerons directement la disponibilité, la livraison et les prochaines étapes.",
+
+        confidenceOrderTitle:
+          "Aucune commande confirmée par surprise",
+
+        confidenceSafetyText:
+          "La documentation de sécurité propre au produit est en cours de vérification. Demandez-nous les documents applicables avant d'utiliser ce produit pour observer le Soleil.",
+
+        confidenceSafetyTitle:
+          "La sécurité est essentielle",
+
+        confidencePriceText:
+          "Les prix affichés concernent uniquement les lunettes. Les frais de livraison sont communiqués avant la confirmation d'une commande.",
+
+        confidencePriceTitle:
+          "Prix du produit clairement indiqués",
 
         navShop:
           "Boutique",
@@ -7588,13 +7708,13 @@ export default {
           "Lunettes d'éclipse solaire",
 
         productDescription:
-          "Lunettes légères conçues pour observer le Soleil en toute sécurité pendant les différentes phases de l'éclipse.",
+          "Lunettes d'observation solaire pour vous préparer à l'éclipse d'août 2027.",
 
         addCart:
           "Ajouter au panier",
 
         shippingNote:
-          "Les informations de livraison sont fournies lors de la commande.",
+          "Les prix des produits sont indiqués ci-dessus. Les frais de livraison et la disponibilité sont confirmés par e-mail avant l'acceptation d'une commande.",
 
 
         visualLabel: "L’expérience",
@@ -7733,7 +7853,7 @@ export default {
           "Que se passe-t-il après ma commande ?",
 
         faq6a:
-          "Votre panier enregistre la quantité choisie dans votre navigateur. Le bouton de commande ouvre ensuite un e-mail afin que vous puissiez confirmer directement votre commande.",
+          "Votre panier est enregistré dans votre navigateur. Le bouton prépare une demande par e-mail ; aucun paiement n'est effectué et aucun achat n'est confirmé. Nous répondrons concernant la disponibilité, les frais de livraison et les prochaines étapes.",
 
         faq7q:
           "Puis-je commander pour un hôtel, une école ou un événement ?",
@@ -7765,15 +7885,33 @@ export default {
           "Total",
 
         checkout:
-          "Commander par e-mail",
+          "Demande par e-mail",
 
         checkoutNote:
-          "Votre commande sera ouverte dans votre application e-mail."
+          "Cela ouvre une demande par e-mail. Votre commande n'est pas confirmée tant que nous n'avons pas répondu concernant la disponibilité et la livraison."
 
       },
 
 
       es: {
+
+        confidenceOrderText:
+          "Tu correo es una consulta de pedido, no una compra completada. Confirmaremos directamente la disponibilidad, el envío y los siguientes pasos.",
+
+        confidenceOrderTitle:
+          "Sin confirmaciones de pedido inesperadas",
+
+        confidenceSafetyText:
+          "La documentación de seguridad específica del producto se está verificando. Solicita la documentación aplicable antes de confiar en este producto para observar el Sol.",
+
+        confidenceSafetyTitle:
+          "La información de seguridad importa",
+
+        confidencePriceText:
+          "Los precios indicados corresponden únicamente a las gafas. El coste del envío se comunica antes de confirmar un pedido.",
+
+        confidencePriceTitle:
+          "Precios claros del producto",
 
         navShop:
           "Tienda",
@@ -7823,13 +7961,13 @@ export default {
           "Gafas para eclipse solar",
 
         productDescription:
-          "Gafas ligeras diseñadas para observar el Sol de forma segura durante las distintas fases del eclipse.",
+          "Gafas de observación solar para prepararte para el eclipse de agosto de 2027.",
 
         addCart:
           "Añadir al carrito",
 
         shippingNote:
-          "La información de envío se proporciona durante el pedido.",
+          "Los precios del producto aparecen arriba. La disponibilidad y los gastos de envío se confirman por correo antes de aceptar un pedido.",
 
 
         visualLabel: "La experiencia",
@@ -7968,7 +8106,7 @@ export default {
           "¿Qué ocurre después de hacer un pedido?",
 
         faq6a:
-          "El carrito guarda la cantidad seleccionada en tu navegador. El botón de pedido abre un correo electrónico para que puedas confirmar directamente tu pedido.",
+          "El carrito se guarda en tu navegador. El botón prepara una consulta por correo; no se realiza ningún pago ni se confirma una compra. Responderemos para confirmar disponibilidad, gastos de envío y los siguientes pasos.",
 
         faq7q:
           "¿Puedo pedir para un hotel, colegio o evento?",
@@ -8000,10 +8138,10 @@ export default {
           "Total",
 
         checkout:
-          "Pedir por email",
+          "Consultar por correo",
 
         checkoutNote:
-          "Tu pedido se abrirá en tu aplicación de correo."
+          "Esto abre una consulta por correo. El pedido no queda confirmado hasta que respondamos sobre disponibilidad y envío."
 
       }
 
