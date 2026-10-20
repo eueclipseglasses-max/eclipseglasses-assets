@@ -2213,7 +2213,7 @@ export default {
     }
 
 
-    .product-image img {
+    .product-illustration {
 
       width:
         100%;
@@ -2224,11 +2224,11 @@ export default {
       aspect-ratio:
         1 / 1;
 
-      object-fit:
-        cover;
-
       display:
         block;
+
+      background:
+        #111;
 
       transition:
         transform .5s ease;
@@ -2236,9 +2236,9 @@ export default {
     }
 
 
-    .product-image:hover img {
+    .product-image:hover .product-illustration {
       transform:
-        scale(1.025);
+        scale(1.015);
     }
 
 
@@ -5052,13 +5052,41 @@ export default {
 
         <div class="product-image">
 
-          <!-- LAUNCH TODO: replace this third-party reference image with a photo of the exact product being sold.
-               Use an image you own or have permission to publish; confirm that the pictured frame/film matches the supplied product. -->
-          <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58am2lANYXVkeZ3riQkUjAmvOr7y--Zy5aIoIxpg7o1pC258Ycjjfl20&s=10"
-            alt="Illustrative reference image of solar eclipse glasses; actual product photo pending"
-            loading="lazy"
-          >
+          <!-- LAUNCH TODO: replace this original vector illustration with an owned/licensed photo of the exact product being sold.
+               Verify that the pictured frame and solar filter match the supplier's actual product. -->
+          <svg class="product-illustration" viewBox="0 0 600 600" role="img" aria-label="Illustration of solar eclipse glasses; actual product photograph pending" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="productGlow" cx="50%" cy="36%" r="65%">
+                <stop offset="0%" stop-color="#28231a"/>
+                <stop offset="100%" stop-color="#111111"/>
+              </radialGradient>
+              <linearGradient id="lensGold" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#b9944f"/>
+                <stop offset="48%" stop-color="#302a20"/>
+                <stop offset="100%" stop-color="#151515"/>
+              </linearGradient>
+              <linearGradient id="frameLight" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#343434"/>
+                <stop offset="100%" stop-color="#101010"/>
+              </linearGradient>
+            </defs>
+            <rect width="600" height="600" fill="url(#productGlow)"/>
+            <circle cx="300" cy="245" r="176" fill="none" stroke="#c9a45d" stroke-opacity=".10" stroke-width="1"/>
+            <circle cx="300" cy="245" r="138" fill="none" stroke="#c9a45d" stroke-opacity=".08" stroke-width="1"/>
+            <g transform="translate(0 10) rotate(-5 300 285)">
+              <path d="M95 225 L48 195 Q38 189 32 199 L30 207 L84 259 Z" fill="#181818" stroke="#484238" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M505 225 L552 195 Q562 189 568 199 L570 207 L516 259 Z" fill="#181818" stroke="#484238" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M83 214 Q88 196 111 194 L252 198 Q276 199 284 221 L291 244 Q299 267 283 293 L258 332 Q249 347 229 346 L121 340 Q102 339 96 320 L77 258 Q72 238 83 214 Z" fill="url(#frameLight)" stroke="#c9a45d" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M517 214 Q512 196 489 194 L348 198 Q324 199 316 221 L309 244 Q301 267 317 293 L342 332 Q351 347 371 346 L479 340 Q498 339 504 320 L523 258 Q528 238 517 214 Z" fill="url(#frameLight)" stroke="#c9a45d" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M278 220 Q300 205 322 220 L316 244 Q300 254 284 244 Z" fill="#171717" stroke="#c9a45d" stroke-width="4" stroke-linejoin="round"/>
+              <path d="M105 218 L249 220 L270 244 L247 317 L121 312 L99 249 Z" fill="url(#lensGold)" stroke="#5d4b2c" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M495 218 L351 220 L330 244 L353 317 L479 312 L501 249 Z" fill="url(#lensGold)" stroke="#5d4b2c" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M123 230 L226 230" stroke="#f4e1b3" stroke-opacity=".28" stroke-width="4" stroke-linecap="round"/>
+              <path d="M374 230 L477 230" stroke="#f4e1b3" stroke-opacity=".28" stroke-width="4" stroke-linecap="round"/>
+            </g>
+            <text x="300" y="465" text-anchor="middle" fill="#f4f1e9" font-family="Arial, sans-serif" font-size="15" letter-spacing="4">SOLAR VIEWING GLASSES</text>
+            <text x="300" y="492" text-anchor="middle" fill="#c9a45d" font-family="Arial, sans-serif" font-size="11" letter-spacing="3">ILLUSTRATIVE MOCK-UP</text>
+          </svg>
           <p class="product-image-note" data-i18n="productImageNote">
             Illustrative reference image only — replace with an actual photo of the product before launch.
           </p>
