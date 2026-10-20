@@ -2365,16 +2365,10 @@ export default {
 
 
     .eclipse-overview {
-
-      display:
-        grid;
-
-      grid-template-columns:
-        .75fr 1.25fr;
-
-      gap:
-        80px;
-
+      display: grid;
+      grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+      gap: 38px;
+      align-items: start;
     }
 
 
@@ -2393,33 +2387,21 @@ export default {
 
 
     .facts {
-
-      display:
-        grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
-      border-top:
-        1px solid var(--line);
-
-      border-left:
-        1px solid var(--line);
-
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,.075);
+      border-radius: 22px;
+      background: #111;
     }
 
-
     .fact {
-
-      padding:
-        26px;
-
-      border-right:
-        1px solid var(--line);
-
-      border-bottom:
-        1px solid var(--line);
-
+      min-width: 0;
+      padding: 17px 18px;
+      border: 1px solid rgba(255,255,255,.045);
+      border-radius: 15px;
+      background: #171717;
     }
 
 
@@ -2479,8 +2461,7 @@ export default {
 
 
     .locations {
-      margin-top:
-        65px;
+      margin-top: 42px;
     }
 
 
@@ -2500,50 +2481,32 @@ export default {
 
 
     .location-table {
-
-      border-top:
-        1px solid var(--line);
-
+      display: grid;
+      gap: 7px;
     }
-
 
     .location-row {
-
-      display:
-        grid;
-
-      grid-template-columns:
-        1fr 1fr 1fr;
-
-      padding:
-        18px 0;
-
-      border-bottom:
-        1px solid var(--line2);
-
-      font-size:
-        13px;
-
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 17px;
+      border: 1px solid rgba(255,255,255,.055);
+      border-radius: 14px;
+      background: #141414;
+      font-size: 13px;
     }
 
-
     .location-row.header {
-
-      color:
-        var(--muted2);
-
-      text-transform:
-        uppercase;
-
-      letter-spacing:
-        .09em;
-
-      font-size:
-        9px;
-
-      font-weight:
-        700;
-
+      padding: 5px 17px 8px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      color: var(--muted2);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      font-size: 9px;
+      font-weight: 700;
     }
 
 
@@ -3782,7 +3745,26 @@ export default {
 
     }
 
-  </style>
+  
+
+    /* Compact, rounded eclipse information panels */
+    @media (max-width: 900px) {
+      .eclipse-overview { grid-template-columns: 1fr; gap: 24px; }
+      .eclipse-intro { max-width: 720px; }
+      .locations { margin-top: 32px; }
+    }
+
+    @media (max-width: 600px) {
+      .facts { gap: 6px; padding: 7px; border-radius: 18px; }
+      .fact { padding: 13px 12px; border-radius: 12px; }
+      .fact-value { font-size: 17px; }
+      .fact-label { font-size: 8px; letter-spacing: .08em; }
+      .fact-sub { font-size: 10px; }
+      .location-row { grid-template-columns: 1fr .9fr 1fr; gap: 7px; padding: 12px 11px; border-radius: 12px; font-size: 11px; }
+      .location-row.header { padding: 4px 11px 7px; font-size: 8px; }
+      .locations-title { font-size: 20px; margin-bottom: 14px; }
+    }
+</style>
 
 </head>
 
