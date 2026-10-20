@@ -1282,6 +1282,19 @@ export default {
     ============================================================
     */
 
+    /*
+    ============================================================
+    PRE-LAUNCH CHECKLIST — UPDATE WHEN VERIFIED INFORMATION EXISTS
+    ============================================================
+    1. Replace the product image URL below with an owned/licensed photo of the exact product.
+    2. Confirm the manufacturer, model, applicable standard/certification and obtain current product-specific safety documents.
+       Do not add safety certification claims until the documents have been checked.
+    3. Add real dispatch estimates, shipping prices/destinations, returns policy, seller legal identity/address and VAT/company details.
+    4. Configure and test a real payment checkout if online payment is intended. Current checkout is an email enquiry only.
+    5. Verify every listed price, stock level and bulk quote workflow before accepting customer orders.
+    ============================================================
+    */
+
     const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1300,8 +1313,15 @@ export default {
 
   <meta
     name="description"
-    content="Solar eclipse glasses for the August 2, 2027 total solar eclipse in southern Spain."
+    content="Prepare for the total solar eclipse on August 2, 2027. Browse solar viewing glasses, transparent pricing and bulk enquiry options."
   >
+  <meta name="theme-color" content="#080808">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="EclipseGlasses.eu">
+  <meta property="og:title" content="EclipseGlasses.eu — August 2, 2027">
+  <meta property="og:description" content="Prepare for the total solar eclipse on August 2, 2027. Product availability and delivery details confirmed before orders are accepted.">
+  <meta property="og:url" content="https://eclipseglasses.eu">
+  <meta name="twitter:card" content="summary_large_image">
 
   <title>
     Eclipse Glasses — August 2, 2027
@@ -2182,6 +2202,17 @@ export default {
       overflow:
         hidden;
 
+    }
+
+
+    .product-image-note {
+      padding: 10px 14px;
+      color: var(--muted2);
+      font-size: 10px;
+      line-height: 1.6;
+      letter-spacing: .01em;
+      background: #111;
+      border-top: 1px solid var(--line2);
     }
 
 
@@ -5021,11 +5052,16 @@ export default {
 
         <div class="product-image">
 
+          <!-- LAUNCH TODO: replace this third-party reference image with a photo of the exact product being sold.
+               Use an image you own or have permission to publish; confirm that the pictured frame/film matches the supplied product. -->
           <img
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT58am2lANYXVkeZ3riQkUjAmvOr7y--Zy5aIoIxpg7o1pC258Ycjjfl20&s=10"
-            alt="Solar eclipse glasses"
+            alt="Illustrative reference image of solar eclipse glasses; actual product photo pending"
             loading="lazy"
           >
+          <p class="product-image-note" data-i18n="productImageNote">
+            Illustrative reference image only — replace with an actual photo of the product before launch.
+          </p>
 
         </div>
 
@@ -6706,7 +6742,7 @@ export default {
             item.quantity +
             " pairs — €" +
             itemTotal.toFixed(2) +
-            "\\n";
+            "\n";
 
         }
       );
@@ -6721,21 +6757,21 @@ export default {
       const body =
         encodeURIComponent(
 
-          "Hello,\\n\\n" +
+          "Hello,\n\n" +
 
-          "I would like to enquire about ordering the following items. I understand this email is not a confirmed purchase:\\n\\n" +
+          "I would like to enquire about ordering the following items. I understand this email is not a confirmed purchase:\n\n" +
 
           orderLines +
 
-          "\\n" +
+          "\n" +
 
           "Product total: €" +
 
           total.toFixed(2) +
 
-          "\\n\\n" +
+          "\n\n" +
 
-          "Please confirm product availability, applicable product safety documentation, shipping cost, any applicable taxes and the next steps before I commit to the order.\\n\\n" +
+          "Please confirm product availability, applicable product safety documentation, shipping cost, any applicable taxes and the next steps before I commit to the order.\n\n" +
 
           "Thank you."
 
@@ -7174,7 +7210,9 @@ export default {
           "Be ready for August 2, 2027.",
 
         heroCopy:
-          "Purpose-made solar viewing glasses for the total solar eclipse crossing southern Spain.",
+          "Solar viewing glasses for the total solar eclipse crossing southern Spain.",
+
+        productImageNote: "Illustrative reference image only — replace with an actual photo of the product before launch.",
 
         pillTotal:
           "Total solar eclipse",
@@ -7279,13 +7317,13 @@ export default {
           "Delivery & ordering",
 
         deliveryText:
-          "Orders are prepared for shipment after ordering. Delivery time depends on destination and shipping method. If you are planning for the 2027 eclipse, ordering early is recommended rather than waiting until the final weeks.",
+          "Shipping costs, dispatch timing and delivery estimates are confirmed by email before any order is accepted. We do not currently publish a guaranteed delivery window.",
 
         aboutTitle:
           "About EclipseGlasses.eu",
 
         aboutText:
-          "EclipseGlasses.eu is an independent project focused on making preparation for the 2027 total solar eclipse simple: clear information, straightforward quantities and glasses for individuals, groups and businesses.",
+          "EclipseGlasses.eu is a dedicated storefront for people preparing for the total solar eclipse on August 2, 2027. Product details, availability, delivery arrangements and applicable documentation are confirmed directly before an order is accepted.",
 
         groupsTitle:
           "Planning for a group?",
@@ -7427,7 +7465,9 @@ export default {
           "Wees klaar voor 2 augustus 2027.",
 
         heroCopy:
-          "Zonne-eclipsbrillen voor de totale zonsverduistering die over Zuid-Spanje trekt.",
+          "Eclipsbrillen voor de totale zonsverduistering die over Zuid-Spanje trekt.",
+
+        productImageNote: "Enkel een illustratieve referentieafbeelding — vervang deze vóór de lancering door een echte productfoto.",
 
         pillTotal:
           "Totale zonsverduistering",
@@ -7532,13 +7572,13 @@ export default {
           "Levering & bestellen",
 
         deliveryText:
-          "Bestellingen worden na bestelling klaargemaakt voor verzending. De levertijd hangt af van bestemming en verzendmethode. Voor de eclips van 2027 raden we aan om ruim op tijd te bestellen.",
+          "Verzendkosten, verzendmoment en verwachte levertijd worden per e-mail bevestigd voordat een bestelling wordt aanvaard. We publiceren momenteel geen gegarandeerde leveringstermijn.",
 
         aboutTitle:
           "Over EclipseGlasses.eu",
 
         aboutText:
-          "EclipseGlasses.eu is een onafhankelijk project dat de voorbereiding op de totale zonsverduistering van 2027 eenvoudig wil maken: duidelijke informatie, eenvoudige hoeveelheden en brillen voor particulieren, groepen en bedrijven.",
+          "EclipseGlasses.eu is een webshop voor wie zich voorbereidt op de totale zonsverduistering van 2 augustus 2027. Productgegevens, beschikbaarheid, verzending en toepasselijke documentatie worden rechtstreeks bevestigd voordat een bestelling wordt aanvaard.",
 
         groupsTitle:
           "Plan je voor een groep?",
@@ -7680,7 +7720,9 @@ export default {
           "Soyez prêt pour le 2 août 2027.",
 
         heroCopy:
-          "Lunettes spécialement conçues pour observer l'éclipse solaire totale qui traversera le sud de l'Espagne.",
+          "Des lunettes d’observation solaire pour l’éclipse totale qui traversera le sud de l’Espagne.",
+
+        productImageNote: "Image de référence illustrative uniquement — remplacez-la par une véritable photo du produit avant le lancement.",
 
         pillTotal:
           "Éclipse solaire totale",
@@ -7785,13 +7827,13 @@ export default {
           "Livraison & commande",
 
         deliveryText:
-          "Les commandes sont préparées pour l'expédition après leur réception. Le délai dépend de la destination et du mode d'expédition. Pour l'éclipse de 2027, nous recommandons de commander suffisamment à l'avance.",
+          "Les frais d’expédition, la date d’envoi et les délais estimés sont confirmés par e-mail avant toute acceptation de commande. Aucun délai de livraison garanti n’est actuellement publié.",
 
         aboutTitle:
           "À propos d'EclipseGlasses.eu",
 
         aboutText:
-          "EclipseGlasses.eu est un projet indépendant destiné à simplifier la préparation de l'éclipse solaire totale de 2027 : informations claires, quantités simples et lunettes pour particuliers, groupes et entreprises.",
+          "EclipseGlasses.eu est une boutique destinée aux personnes qui préparent l’éclipse solaire totale du 2 août 2027. Les détails du produit, la disponibilité, les modalités d’expédition et la documentation applicable sont confirmés directement avant l’acceptation d’une commande.",
 
         groupsTitle:
           "Vous préparez un groupe ?",
@@ -7933,7 +7975,9 @@ export default {
           "Prepárate para el 2 de agosto de 2027.",
 
         heroCopy:
-          "Gafas diseñadas para observar de forma segura el eclipse solar total que cruzará el sur de España.",
+          "Gafas de observación solar para el eclipse total que cruzará el sur de España.",
+
+        productImageNote: "Imagen de referencia ilustrativa — sustitúyela por una foto real del producto antes del lanzamiento.",
 
         pillTotal:
           "Eclipse solar total",
@@ -8038,13 +8082,13 @@ export default {
           "Envío y pedidos",
 
         deliveryText:
-          "Los pedidos se preparan para el envío después de realizarse. El plazo depende del destino y del método de envío. Para el eclipse de 2027 recomendamos pedir con suficiente antelación.",
+          "Los gastos de envío, la fecha de expedición y los plazos estimados se confirman por correo electrónico antes de aceptar cualquier pedido. Actualmente no publicamos un plazo de entrega garantizado.",
 
         aboutTitle:
           "Sobre EclipseGlasses.eu",
 
         aboutText:
-          "EclipseGlasses.eu es un proyecto independiente centrado en facilitar la preparación del eclipse solar total de 2027: información clara, cantidades sencillas y gafas para particulares, grupos y empresas.",
+          "EclipseGlasses.eu es una tienda para quienes se preparan para el eclipse solar total del 2 de agosto de 2027. Los detalles del producto, la disponibilidad, el envío y la documentación aplicable se confirman directamente antes de aceptar un pedido.",
 
         groupsTitle:
           "¿Preparas un grupo?",
