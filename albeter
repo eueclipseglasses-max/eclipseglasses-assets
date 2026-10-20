@@ -4914,6 +4914,46 @@ export default {
       .bulk .container { padding:18px; }
     }
 
+
+    /* Shared spacing and alignment */
+    .container { width:min(1120px,calc(100% - 48px)); }
+    .nav-inner { height:64px; }
+    .nav-links { gap:24px; }
+    .nav-links a { font-size:11px; }
+    .hero { min-height:680px; }
+    .hero-content { padding-top:76px; padding-bottom:70px; }
+    .section { padding:72px 0; }
+    .section-heading { margin-bottom:34px; }
+    .section-description { max-width:390px; }
+    .shop-grid { gap:48px; }
+    .product-image { border-radius:18px; }
+    .price-option { border-radius:12px !important; }
+    .safety-card,.info-card { border-radius:16px; }
+    .bulk .container { border-radius:20px; }
+    .faq-item { padding:17px 0; }
+    .footer { padding:34px 0 26px; }
+    .footer-column a { transition:color .18s ease; }
+    .footer-column a:hover { color:var(--gold2); }
+    @media(max-width:900px) {
+      .container { width:min(100% - 40px,720px); }
+      .hero { min-height:620px; }
+      .section { padding:58px 0; }
+      .shop-grid { gap:28px; }
+    }
+    @media(max-width:600px) {
+      .container { width:calc(100% - 32px); }
+      .nav-inner { height:60px; }
+      .section { padding:50px 0; }
+      .section-heading { margin-bottom:24px; }
+      .hero-countdown { gap:11px; margin:0 0 20px; }
+      .countdown-number { font-size:34px; }
+      .countdown-copy { padding-left:11px; }
+      .countdown-label { font-size:8px; }
+      .price-option { border-radius:11px !important; }
+      .bulk .container { padding:18px; }
+      .footer { padding:28px 0 22px; }
+    }
+
 </style>
 
 </head>
@@ -5107,13 +5147,6 @@ export default {
 
         </div>
 
-
-        <div
-          class="hero-note"
-          data-i18n="heroNote"
-        >
-          The next major total solar eclipse visible from southern Spain.
-        </div>
 
       </div>
 
@@ -7372,9 +7405,6 @@ export default {
         countdownLabel:
           "DAYS TO ECLIPSE DAY",
 
-        heroNote:
-          "The next major total solar eclipse visible from southern Spain.",
-
 
         shopLabel:
           "Shop",
@@ -7651,9 +7681,6 @@ export default {
 
         countdownLabel:
           "DAGEN TOT DE ECLIPSDAG",
-
-        heroNote:
-          "De volgende grote totale zonsverduistering zichtbaar vanuit Zuid-Spanje.",
 
 
         shopLabel:
@@ -7932,9 +7959,6 @@ export default {
         countdownLabel:
           "JOURS AVANT L’ÉCLIPSE",
 
-        heroNote:
-          "La prochaine grande éclipse solaire totale visible depuis le sud de l'Espagne.",
-
 
         shopLabel:
           "Boutique",
@@ -8211,9 +8235,6 @@ export default {
 
         countdownLabel:
           "DÍAS PARA EL DÍA DEL ECLIPSE",
-
-        heroNote:
-          "El próximo gran eclipse solar total visible desde el sur de España.",
 
 
         shopLabel:
