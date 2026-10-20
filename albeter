@@ -565,6 +565,66 @@ export default {
 
     }
 
+
+
+    @media (max-width: 900px) {
+
+      .eclipse-overview {
+        grid-template-columns: 1fr;
+        gap: 26px;
+      }
+
+      .locations {
+        margin-top: 32px;
+      }
+
+    }
+
+    @media (max-width: 600px) {
+
+      .facts {
+        gap: 6px;
+        padding: 7px;
+        border-radius: 17px;
+      }
+
+      .fact {
+        padding: 13px 12px;
+        border-radius: 12px;
+      }
+
+      .fact-value {
+        font-size: 18px;
+      }
+
+      .locations-title {
+        font-size: 20px;
+        margin-bottom: 14px;
+      }
+
+      .location-table {
+        gap: 6px;
+      }
+
+      .location-row {
+        grid-template-columns: 1fr 1fr;
+        gap: 7px 12px;
+        padding: 12px 13px;
+        border-radius: 12px;
+      }
+
+      .location-row.header {
+        display: none;
+      }
+
+      .location-row:not(.header) div:nth-child(3) {
+        grid-column: 1 / -1;
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+    }
+
   </style>
 
 </head>
@@ -2370,10 +2430,13 @@ export default {
         grid;
 
       grid-template-columns:
-        .75fr 1.25fr;
+        .85fr 1.15fr;
 
       gap:
-        80px;
+        38px;
+
+      align-items:
+        start;
 
     }
 
@@ -2398,27 +2461,42 @@ export default {
         grid;
 
       grid-template-columns:
-        repeat(2, 1fr);
+        repeat(2, minmax(0, 1fr));
 
-      border-top:
-        1px solid var(--line);
+      gap:
+        8px;
 
-      border-left:
-        1px solid var(--line);
+      padding:
+        10px;
+
+      background:
+        #202020;
+
+      border:
+        1px solid rgba(255,255,255,.07);
+
+      border-radius:
+        22px;
 
     }
 
 
     .fact {
 
+      min-width:
+        0;
+
       padding:
-        26px;
+        17px 18px;
 
-      border-right:
-        1px solid var(--line);
+      background:
+        #171717;
 
-      border-bottom:
-        1px solid var(--line);
+      border:
+        1px solid rgba(255,255,255,.045);
+
+      border-radius:
+        15px;
 
     }
 
@@ -2480,7 +2558,7 @@ export default {
 
     .locations {
       margin-top:
-        65px;
+        42px;
     }
 
 
@@ -2501,8 +2579,11 @@ export default {
 
     .location-table {
 
-      border-top:
-        1px solid var(--line);
+      display:
+        grid;
+
+      gap:
+        7px;
 
     }
 
@@ -2513,13 +2594,25 @@ export default {
         grid;
 
       grid-template-columns:
-        1fr 1fr 1fr;
+        1.2fr 1fr 1fr;
+
+      align-items:
+        center;
+
+      gap:
+        14px;
 
       padding:
-        18px 0;
+        13px 17px;
 
-      border-bottom:
-        1px solid var(--line2);
+      background:
+        #141414;
+
+      border:
+        1px solid rgba(255,255,255,.055);
+
+      border-radius:
+        14px;
 
       font-size:
         13px;
@@ -2543,6 +2636,18 @@ export default {
 
       font-weight:
         700;
+
+      padding:
+        0 17px 4px;
+
+      background:
+        transparent;
+
+      border:
+        0;
+
+      border-radius:
+        0;
 
     }
 
