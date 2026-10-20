@@ -4724,16 +4724,18 @@ export default {
       height: clamp(220px, 27vw, 350px);
       object-fit: cover;
       transition: transform .8s cubic-bezier(.2,.7,.2,1), filter .5s ease;
-      filter: saturate(.82);
+      /* Let the eclipse colours do the visual work: vivid, but still photographic. */
+      filter: saturate(1.14) contrast(1.035) brightness(1.025);
     }
     .visual-card-wide img { object-position: center; }
     .visual-card::after {
       content: "";
       position: absolute;
-      inset: 35% 0 0;
+      inset: 43% 0 0;
       z-index: 1;
       pointer-events: none;
-      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.12) 22%, rgba(0,0,0,.88) 100%);
+      /* Keep more of the original image visible; fade only where the captions sit. */
+      background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,.10) 24%, rgba(0,0,0,.78) 100%);
     }
     .visual-card figcaption {
       position: absolute;
@@ -4784,7 +4786,7 @@ export default {
       line-height: 1.6;
     }
     @media (hover: hover) and (pointer: fine) {
-      .visual-card:hover img { transform: scale(1.045); filter: saturate(1.08); }
+      .visual-card:hover img { transform: scale(1.045); filter: saturate(1.24) contrast(1.05) brightness(1.035); }
       .visual-card:hover .visual-arrow { transform: translate(2px,-2px); color: var(--gold2); }
     }
 
