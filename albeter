@@ -4339,6 +4339,192 @@ export default {
         opacity: .55;
       }
     }
+
+    /* Final polish: one consistent design system, clearer focus and better mobile usability */
+    :root {
+      --surface: #101010;
+      --surface-raised: #141414;
+      --radius-control: 999px;
+      --radius-card: 16px;
+      --focus-ring: rgba(226,196,127,.78);
+    }
+
+    body {
+      font-size: 14px;
+      line-height: 1.65;
+      text-rendering: optimizeLegibility;
+    }
+
+    .nav {
+      background: rgba(8,8,8,.94);
+      border-bottom-color: rgba(255,255,255,.08);
+    }
+
+    .nav-inner { gap: 22px; }
+    .nav-links a { transition: color .18s ease, opacity .18s ease; }
+    .nav-links a:hover { color: var(--gold2); }
+
+    .hero {
+      background: #080808 !important;
+      min-height: 660px;
+      isolation: isolate;
+    }
+
+    .hero-photo { background: #080808; }
+    .hero-photo img {
+      border-radius: 22px;
+      border-color: rgba(255,255,255,.13);
+      box-shadow: 0 24px 70px rgba(0,0,0,.32);
+    }
+
+    .hero h1 { text-wrap: balance; }
+    .hero-copy { color: #b8b5ad; }
+    .hero-note { line-height: 1.6; }
+
+    .button,
+    .cart-button,
+    .quantity-button,
+    .add-to-cart,
+    .checkout-button,
+    .quote-submit {
+      border-radius: var(--radius-control) !important;
+      transition:
+        background-color .2s ease,
+        color .2s ease,
+        border-color .2s ease,
+        box-shadow .2s ease,
+        transform .2s ease;
+    }
+
+    .button-primary {
+      background: var(--cream);
+      color: #080808;
+      box-shadow: 0 1px 0 rgba(255,255,255,.15) inset;
+    }
+
+    .button-primary:hover,
+    .add-to-cart:hover,
+    .checkout-button:hover,
+    .quote-submit:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 7px 22px rgba(0,0,0,.22);
+    }
+
+    .button-secondary {
+      border-color: rgba(255,255,255,.16);
+      background: rgba(255,255,255,.025);
+    }
+
+    .section { border-bottom-color: rgba(255,255,255,.065); }
+    .section-title,
+    .final-cta h2 { text-wrap: balance; }
+    .section-description { color: #aaa79f; }
+
+    .product-image,
+    .fact,
+    .safety-card,
+    .info-card,
+    .bulk .container,
+    .location-row:not(.header) {
+      border-color: rgba(255,255,255,.075);
+    }
+
+    .product-image {
+      background: #101010;
+      overflow: hidden;
+    }
+
+    .price-option {
+      transition:
+        background-color .18s ease,
+        border-color .18s ease,
+        transform .18s ease;
+    }
+
+    .price-option:hover { border-color: rgba(255,255,255,.16); }
+    .price-option.active { border-color: rgba(226,196,127,.72); }
+
+    .fact,
+    .safety-card,
+    .info-card,
+    .location-row:not(.header) {
+      transition: border-color .2s ease, background-color .2s ease;
+    }
+
+    .field,
+    .quantity-input,
+    .language {
+      border-color: rgba(255,255,255,.14);
+      transition: border-color .18s ease, background-color .18s ease;
+    }
+
+    .field:focus,
+    .quantity-input:focus,
+    .language:focus {
+      border-color: var(--focus-ring);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(226,196,127,.10);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 4px;
+    }
+
+    .faq-question { transition: color .18s ease; }
+    .faq-question:hover { color: var(--gold2); }
+
+    .footer-inner { line-height: 1.8; }
+
+    @media (hover: hover) and (pointer: fine) {
+      .fact:hover,
+      .safety-card:hover,
+      .info-card:hover,
+      .location-row:not(.header):hover {
+        border-color: rgba(226,196,127,.20);
+      }
+    }
+
+    @media (max-width: 900px) {
+      .hero { min-height: 620px; }
+      .hero-content { width: 58%; }
+    }
+
+    @media (max-width: 560px) {
+      .container { width: calc(100% - 32px); }
+
+      /* Keep language switching available on phones. */
+      .language {
+        display: block;
+        max-width: 88px;
+        padding: 7px 23px 7px 9px;
+        font-size: 11px;
+        border-radius: 999px;
+      }
+
+      .nav-right { gap: 7px; }
+      .cart-button { padding: 8px 12px; min-height: 34px; }
+      .hero { min-height: auto; }
+      .hero h1 { text-wrap: balance; }
+      .hero-actions { gap: 8px; }
+      .hero-actions .button { min-height: 42px; }
+      .section { padding: 52px 0; }
+      .fact { padding: 16px; }
+      .bulk .container { padding: 18px; }
+      .faq-question { gap: 16px; line-height: 1.5; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
 </style>
 
 </head>
