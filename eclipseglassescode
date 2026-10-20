@@ -3784,7 +3784,7 @@ export default {
 
   
 
-    /* EclipseGlasses custom pointer — desktop only */
+    /* EclipseGlasses ambient glow cursor — desktop only */
     @media (pointer: fine) and (prefers-reduced-motion: no-preference) {
       body.eg-custom-cursor,
       body.eg-custom-cursor a,
@@ -3798,44 +3798,97 @@ export default {
       }
 
       .eg-cursor {
+        --eg-cursor-rgb: 218, 181, 105;
         position: fixed;
         left: 0;
         top: 0;
-        width: 12px;
-        height: 12px;
+        width: 14px;
+        height: 14px;
         border-radius: 50%;
-        background: var(--gold, #c9a45d);
-        border: 1px solid rgba(255,255,255,.55);
         pointer-events: none;
         z-index: 99999;
         transform: translate(-50%, -50%);
         opacity: 0;
+        background: rgba(var(--eg-cursor-rgb), .96);
+        border: 1px solid rgba(255, 244, 215, .95);
+        box-shadow:
+          0 0 8px rgba(var(--eg-cursor-rgb), .85),
+          0 0 20px rgba(var(--eg-cursor-rgb), .42),
+          0 0 42px rgba(var(--eg-cursor-rgb), .16);
         transition:
-          width .18s ease,
-          height .18s ease,
-          background-color .18s ease,
+          width .24s cubic-bezier(.2,.8,.2,1),
+          height .24s cubic-bezier(.2,.8,.2,1),
+          background-color .24s ease,
+          border-color .24s ease,
+          box-shadow .24s ease,
           opacity .18s ease;
         will-change: left, top, width, height;
       }
 
-      .eg-cursor.is-visible {
+      .eg-cursor::before {
+        content: "";
+        position: absolute;
+        inset: -13px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(var(--eg-cursor-rgb), .22) 0%, rgba(var(--eg-cursor-rgb), .10) 34%, rgba(var(--eg-cursor-rgb), 0) 72%);
+        filter: blur(2px);
+        transform: scale(.82);
+        transition: transform .28s ease, opacity .28s ease;
+        opacity: .8;
+      }
+
+      .eg-cursor::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        background: #fff9e9;
+        box-shadow: 0 0 7px rgba(255,255,255,.75);
+        transition: inset .24s ease, background-color .24s ease;
+      }
+
+      .eg-cursor.is-visible { opacity: 1; }
+
+      .eg-cursor.is-hovering {
+        width: 34px;
+        height: 34px;
+        background: rgba(var(--eg-cursor-rgb), .15);
+        border-color: rgba(var(--eg-cursor-rgb), .95);
+        box-shadow:
+          0 0 10px rgba(var(--eg-cursor-rgb), .7),
+          0 0 28px rgba(var(--eg-cursor-rgb), .5),
+          0 0 60px rgba(var(--eg-cursor-rgb), .24),
+          inset 0 0 12px rgba(var(--eg-cursor-rgb), .12);
+      }
+
+      .eg-cursor.is-hovering::before {
+        inset: -24px;
+        transform: scale(1.12);
         opacity: 1;
       }
 
-      .eg-cursor.is-hovering {
-        width: 36px;
-        height: 36px;
-        background: var(--cream, #f4f1e9);
-        border-color: var(--gold, #c9a45d);
+      .eg-cursor.is-hovering::after {
+        inset: 12px;
+        background: rgb(var(--eg-cursor-rgb));
       }
+
+      .eg-cursor.is-link { --eg-cursor-rgb: 226, 196, 127; }
+      .eg-cursor.is-button { --eg-cursor-rgb: 255, 231, 174; }
+      .eg-cursor.is-field { --eg-cursor-rgb: 245, 239, 220; }
 
       .eg-cursor.is-pressing {
-        width: 22px;
-        height: 22px;
-        background: var(--gold2, #e2c47f);
+        width: 23px;
+        height: 23px;
+        box-shadow:
+          0 0 7px rgba(var(--eg-cursor-rgb), .9),
+          0 0 18px rgba(var(--eg-cursor-rgb), .55);
+      }
+
+      .eg-cursor.is-pressing::before {
+        inset: -8px;
+        opacity: .55;
       }
     }
-
 </style>
 
 </head>
@@ -7118,7 +7171,7 @@ export default {
     );
 
 
-    // Custom gold/cream cursor on mouse devices; native cursor remains on touch devices.
+    // Ambient gold glow cursor. It changes glow/size according to the hovered control.
     if (
       window.matchMedia &&
       window.matchMedia("(pointer: fine) and (prefers-reduced-motion: no-preference)").matches
@@ -7129,7 +7182,9 @@ export default {
       document.body.appendChild(egCursor);
       document.body.classList.add("eg-custom-cursor");
 
+      const interactiveSelector = "a, button, input, select, textarea, summary, [role='button'], .cart-button, .quantity-button";
       let cursorVisible = false;
+
       const moveCursor = (event) => {
         egCursor.style.left = event.clientX + "px";
         egCursor.style.top = event.clientY + "px";
@@ -7139,25 +7194,36 @@ export default {
         }
       };
 
+      const setHoverTarget = (target) => {
+        const element = target && target.closest ? target.closest(interactiveSelector) : null;
+        egCursor.classList.remove("is-hovering", "is-link", "is-button", "is-field");
+        if (!element) return;
+        egCursor.classList.add("is-hovering");
+        if (element.matches("button, [role='button'], .cart-button, .quantity-button")) {
+          egCursor.classList.add("is-button");
+        } else if (element.matches("input, select, textarea")) {
+          egCursor.classList.add("is-field");
+        } else {
+          egCursor.classList.add("is-link");
+        }
+      };
+
       document.addEventListener("pointermove", moveCursor, { passive: true });
-      document.addEventListener("pointerover", (event) => {
-        if (event.target.closest("a, button, input, select, textarea, summary, [role='button']")) {
-          egCursor.classList.add("is-hovering");
-        }
-      });
+      document.addEventListener("pointerover", (event) => setHoverTarget(event.target));
       document.addEventListener("pointerout", (event) => {
-        if (
-          event.target.closest("a, button, input, select, textarea, summary, [role='button']") &&
-          (!event.relatedTarget || !event.target.closest("a, button, input, select, textarea, summary, [role='button']").contains(event.relatedTarget))
-        ) {
-          egCursor.classList.remove("is-hovering");
-        }
+        const leaving = event.target && event.target.closest ? event.target.closest(interactiveSelector) : null;
+        const entering = event.relatedTarget && event.relatedTarget.closest ? event.relatedTarget.closest(interactiveSelector) : null;
+        if (leaving !== entering) setHoverTarget(event.relatedTarget);
       });
       document.addEventListener("pointerdown", () => egCursor.classList.add("is-pressing"));
       document.addEventListener("pointerup", () => egCursor.classList.remove("is-pressing"));
-      document.addEventListener("pointerleave", () => egCursor.classList.remove("is-visible"));
+      document.addEventListener("pointerleave", () => {
+        egCursor.classList.remove("is-visible");
+        cursorVisible = false;
+      });
       document.addEventListener("pointerenter", () => {
-        if (cursorVisible) egCursor.classList.add("is-visible");
+        egCursor.classList.add("is-visible");
+        cursorVisible = true;
       });
     }
 
