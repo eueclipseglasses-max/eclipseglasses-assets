@@ -7300,27 +7300,6 @@ export default {
         footerContact:
           "Contact",
 
-        footerInstagram:
-          "Instagram",
-
-        footerReferences:
-          "Image credits",
-
-        footerBusiness:
-          "Business & bulk orders",
-
-        footerFollow:
-          "Follow & references",
-
-        footerCopyright:
-          "Independent eclipse glasses project · Europe",
-
-        footerTagline:
-          "Solar eclipse glasses for individuals, groups and organisations.",
-
-        footerContact:
-          "Contact",
-
         footerDelivery:
           "Delivery & info",
 
@@ -7591,27 +7570,6 @@ export default {
 
         navSafety:
           "Veiligheid",
-
-        footerTagline:
-          "Eclipsbrillen voor particulieren, groepen en organisaties.",
-
-        footerContact:
-          "Contact",
-
-        footerInstagram:
-          "Instagram",
-
-        footerReferences:
-          "Beeldvermelding",
-
-        footerBusiness:
-          "Zakelijke & grote bestellingen",
-
-        footerFollow:
-          "Volg & referenties",
-
-        footerCopyright:
-          "Onafhankelijk eclipsbrillenproject · Europa",
 
         footerTagline:
           "Eclipsbrillen voor particulieren, groepen en organisaties.",
@@ -7896,27 +7854,6 @@ export default {
         footerContact:
           "Contact",
 
-        footerInstagram:
-          "Instagram",
-
-        footerReferences:
-          "Crédits des images",
-
-        footerBusiness:
-          "Commandes professionnelles et en gros",
-
-        footerFollow:
-          "Réseaux & références",
-
-        footerCopyright:
-          "Projet indépendant de lunettes solaires · Europe",
-
-        footerTagline:
-          "Lunettes d’observation solaire pour particuliers, groupes et organisations.",
-
-        footerContact:
-          "Contact",
-
         footerDelivery:
           "Livraison & infos",
 
@@ -8187,27 +8124,6 @@ export default {
 
         navSafety:
           "Seguridad",
-
-        footerTagline:
-          "Gafas de observación solar para particulares, grupos y organizaciones.",
-
-        footerContact:
-          "Contacto",
-
-        footerInstagram:
-          "Instagram",
-
-        footerReferences:
-          "Créditos de imágenes",
-
-        footerBusiness:
-          "Pedidos profesionales y al por mayor",
-
-        footerFollow:
-          "Redes y referencias",
-
-        footerCopyright:
-          "Proyecto independiente de gafas solares · Europa",
 
         footerTagline:
           "Gafas de observación solar para particulares, grupos y organizaciones.",
