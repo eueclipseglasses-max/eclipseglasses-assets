@@ -4957,20 +4957,59 @@ export default {
     }
 
 
-    /* Restrained, solid colour accents — no gradients or decorative effects. */
+    /* Restrained accents and one consistent card system for both sections. */
     #eclipse { background: #0b0b0a; }
     .nav-links a[href="#bulk"] { color: var(--cream); }
     .nav-links a[href="#bulk"]:hover { color: var(--gold2); }
 
+    .safety-card,
+    .info-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-height: 278px;
+      padding: 28px;
+      background: #101010;
+      border: 1px solid rgba(255,255,255,.07);
+    }
+    .safety-card h3,
+    .info-card h3 {
+      font-size: 20px;
+      line-height: 1.35;
+      margin: 0 0 13px;
+    }
+    .safety-card p,
+    .info-card p {
+      font-size: 13px;
+      line-height: 1.8;
+    }
+    .safety-icon,
+    .info-icon-wrap {
+      width: 40px;
+      height: 40px;
+      margin: 0 0 16px;
+      border-radius: 12px;
+      background: transparent;
+    }
+    .safety-card:nth-child(1) .safety-icon,
+    .info-card:nth-child(1) .info-icon-wrap { color: #9eafc0; border-color: rgba(158,175,192,.22); }
+    .safety-card:nth-child(2) .safety-icon,
+    .info-card:nth-child(2) .info-icon-wrap { color: #c9a45d; border-color: rgba(201,164,93,.22); }
+    .safety-card:nth-child(3) .safety-icon,
+    .info-card:nth-child(3) .info-icon-wrap { color: #a5b8a4; border-color: rgba(165,184,164,.22); }
+
+    .safety-number { margin-bottom: 18px; }
     .safety-card:nth-child(1) .safety-number { color: #9eafc0; }
     .safety-card:nth-child(2) .safety-number { color: #c9a45d; }
     .safety-card:nth-child(3) .safety-number { color: #a5b8a4; }
 
+    .info-icon { margin-bottom: 18px; }
     .info-card:nth-child(1) .info-icon { color: #9eafc0; }
     .info-card:nth-child(2) .info-icon { color: #c9a45d; }
     .info-card:nth-child(3) .info-icon { color: #a5b8a4; }
 
     .visual-index { color: #9eafc0; }
+
 </style>
 
 </head>
@@ -5246,30 +5285,6 @@ export default {
           >
             Solar viewing glasses for planning ahead for the August 2027 eclipse.
           </p>
-
-          <div class="order-confidence" aria-label="Ordering information">
-            <div class="order-confidence-item">
-              <span class="confidence-mark" aria-hidden="true">01</span>
-              <div>
-                <strong data-i18n="confidencePriceTitle">Clear product pricing</strong>
-                <p data-i18n="confidencePriceText">The prices shown are for the glasses only. Shipping is quoted separately before an order is confirmed.</p>
-              </div>
-            </div>
-            <div class="order-confidence-item">
-              <span class="confidence-mark" aria-hidden="true">02</span>
-              <div>
-                <strong data-i18n="confidenceSafetyTitle">Safety information matters</strong>
-                <p data-i18n="confidenceSafetyText">Product-specific safety documentation is being verified. Ask us for the applicable documentation before relying on this product for solar viewing.</p>
-              </div>
-            </div>
-            <div class="order-confidence-item">
-              <span class="confidence-mark" aria-hidden="true">03</span>
-              <div>
-                <strong data-i18n="confidenceOrderTitle">No surprise order confirmation</strong>
-                <p data-i18n="confidenceOrderText">Your email is an order enquiry, not a completed purchase. We will confirm availability, shipping and next steps directly.</p>
-              </div>
-            </div>
-          </div>
 
           <div class="price-grid">
 
