@@ -4961,6 +4961,71 @@ export default {
     #eclipse { background: #0b0b0a; }
     .nav-links a[href="#bulk"] { color: var(--cream); }
     .nav-links a[href="#bulk"]:hover { color: var(--gold2); }
+
+
+    /* Subtle colour depth: keep the black identity, add restrained warmth */
+    .hero {
+      background:
+        radial-gradient(ellipse at 78% 40%, rgba(115, 83, 39, .10) 0%, rgba(8,8,8,0) 42%),
+        #080808;
+    }
+
+    .section:nth-of-type(even) {
+      background-color: #0b0b0a;
+    }
+
+    .section:nth-of-type(odd) {
+      background-color: #080808;
+    }
+
+    .section-heading,
+    .product-info,
+    .bulk-content {
+      position: relative;
+    }
+
+    .section-label,
+    .eyebrow {
+      text-shadow: 0 0 22px rgba(201,164,93,.10);
+    }
+
+    .product-image,
+    .gallery-item,
+    .bulk-card,
+    .quote-form,
+    .faq-item {
+      border-color: rgba(201,164,93,.13);
+    }
+
+    .product-image {
+      background: linear-gradient(145deg, #15130f, #101010 60%);
+    }
+
+    .pill {
+      border-color: rgba(201,164,93,.15);
+      background: rgba(201,164,93,.035);
+    }
+
+    .button-secondary:hover,
+    .cart-button:hover {
+      border-color: rgba(201,164,93,.42);
+      background: rgba(201,164,93,.07);
+    }
+
+    .nav {
+      background: rgba(8,8,8,.88);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      .section-label::after {
+        content: "";
+        display: inline-block;
+        width: 14px;
+        height: 1px;
+        margin: 0 0 3px 8px;
+        background: rgba(201,164,93,.38);
+      }
+    }
 </style>
 
 </head>
