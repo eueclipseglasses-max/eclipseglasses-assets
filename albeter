@@ -4957,10 +4957,54 @@ export default {
     }
 
 
-    /* Small tonal variation: the site remains black, with one quiet shift for the event guide. */
-    #eclipse { background: #0b0b0a; }
-    .nav-links a[href="#bulk"] { color: var(--cream); }
-    .nav-links a[href="#bulk"]:hover { color: var(--gold2); }
+    /* Subtle colour rhythm: black remains the foundation. */
+    #eclipse {
+      background:
+        radial-gradient(ellipse at 82% 12%, rgba(57, 77, 82, .10), transparent 42%),
+        #0b0b0a;
+    }
+
+    .nav-links a[href="#bulk"] {
+      color: var(--cream);
+    }
+
+    .nav-links a[href="#bulk"]:hover {
+      color: var(--gold2);
+    }
+
+    /* A restrained bronze accent helps the business section feel considered. */
+    .bulk {
+      background:
+        linear-gradient(115deg, rgba(105, 77, 42, .075), transparent 48%),
+        #090909;
+      border-top: 1px solid rgba(201, 164, 93, .12);
+      border-bottom: 1px solid rgba(201, 164, 93, .10);
+    }
+
+    .section-label,
+    .visual-index {
+      color: #d2b779;
+    }
+
+    .visual-card {
+      background: #101110;
+      border-color: rgba(194, 174, 132, .16);
+    }
+
+    .visual-card figcaption {
+      background:
+        linear-gradient(180deg, rgba(8, 8, 8, .68), rgba(8, 8, 8, .96));
+    }
+
+    .fact {
+      background:
+        linear-gradient(145deg, rgba(77, 96, 91, .07), transparent 70%),
+        #101010;
+    }
+
+    .price-option.active {
+      box-shadow: inset 0 0 0 1px rgba(210, 183, 121, .12);
+    }
 
 
     /* Subtle colour depth: keep the black identity, add restrained warmth */
