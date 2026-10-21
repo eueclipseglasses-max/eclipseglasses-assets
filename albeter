@@ -4957,10 +4957,20 @@ export default {
     }
 
 
-    /* Small tonal variation: the site remains black, with one quiet shift for the event guide. */
+    /* Restrained, solid colour accents — no gradients or decorative effects. */
     #eclipse { background: #0b0b0a; }
     .nav-links a[href="#bulk"] { color: var(--cream); }
     .nav-links a[href="#bulk"]:hover { color: var(--gold2); }
+
+    .safety-card:nth-child(1) .safety-number { color: #9eafc0; }
+    .safety-card:nth-child(2) .safety-number { color: #c9a45d; }
+    .safety-card:nth-child(3) .safety-number { color: #a5b8a4; }
+
+    .info-card:nth-child(1) .info-icon { color: #9eafc0; }
+    .info-card:nth-child(2) .info-icon { color: #c9a45d; }
+    .info-card:nth-child(3) .info-icon { color: #a5b8a4; }
+
+    .visual-index { color: #9eafc0; }
 </style>
 
 </head>
@@ -7540,7 +7550,7 @@ export default {
           "Schools, hotels, travel companies, astronomy groups, event organisers and retailers can request a custom quotation for larger quantities.",
 
         bulkDescription2:
-          "Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.",
+          "Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly. Applicable product documentation and certificates can be requested from us.",
 
         requestQuote:
           "Request a quote",
@@ -7823,7 +7833,7 @@ export default {
           "Scholen, hotels, reisorganisaties, astronomiegroepen, evenementenorganisatoren en retailers kunnen een offerte aanvragen.",
 
         bulkDescription2:
-          "Vertel ons hoeveel je nodig hebt, waar de bestelling naartoe moet en waarvoor je de brillen voorbereidt. Daarna kunnen we de bestelling rechtstreeks bespreken.",
+          "Vertel ons hoeveel je nodig hebt, waar de bestelling naartoe moet en waarvoor je de brillen voorbereidt. Daarna bespreken we de bestelling rechtstreeks. Toepasselijke productdocumentatie en certificaten zijn op aanvraag verkrijgbaar.",
 
         requestQuote:
           "Offerte aanvragen",
@@ -8106,7 +8116,7 @@ export default {
           "Écoles, hôtels, agences de voyage, groupes d'astronomie et entreprises peuvent demander un devis personnalisé.",
 
         bulkDescription2:
-          "Indiquez la quantité souhaitée, la destination et l'utilisation prévue. Nous pourrons ensuite discuter directement de la commande.",
+          "Indiquez la quantité souhaitée, la destination et l'utilisation prévue. Nous pourrons ensuite discuter directement de la commande. La documentation produit applicable et les certificats peuvent être demandés.",
 
         requestQuote:
           "Demander un devis",
@@ -8389,7 +8399,7 @@ export default {
           "Colegios, hoteles, agencias de viajes, grupos de astronomía y empresas pueden solicitar un presupuesto personalizado.",
 
         bulkDescription2:
-          "Indica la cantidad que necesitas, el destino y para qué estás preparando el pedido. Después podremos hablar directamente sobre la solicitud.",
+          "Indica la cantidad que necesitas, el destino y para qué estás preparando el pedido. Después podremos hablar directamente sobre la solicitud. La documentación del producto y los certificados aplicables están disponibles bajo petición.",
 
         requestQuote:
           "Solicitar presupuesto",
