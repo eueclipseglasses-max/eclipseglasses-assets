@@ -385,7 +385,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               type="number"
               min="1"
               value="1"
-              aria-label="Quantity"
+              aria-label="Quantity" data-i18n-aria="quantityAria"
             >
 
 
@@ -806,7 +806,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
         <div class="info-card">
 
-          <div class="info-icon">
+          <div class="info-icon" data-i18n="infoDeliveryLabel">
             01 / DELIVERY
           </div>
 
@@ -823,7 +823,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
         <div class="info-card">
 
-          <div class="info-icon">
+          <div class="info-icon" data-i18n="infoAboutLabel">
             02 / ABOUT
           </div>
 
@@ -840,7 +840,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
         <div class="info-card">
 
-          <div class="info-icon">
+          <div class="info-icon" data-i18n="infoGroupsLabel">
             03 / GROUPS
           </div>
 
@@ -918,7 +918,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
             id="bulkName"
             class="field"
             type="text"
-            placeholder="Name / company"
+            placeholder="Name / company" data-i18n-placeholder="bulkNamePlaceholder"
             required
             maxlength="120"
           >
@@ -928,7 +928,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
             id="bulkEmail"
             class="field"
             type="email"
-            placeholder="Email"
+            placeholder="Email" data-i18n-placeholder="bulkEmailPlaceholder"
             required
             maxlength="180"
           >
@@ -940,7 +940,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
             type="number"
             min="51"
             max="1000000"
-            placeholder="Quantity"
+            placeholder="Quantity" data-i18n-placeholder="bulkQuantityPlaceholder"
             required
           >
 
@@ -948,7 +948,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
           <textarea
             id="bulkMessage"
             class="field"
-            placeholder="Tell us what you need..."
+            placeholder="Tell us what you need..." data-i18n-placeholder="bulkMessagePlaceholder"
             maxlength="3000"
           ></textarea>
 
@@ -1302,39 +1302,39 @@ const PAGE_HTML = String.raw`<nav class="nav">
         <a class="footer-wordmark" href="#" aria-label="EclipseGlasses home">
           ECLIPSE<span>GLASSES</span>
         </a>
-        <p class="footer-tagline">
+        <p class="footer-tagline" data-i18n="footerTagline">
           Ready for the moment the world goes dark.
         </p>
-        <p class="footer-purpose">
+        <p class="footer-purpose" data-i18n="footerPurpose">
           Premium eclipse glasses for the total solar eclipse of 2 August 2027.
           Made for curious people, families and businesses preparing for totality.
         </p>
       </div>
 
       <div class="footer-column">
-        <h3>Explore</h3>
-        <a href="#eclipse">The 2027 eclipse</a>
-        <a href="#shop">Shop eclipse glasses</a>
-        <a href="#safety">Viewing safety</a>
-        <a href="#information">Delivery & information</a>
-        <a href="#faq">Frequently asked questions</a>
+        <h3 data-i18n="footerExplore">Explore</h3>
+        <a href="#eclipse" data-i18n="footerEclipse">The 2027 eclipse</a>
+        <a href="#shop" data-i18n="footerShop">Shop eclipse glasses</a>
+        <a href="#safety" data-i18n="footerSafety">Viewing safety</a>
+        <a href="#information" data-i18n="footerDelivery">Delivery & information</a>
+        <a href="#faq" data-i18n="footerFaq">Frequently asked questions</a>
       </div>
 
       <div class="footer-column">
-        <h3>For businesses</h3>
-        <a href="#bulk">Bulk orders & wholesale</a>
-        <a href="#bulk">Custom order enquiries</a>
-        <a href="mailto:sales@eclipseglasses.eu">Sales enquiries</a>
+        <h3 data-i18n="footerBusiness">For businesses</h3>
+        <a href="#bulk" data-i18n="footerBulk">Bulk orders & wholesale</a>
+        <a href="#bulk" data-i18n="footerCustom">Custom order enquiries</a>
+        <a href="mailto:sales@eclipseglasses.eu" data-i18n="footerSales">Sales enquiries</a>
       </div>
 
       <div class="footer-column footer-contact">
-        <h3>Get in touch</h3>
-        <span class="footer-contact-label">General enquiries</span>
+        <h3 data-i18n="footerContact">Get in touch</h3>
+        <span class="footer-contact-label" data-i18n="footerGeneral">General enquiries</span>
         <a href="mailto:info@eclipseglasses.eu">info@eclipseglasses.eu</a>
-        <span class="footer-contact-label">Orders & business sales</span>
+        <span class="footer-contact-label" data-i18n="footerOrders">Orders & business sales</span>
         <a href="mailto:sales@eclipseglasses.eu">sales@eclipseglasses.eu</a>
-        <div class="footer-socials" aria-label="Social media">
-          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
+        <div class="footer-socials" aria-label="Social media" data-i18n-aria="footerSocialAria">
+          <a href="https://www.instagram.com/eclipseglasses.eu" target="_blank" rel="noopener noreferrer" data-i18n="footerInstagram">Instagram <span aria-hidden="true">↗</span></a>
           <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">TikTok <span aria-hidden="true">↗</span></a>
         </div>
       </div>
@@ -1342,8 +1342,8 @@ const PAGE_HTML = String.raw`<nav class="nav">
     </div>
 
     <div class="container footer-bottom">
-      <span>© 2026 EclipseGlasses.eu. All rights reserved.</span>
-      <span class="footer-bottom-note">Looking ahead to 2 August 2027.</span>
+      <span data-i18n="footerCopyright">© 2026 EclipseGlasses.eu. All rights reserved.</span>
+      <span class="footer-bottom-note" data-i18n="footerNote">Looking ahead to 2 August 2027.</span>
     </div>
 
   </footer>
@@ -3025,7 +3025,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         container.innerHTML =
           '<div class="cart-empty">' +
-            'Your cart is empty.' +
+            (extraTranslations[document.documentElement.lang] || extraTranslations.en).cartEmpty +
           '</div>';
 
 
@@ -4598,13 +4598,72 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
     };
 
 
+
+    const extraTranslations = {
+      en: {
+        footerTagline:"Ready for the moment the world goes dark.",
+        footerPurpose:"Premium eclipse glasses for the total solar eclipse of 2 August 2027. Made for curious people, families and businesses preparing for totality.",
+        footerExplore:"Explore", footerEclipse:"The 2027 eclipse", footerShop:"Shop eclipse glasses", footerSafety:"Viewing safety",
+        footerDelivery:"Delivery & information", footerFaq:"Frequently asked questions", footerBusiness:"For businesses",
+        footerBulk:"Bulk orders & wholesale", footerCustom:"Custom order enquiries", footerSales:"Sales enquiries",
+        footerContact:"Get in touch", footerGeneral:"General enquiries", footerOrders:"Orders & business sales",
+        footerInstagram:"Instagram ↗", footerCopyright:"© 2026 EclipseGlasses.eu. All rights reserved.",
+        footerNote:"Looking ahead to 2 August 2027.", footerSocialAria:"Social media",
+        infoDeliveryLabel:"01 / DELIVERY", infoAboutLabel:"02 / ABOUT", infoGroupsLabel:"03 / GROUPS",
+        bulkNamePlaceholder:"Name / company", bulkEmailPlaceholder:"Email", bulkQuantityPlaceholder:"Quantity",
+        bulkMessagePlaceholder:"Tell us what you need...", quantityAria:"Quantity",
+        cartEmpty:"Your cart is empty.", cartRemove:"Remove", cartItem:"pair(s)"
+      },
+      nl: {
+        footerTagline:"Klaar voor het moment waarop de wereld donker wordt.",
+        footerPurpose:"Premium eclipsbrillen voor de totale zonsverduistering van 2 augustus 2027. Voor nieuwsgierige mensen, gezinnen en bedrijven die zich voorbereiden op de totaliteit.",
+        footerExplore:"Ontdek", footerEclipse:"De eclips van 2027", footerShop:"Eclipsbrillen kopen", footerSafety:"Veilig waarnemen",
+        footerDelivery:"Levering & informatie", footerFaq:"Veelgestelde vragen", footerBusiness:"Voor bedrijven",
+        footerBulk:"Bulkbestellingen & groothandel", footerCustom:"Offerte op maat aanvragen", footerSales:"Verkoopvragen",
+        footerContact:"Contact", footerGeneral:"Algemene vragen", footerOrders:"Bestellingen & zakelijke verkoop",
+        footerInstagram:"Instagram ↗", footerCopyright:"© 2026 EclipseGlasses.eu. Alle rechten voorbehouden.",
+        footerNote:"Op weg naar 2 augustus 2027.", footerSocialAria:"Sociale media",
+        infoDeliveryLabel:"01 / LEVERING", infoAboutLabel:"02 / OVER ONS", infoGroupsLabel:"03 / GROEPEN",
+        bulkNamePlaceholder:"Naam / bedrijf", bulkEmailPlaceholder:"E-mail", bulkQuantityPlaceholder:"Aantal",
+        bulkMessagePlaceholder:"Vertel ons wat je nodig hebt...", quantityAria:"Aantal",
+        cartEmpty:"Je winkelwagen is leeg.", cartRemove:"Verwijderen", cartItem:"paar"
+      },
+      fr: {
+        footerTagline:"Prêts pour le moment où le monde s’assombrit.",
+        footerPurpose:"Des lunettes d’éclipse premium pour l’éclipse solaire totale du 2 août 2027. Pour les curieux, les familles et les entreprises qui préparent la totalité.",
+        footerExplore:"Explorer", footerEclipse:"L’éclipse de 2027", footerShop:"Acheter des lunettes", footerSafety:"Sécurité d’observation",
+        footerDelivery:"Livraison et informations", footerFaq:"Questions fréquentes", footerBusiness:"Pour les professionnels",
+        footerBulk:"Commandes en gros et vente en gros", footerCustom:"Demande de devis personnalisé", footerSales:"Demandes commerciales",
+        footerContact:"Nous contacter", footerGeneral:"Demandes générales", footerOrders:"Commandes et ventes professionnelles",
+        footerInstagram:"Instagram ↗", footerCopyright:"© 2026 EclipseGlasses.eu. Tous droits réservés.",
+        footerNote:"En route vers le 2 août 2027.", footerSocialAria:"Réseaux sociaux",
+        infoDeliveryLabel:"01 / LIVRAISON", infoAboutLabel:"02 / À PROPOS", infoGroupsLabel:"03 / GROUPES",
+        bulkNamePlaceholder:"Nom / entreprise", bulkEmailPlaceholder:"E-mail", bulkQuantityPlaceholder:"Quantité",
+        bulkMessagePlaceholder:"Indiquez-nous vos besoins...", quantityAria:"Quantité",
+        cartEmpty:"Votre panier est vide.", cartRemove:"Supprimer", cartItem:"paire(s)"
+      },
+      es: {
+        footerTagline:"Listos para el momento en que el mundo se oscurezca.",
+        footerPurpose:"Gafas premium para el eclipse solar total del 2 de agosto de 2027. Para personas curiosas, familias y empresas que se preparan para la totalidad.",
+        footerExplore:"Explorar", footerEclipse:"El eclipse de 2027", footerShop:"Comprar gafas", footerSafety:"Seguridad de observación",
+        footerDelivery:"Entrega e información", footerFaq:"Preguntas frecuentes", footerBusiness:"Para empresas",
+        footerBulk:"Pedidos al por mayor y venta mayorista", footerCustom:"Solicitar presupuesto personalizado", footerSales:"Consultas comerciales",
+        footerContact:"Contacto", footerGeneral:"Consultas generales", footerOrders:"Pedidos y ventas para empresas",
+        footerInstagram:"Instagram ↗", footerCopyright:"© 2026 EclipseGlasses.eu. Todos los derechos reservados.",
+        footerNote:"Rumbo al 2 de agosto de 2027.", footerSocialAria:"Redes sociales",
+        infoDeliveryLabel:"01 / ENTREGA", infoAboutLabel:"02 / SOBRE NOSOTROS", infoGroupsLabel:"03 / GRUPOS",
+        bulkNamePlaceholder:"Nombre / empresa", bulkEmailPlaceholder:"Correo electrónico", bulkQuantityPlaceholder:"Cantidad",
+        bulkMessagePlaceholder:"Cuéntanos qué necesitas...", quantityAria:"Cantidad",
+        cartEmpty:"Tu carrito está vacío.", cartRemove:"Eliminar", cartItem:"par(es)"
+      }
+    };
+
     function applyLanguage(
       language
     ) {
 
-      const dictionary =
-        translations[language] ||
-        translations.en;
+      const baseDictionary = translations[language] || translations.en;
+      const dictionary = { ...baseDictionary, ...(extraTranslations[language] || extraTranslations.en) };
 
 
       document
@@ -4622,14 +4681,26 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
               dictionary[key]
             ) {
 
-              element.textContent =
-                dictionary[key];
+              if (key === "groupsText") {
+                element.innerHTML = dictionary[key];
+              } else {
+                element.textContent = dictionary[key];
+              }
 
             }
 
           }
         );
 
+
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(element => {
+        const key = element.dataset.i18nPlaceholder;
+        if (dictionary[key]) element.placeholder = dictionary[key];
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach(element => {
+        const key = element.dataset.i18nAria;
+        if (dictionary[key]) element.setAttribute("aria-label", dictionary[key]);
+      });
 
       localStorage.setItem(
         "eclipse_language",
