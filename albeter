@@ -3115,7 +3115,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
             item.quantity +
             " pairs — €" +
             itemTotal.toFixed(2) +
-            "\\n";
+            "\n";
 
         }
       );
@@ -3130,21 +3130,21 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
       const body =
         encodeURIComponent(
 
-          "Hello,\\n\\n" +
+          "Hello,\n\n" +
 
-          "I would like to order the following:\\n\\n" +
+          "I would like to order the following:\n\n" +
 
           orderLines +
 
-          "\\n" +
+          "\n" +
 
           "Product total: €" +
 
           total.toFixed(2) +
 
-          "\\n\\n" +
+          "\n\n" +
 
-          "Please let me know the shipping cost and the next steps.\\n\\n" +
+          "Please let me know the shipping cost and the next steps.\n\n" +
 
           "Thank you."
 
@@ -4456,7 +4456,8 @@ function pageResponse() {
 </head>
 <body>
   <main class="eg">${PAGE_HTML}</main>
-  <script>${PAGE_SCRIPT}\n</script>
+  <script>${PAGE_SCRIPT}
+</script>
 </body>
 </html>`;
   return new Response(html, {
@@ -4477,10 +4478,7 @@ export default {
       return new Response(null, { status: 204 });
     }
     if (url.pathname === "/api/quote" && request.method === "POST") {
-      return Response.json({
-        success: false,
-        error: "Please use the bulk quote form to open your email app, or email orders@eclipseglasses.eu directly."
-      }, { status: 501 });
+      return Response.json({ success: false, error: "Please email orders@eclipseglasses.eu directly." }, { status: 501 });
     }
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
