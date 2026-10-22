@@ -246,13 +246,12 @@ const PAGE_HTML = String.raw`<nav class="nav">
       <div class="shop-grid">
 
 
-        <button
-          class="product-image product-image-trigger"
-          type="button"
-          onclick="openProductImage()"
-          aria-haspopup="dialog"
-          aria-label="View the full glasses design"
-          data-i18n-aria="productImageOpenAria"
+        <div
+          class="product-image product-image-scroll"
+          role="region"
+          tabindex="0"
+          aria-label="Scroll horizontally to view the full glasses design"
+          data-i18n-aria="productImageScrollAria"
         >
           <img
             src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/eclipseglasses_mockup_final.png"
@@ -261,10 +260,10 @@ const PAGE_HTML = String.raw`<nav class="nav">
             loading="lazy"
           >
           <span class="product-image-hint">
-            <span class="product-image-hint-icon" aria-hidden="true">⤢</span>
-            <span data-i18n="productImageHint">Click to view full design</span>
+            <span class="product-image-hint-icon" aria-hidden="true">↔</span>
+            <span data-i18n="productImageHint">Scroll sideways to view the full design</span>
           </span>
-        </button>
+        </div>
 
 
         <div class="product-info">
@@ -1864,37 +1863,52 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   width: 100%;
   aspect-ratio: 1;
   overflow: hidden;
-  padding: 0;
   border: 0;
   border-radius: var(--radius-frame);
   background: #e9dfcf;
   box-shadow: var(--shadow-ring);
-  color: inherit;
-  text-align: inherit;
-  cursor: zoom-in;
 }
 
-.eg .product-image img {
+.eg .product-image-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  scrollbar-color: var(--color-gold) #d8cbb7;
+  scrollbar-width: thin;
+  touch-action: pan-x pan-y;
+}
+
+.eg .product-image-scroll:active {
+  cursor: grabbing;
+}
+
+.eg .product-image-scroll:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.eg .product-image-scroll img {
   display: block;
-  width: 100%;
+  width: auto;
   height: 100%;
+  max-width: none;
   object-fit: contain;
-  transition: transform 0.35s ease;
-}
-
-.eg .product-image:hover img,
-.eg .product-image:focus-visible img {
-  transform: scale(1.035);
+  pointer-events: none;
+  user-select: none;
 }
 
 .eg .product-image-hint {
-  position: absolute;
-  right: 0.8rem;
+  position: sticky;
+  left: 0.8rem;
   bottom: 0.8rem;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  width: max-content;
   max-width: calc(100% - 1.6rem);
+  margin: -3.25rem 0.8rem 0.8rem;
   padding: 0.65rem 0.85rem;
   border: 1px solid rgb(255 255 255 / 0.18);
   border-radius: 999px;
@@ -1903,89 +1917,13 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   font-size: 0.72rem;
   line-height: 1.2;
   box-shadow: 0 5px 20px rgb(0 0 0 / 0.18);
+  pointer-events: none;
 }
 
 .eg .product-image-hint-icon {
   color: var(--color-gold);
   font-size: 1rem;
-}
-
-.eg .product-image-modal {
-  position: fixed;
-  z-index: 10000;
-  inset: 0;
-  display: none;
-  padding: clamp(0.75rem, 3vw, 2rem);
-  background: rgb(0 0 0 / 88%);
-}
-
-.eg .product-image-modal.is-open {
-  display: flex;
-  flex-direction: column;
-}
-
-.eg .product-image-modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto 0.8rem;
-  color: #f4f1e9;
-}
-
-.eg .product-image-modal-title {
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.eg .product-image-modal-help {
-  color: #c8c4bb;
-  font-size: 0.72rem;
-  text-align: right;
-}
-
-.eg .product-image-modal-close {
   flex: 0 0 auto;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid rgb(255 255 255 / 0.2);
-  border-radius: 50%;
-  background: #151515;
-  color: #fff;
-  font-size: 1.35rem;
-  cursor: pointer;
-}
-
-.eg .product-image-modal-scroll {
-  flex: 1;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  overflow: auto;
-  overscroll-behavior: contain;
-  border-radius: 0.75rem;
-  background: #e9dfcf;
-  scrollbar-color: #c9a45d #262626;
-}
-
-.eg .product-image-modal-scroll img {
-  display: block;
-  width: max(100%, 1100px);
-  max-width: none;
-  height: auto;
-}
-
-.eg .product-image-modal-scroll:focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 3px;
-}
-
-@media (max-width: 640px) {
-  .eg .product-image-modal-scroll img {
-    width: max(100%, 900px);
-  }
 }
 
 .eg .product-info h3 {
@@ -3866,13 +3804,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         quantityPair:
           "pair",
 
-        productImageHint: "Click to view full design",
-        productImageOpenAria: "Open the full glasses design",
+        productImageHint: "Scroll sideways to view the full design",
+        productImageOpenAria: "Scroll horizontally to view the full glasses design",
         productImageAlt: "EclipseGlasses product design",
-        productImageModalTitle: "Full glasses design",
-        productImageModalHelp: "Scroll sideways to inspect the full design. Press Esc to close.",
-        productImageCloseAria: "Close image",
-        productImageScrollAria: "Scrollable full product design",
+        productImageScrollAria: "Scroll horizontally to view the full glasses design",
 
         pricePerPair:
           "/ pair",
@@ -4161,13 +4096,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         quantityPair:
           "bril",
 
-        productImageHint: "Klik om het volledige ontwerp te bekijken",
-        productImageOpenAria: "Open het volledige brilontwerp",
+        productImageHint: "Scroll horizontaal om de volledige bril te bekijken",
+        productImageOpenAria: "Scroll horizontaal om het volledige brilontwerp te bekijken",
         productImageAlt: "Productontwerp van EclipseGlasses",
-        productImageModalTitle: "Volledig brilontwerp",
-        productImageModalHelp: "Scroll horizontaal om het volledige ontwerp te bekijken. Druk op Esc om te sluiten.",
-        productImageCloseAria: "Afbeelding sluiten",
-        productImageScrollAria: "Scrollbaar volledig productontwerp",
+        productImageScrollAria: "Scroll horizontaal om het volledige brilontwerp te bekijken",
 
         pricePerPair:
           "/ bril",
@@ -4456,13 +4388,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         quantityPair:
           "paire",
 
-        productImageHint: "Cliquez pour voir le design complet",
-        productImageOpenAria: "Ouvrir le design complet des lunettes",
+        productImageHint: "Faites défiler pour voir le design complet",
+        productImageOpenAria: "Faites défiler horizontalement pour voir le design complet des lunettes",
         productImageAlt: "Design du produit EclipseGlasses",
-        productImageModalTitle: "Design complet des lunettes",
-        productImageModalHelp: "Faites défiler horizontalement pour voir le design complet. Appuyez sur Échap pour fermer.",
-        productImageCloseAria: "Fermer l’image",
-        productImageScrollAria: "Design complet du produit défilable",
+        productImageScrollAria: "Faites défiler horizontalement pour voir le design complet des lunettes",
 
         pricePerPair:
           "/ paire",
@@ -4750,13 +4679,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         quantityPair:
           "par",
 
-        productImageHint: "Haz clic para ver el diseño completo",
-        productImageOpenAria: "Abrir el diseño completo de las gafas",
+        productImageHint: "Desplázate para ver el diseño completo",
+        productImageOpenAria: "Desplázate horizontalmente para ver el diseño completo de las gafas",
         productImageAlt: "Diseño del producto EclipseGlasses",
-        productImageModalTitle: "Diseño completo de las gafas",
-        productImageModalHelp: "Desplázate horizontalmente para ver el diseño completo. Pulsa Esc para cerrar.",
-        productImageCloseAria: "Cerrar imagen",
-        productImageScrollAria: "Diseño completo del producto desplazable",
+        productImageScrollAria: "Desplázate horizontalmente para ver el diseño completo de las gafas",
 
         pricePerPair:
           "/ par",
@@ -5061,37 +4987,6 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
       }
     };
 
-    function openProductImage() {
-      const modal = document.getElementById("productImageModal");
-      if (!modal) return;
-      modal.classList.add("is-open");
-      document.body.style.overflow = "hidden";
-      const scrollArea = modal.querySelector(".product-image-modal-scroll");
-      if (scrollArea) scrollArea.scrollLeft = 0;
-      const closeButton = modal.querySelector(".product-image-modal-close");
-      if (closeButton) closeButton.focus();
-    }
-
-    function closeProductImage(event, forceClose = false) {
-      if (event) {
-        if (!forceClose && event.target !== event.currentTarget) return;
-        event.stopPropagation();
-      }
-      const modal = document.getElementById("productImageModal");
-      if (!modal) return;
-      modal.classList.remove("is-open");
-      document.body.style.overflow = "";
-      const trigger = document.querySelector(".product-image-trigger");
-      if (trigger) trigger.focus();
-    }
-
-    document.addEventListener("keydown", event => {
-      if (event.key === "Escape") {
-        const modal = document.getElementById("productImageModal");
-        if (modal && modal.classList.contains("is-open")) closeProductImage();
-      }
-    });
-
     function applyLanguage(
       language
     ) {
@@ -5232,18 +5127,6 @@ function pageResponse() {
 </head>
 <body>
   <main class="eg">${PAGE_HTML}</main>
-  <div id="productImageModal" class="product-image-modal" role="dialog" aria-modal="true" aria-labelledby="productImageModalTitle" onclick="closeProductImage(event)">
-    <div class="product-image-modal-header">
-      <div>
-        <div id="productImageModalTitle" class="product-image-modal-title" data-i18n="productImageModalTitle">Full glasses design</div>
-        <div class="product-image-modal-help" data-i18n="productImageModalHelp">Scroll sideways to inspect the full design. Press Esc to close.</div>
-      </div>
-      <button class="product-image-modal-close" type="button" onclick="closeProductImage(event, true)" aria-label="Close image" data-i18n-aria="productImageCloseAria">×</button>
-    </div>
-    <div class="product-image-modal-scroll" tabindex="0" role="region" aria-label="Scrollable full product design" data-i18n-aria="productImageScrollAria" onclick="event.stopPropagation()">
-      <img src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/eclipseglasses_mockup_final.png" alt="Full EclipseGlasses design" data-i18n-alt="productImageAlt">
-    </div>
-  </div>
   <script>${PAGE_SCRIPT}
 </script>
 </body>
