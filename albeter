@@ -3405,12 +3405,11 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         const subject = encodeURIComponent("EclipseGlasses bulk quote request");
         const body = encodeURIComponent(
-          "Name: " + name + "
-Email: " + email + "
-Quantity: " + quantity +
-          "
-Message: " + message + "
-Website: " + website
+          "Name: " + name + String.fromCharCode(10) +
+          "Email: " + email + String.fromCharCode(10) +
+          "Quantity: " + quantity + String.fromCharCode(10) +
+          "Message: " + message + String.fromCharCode(10) +
+          "Website: " + website
         );
         window.location.href = "mailto:orders@eclipseglasses.eu?subject=" + subject + "&body=" + body;
         status.textContent = "Your email app should open with your quote request ready to send.";
@@ -3994,8 +3993,8 @@ Website: " + website
 
         safetyTwoTitle:
           "Vérifiez-les avant utilisation",
-        safetyTwo:
-          "N'utilisez pas de lunettes rayées, déchirées, perforées ou endommagées.",
+
+        safetyTwo:          "N'utilisez pas de lunettes rayées, déchirées, perforées ou endommagées.",
 
         safetyThreeTitle:
           "La totalité est différente",
