@@ -317,31 +317,32 @@ const PAGE_HTML = String.raw`<nav class="nav">
               </span>
 
               <span class="price-value">
-                €19.95
+                €17.95
               </span>
 
               <span class="price-per">
-                €3.99 / pair
+                €3.59 / pair
               </span>
 
             </div>
 
 
             <div
-              class="price-option"
+              class="price-option has-badge"
               data-qty="10"
             >
+              <span class="price-badge" data-i18n="badgePopular">Most popular</span>
 
               <span class="price-quantity" data-i18n-qty="10">
                 10 pairs
               </span>
 
               <span class="price-value">
-                €34.95
+                €29.95
               </span>
 
               <span class="price-per">
-                €3.50 / pair
+                €3.00 / pair
               </span>
 
             </div>
@@ -357,27 +358,28 @@ const PAGE_HTML = String.raw`<nav class="nav">
               </span>
 
               <span class="price-value">
-                €69.95
+                €59.95
               </span>
 
               <span class="price-per">
-                €2.80 / pair
+                €2.00 / pair
               </span>
 
             </div>
 
 
             <div
-              class="price-option"
+              class="price-option has-badge"
               data-qty="50"
             >
+              <span class="price-badge" data-i18n="badgeBestValue">Best value</span>
 
               <span class="price-quantity" data-i18n-qty="50">
                 50 pairs
               </span>
 
               <span class="price-value">
-                €119.95
+                €99.95
               </span>
 
               <span class="price-per">
@@ -1964,6 +1966,7 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 }
 
 .eg .price-option {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas:
@@ -1978,6 +1981,22 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   box-shadow: var(--shadow-ring);
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.eg .price-option.has-badge {
+  padding-top: 1.35rem;
+}
+
+.eg .price-badge {
+  position: absolute;
+  top: 0.28rem;
+  right: 0.75rem;
+  color: var(--color-gold);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.1;
+  text-transform: uppercase;
 }
 
 .eg .price-option:hover {
@@ -2876,22 +2895,22 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       {
         min: 50,
-        price: 119.95 / 50
+        price: 99.95 / 50
       },
 
       {
         min: 25,
-        price: 69.95 / 25
+        price: 59.95 / 25
       },
 
       {
         min: 10,
-        price: 34.95 / 10
+        price: 29.95 / 10
       },
 
       {
         min: 5,
-        price: 19.95 / 5
+        price: 17.95 / 5
       },
 
       {
@@ -3869,7 +3888,15 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         shopDescription:
           "Order individually or prepare for a group. Quantity pricing is applied automatically.",
 
-        productTitle:
+        badgePopular: "Most popular",
+          badgeBestValue: "Best value",
+          badgePopular: "Populairste keuze",
+          badgeBestValue: "Beste prijs",
+          badgePopular: "Le plus populaire",
+          badgeBestValue: "Meilleur prix",
+          badgePopular: "Más popular",
+          badgeBestValue: "Mejor precio",
+          productTitle:
           "Solar Eclipse Glasses",
 
         productDescription:
