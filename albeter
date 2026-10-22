@@ -2996,6 +2996,14 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
     function renderCart() {
 
+      const currentLanguage = document.documentElement.lang || "en";
+      const cartDictionary = {
+        ...(translations[currentLanguage] || translations.en),
+        ...(extraTranslations[currentLanguage] || extraTranslations.en)
+      };
+      const numberLocale = ({ en: "en-IE", nl: "nl-BE", fr: "fr-BE", es: "es-ES" })[currentLanguage] || "en-IE";
+      const formatMoney = value => new Intl.NumberFormat(numberLocale, { style: "currency", currency: "EUR" }).format(value);
+
       const container =
         document.getElementById(
           "cartItems"
@@ -3022,12 +3030,12 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         container.innerHTML =
           '<div class="cart-empty">' +
-            (extraTranslations[document.documentElement.lang] || extraTranslations.en).cartEmpty +
+            cartDictionary.cartEmpty +
           '</div>';
 
 
         totalElement.textContent =
-          "€0.00";
+          formatMoney(0);
 
 
         return;
@@ -3074,9 +3082,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
                 '</div>' +
 
                 '<div class="cart-item-detail">' +
-                  '€' +
-                  unitPrice.toFixed(2) +
-                  ' / pair' +
+                  formatMoney(unitPrice) +
+                  ' ' + cartDictionary.pricePerPair +
                 '</div>' +
 
                 '<div class="cart-controls">' +
@@ -3105,7 +3112,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
                       index +
                     ')"' +
                   '>' +
-                    (extraTranslations[document.documentElement.lang] || extraTranslations.en).cartRemove +
+                    cartDictionary.cartRemove +
                   '</button>' +
 
                 '</div>' +
@@ -3113,8 +3120,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
               '</div>' +
 
               '<div class="cart-item-price">' +
-                '€' +
-                itemTotal.toFixed(2) +
+                formatMoney(itemTotal) +
               '</div>' +
 
             '</div>';
@@ -3128,8 +3134,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       totalElement.textContent =
-        "€" +
-        total.toFixed(2);
+        formatMoney(total);
 
     }
 
@@ -4970,6 +4975,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       document.documentElement.lang =
         language;
+
+      renderCart();
 
     }
 
