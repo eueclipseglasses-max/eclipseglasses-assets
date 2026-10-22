@@ -1875,13 +1875,20 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
   cursor: grab;
-  scrollbar-color: var(--color-gold) #d8cbb7;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   touch-action: pan-x pan-y;
 }
 
-.eg .product-image-scroll:active {
+.eg .product-image-scroll::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.eg .product-image-scroll.is-dragging {
   cursor: grabbing;
+  user-select: none;
 }
 
 .eg .product-image-scroll:focus-visible {
@@ -4986,6 +4993,43 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         cartLabel:"Carrito", menuAria:"Menú", heroImageAlt:"Eclipse solar total sobre una costa tranquila del sur"
       }
     };
+
+    // Let desktop users drag the product image itself to explore it.
+    const productScroller = document.querySelector(".product-image-scroll");
+    if (productScroller) {
+      let isDragging = false;
+      let startX = 0;
+      let startScrollLeft = 0;
+      let dragged = false;
+
+      productScroller.addEventListener("pointerdown", event => {
+        if (event.pointerType === "touch") return; // Keep native swipe scrolling on touchscreens.
+        isDragging = true;
+        dragged = false;
+        startX = event.clientX;
+        startScrollLeft = productScroller.scrollLeft;
+        productScroller.classList.add("is-dragging");
+      });
+
+      window.addEventListener("pointermove", event => {
+        if (!isDragging) return;
+        const distance = event.clientX - startX;
+        if (Math.abs(distance) > 3) dragged = true;
+        if (dragged) {
+          productScroller.scrollLeft = startScrollLeft - distance;
+          event.preventDefault();
+        }
+      }, { passive: false });
+
+      const stopProductDrag = () => {
+        isDragging = false;
+        productScroller.classList.remove("is-dragging");
+      };
+      window.addEventListener("pointerup", stopProductDrag);
+      window.addEventListener("pointercancel", stopProductDrag);
+
+      productScroller.addEventListener("dragstart", event => event.preventDefault());
+    }
 
     function applyLanguage(
       language
