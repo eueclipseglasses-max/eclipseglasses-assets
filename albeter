@@ -246,19 +246,21 @@ const PAGE_HTML = String.raw`<nav class="nav">
       <div class="shop-grid">
 
 
-        <div
-          class="product-image product-image-scroll"
-          role="region"
-          tabindex="0"
-          aria-label="Scroll horizontally to view the full glasses design"
-          data-i18n-aria="productImageScrollAria"
-        >
-          <img
-            src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/eclipseglasses_mockup_final.png"
-            alt="EclipseGlasses product design"
-            data-i18n-alt="productImageAlt"
-            loading="lazy"
+        <div class="product-image product-image-frame">
+          <div
+            class="product-image-scroll"
+            role="region"
+            tabindex="0"
+            aria-label="Scroll horizontally to view the full glasses design"
+            data-i18n-aria="productImageScrollAria"
           >
+            <img
+              src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/eclipseglasses_mockup_final.png"
+              alt="EclipseGlasses product design"
+              data-i18n-alt="productImageAlt"
+              loading="lazy"
+            >
+          </div>
           <span class="product-image-hint">
             <span class="product-image-hint-icon" aria-hidden="true">↔</span>
             <span data-i18n="productImageHint">Scroll sideways to view the full design</span>
@@ -1857,7 +1859,7 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   align-items: center;
 }
 
-.eg .product-image {
+.eg .product-image-frame {
   position: relative;
   display: block;
   width: 100%;
@@ -1870,6 +1872,8 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 }
 
 .eg .product-image-scroll {
+  position: absolute;
+  inset: 0;
   overflow-x: auto;
   overflow-y: hidden;
   overscroll-behavior-x: contain;
