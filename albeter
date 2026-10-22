@@ -3888,15 +3888,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         shopDescription:
           "Order individually or prepare for a group. Quantity pricing is applied automatically.",
 
-        badgePopular: "Most popular",
+badgePopular: "Most popular",
           badgeBestValue: "Best value",
-          badgePopular: "Populairste keuze",
-          badgeBestValue: "Beste prijs",
-          badgePopular: "Le plus populaire",
-          badgeBestValue: "Meilleur prix",
-          badgePopular: "Más popular",
-          badgeBestValue: "Mejor precio",
-          productTitle:
+
+        productTitle:
           "Solar Eclipse Glasses",
 
         productDescription:
@@ -4187,6 +4182,9 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         shopDescription:
           "Bestel individueel of bereid je voor op een groep. Staffelkortingen worden automatisch toegepast.",
+
+        badgePopular: "Populairste keuze",
+          badgeBestValue: "Beste prijs",
 
         productTitle:
           "Zonne-eclipsbrillen",
@@ -4480,6 +4478,9 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         shopDescription:
           "Commandez à l'unité ou pour un groupe. Les tarifs dégressifs sont appliqués automatiquement.",
 
+        badgePopular: "Le plus populaire",
+          badgeBestValue: "Meilleur prix",
+
         productTitle:
           "Lunettes d'éclipse solaire",
 
@@ -4770,6 +4771,9 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         shopDescription:
           "Compra unidades individuales o prepara un pedido para un grupo. Los precios por cantidad se aplican automáticamente.",
+
+        badgePopular: "Más popular",
+          badgeBestValue: "Mejor precio",
 
         productTitle:
           "Gafas para eclipse solar",
