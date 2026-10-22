@@ -3744,6 +3744,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         quantityPairs:
           "pairs",
+        quantityPair:
+          "pair",
 
         pricePerPair:
           "/ pair",
@@ -4029,6 +4031,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         quantityPairs:
           "brillen",
+        quantityPair:
+          "bril",
 
         pricePerPair:
           "/ bril",
@@ -4314,6 +4318,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         quantityPairs:
           "paires",
+        quantityPair:
+          "paire",
 
         pricePerPair:
           "/ paire",
@@ -4598,6 +4604,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         quantityPairs:
           "pares",
+        quantityPair:
+          "par",
 
         pricePerPair:
           "/ par",
@@ -4954,7 +4962,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
       const money = value => new Intl.NumberFormat(numberLocale, { style: "currency", currency: "EUR" }).format(value);
       document.querySelectorAll("[data-i18n-qty]").forEach(element => {
         const quantity = Number(element.dataset.i18nQty);
-        element.textContent = quantity + " " + (dictionary.quantityPairs || "pairs");
+        const unit = quantity === 1
+          ? (dictionary.quantityPair || dictionary.quantityPairs || "pair")
+          : (dictionary.quantityPairs || "pairs");
+        element.textContent = quantity + " " + unit;
       });
       document.querySelectorAll(".price-option").forEach(option => {
         const quantity = Number(option.dataset.qty);
