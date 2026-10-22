@@ -3296,7 +3296,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
     ============================================================
     */
 
-    async function submitBulk(
+        async function submitBulk(
       event
     ) {
 
@@ -3403,18 +3403,117 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       try {
 
-        const subject = encodeURIComponent("EclipseGlasses bulk quote request");
-        const body = encodeURIComponent(
-          "Name: " + name + String.fromCharCode(10) +
-          "Email: " + email + String.fromCharCode(10) +
-          "Quantity: " + quantity + String.fromCharCode(10) +
-          "Message: " + message + String.fromCharCode(10) +
-          "Website: " + website
+
+        const response =
+          await fetch(
+            "/api/quote",
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Content-Type":
+                  "application/json"
+
+              },
+
+              body:
+                JSON.stringify({
+
+                  name:
+                    name,
+
+                  email:
+                    email,
+
+                  quantity:
+                    quantity,
+
+                  message:
+                    message,
+
+                  website:
+                    website
+
+                })
+
+            }
+          );
+
+
+        const result =
+          await response.json();
+
+
+        if (
+          !response.ok ||
+          !result.success
+        ) {
+
+          throw new Error(
+            result.error ||
+            "Something went wrong."
+          );
+
+        }
+
+
+        status.innerHTML =
+
+          "<strong>Quote request received.</strong><br>" +
+
+          "Your reference number is <strong>" +
+
+          escapeHTML(
+            result.quoteNumber
+          ) +
+
+          "</strong>. " +
+
+          "We'll get back to you as soon as possible.";
+
+
+        status.classList.add(
+          "show"
         );
-        window.location.href = "mailto:orders@eclipseglasses.eu?subject=" + subject + "&body=" + body;
-        status.textContent = "Your email app should open with your quote request ready to send.";
-        status.classList.add("show");
+
+
         form.reset();
+
+
+        document
+          .getElementById(
+            "bulkQuantity"
+          )
+          .value =
+          "";
+
+
+      } catch (error) {
+
+
+        console.error(
+          "Quote submission error:",
+          error
+        );
+
+
+        status.textContent =
+          error.message ||
+          "Something went wrong. Please try again.";
+
+
+        status.classList.add(
+          "show"
+        );
+
+
+        status.classList.add(
+          "error"
+        );
+
 
       } finally {
 
@@ -3433,7 +3532,6 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
       }
 
     }
-
 
     /*
     ============================================================
@@ -4471,14 +4569,1226 @@ function pageResponse() {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
+
+    /*
+    ============================================================
+    ADMIN DASHBOARD
+    ============================================================
+    */
+
+    if (url.pathname === "/admin") {
+
+      const auth = request.headers.get("Authorization");
+
+      if (!auth || !auth.startsWith("Basic ")) {
+
+        return new Response("Authentication required.", {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="EclipseGlasses Admin"',
+            "content-type": "text/plain; charset=UTF-8"
+          }
+        });
+
+      }
+
+      let username = "";
+      let password = "";
+
+      try {
+
+        const decoded =
+          atob(auth.slice(6));
+
+        const separator =
+          decoded.indexOf(":");
+
+        username =
+          decoded.slice(0, separator);
+
+        password =
+          decoded.slice(separator + 1);
+
+      } catch {
+
+        return new Response("Authentication required.", {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="EclipseGlasses Admin"',
+            "content-type": "text/plain; charset=UTF-8"
+          }
+        });
+
+      }
+
+
+      if (
+        username !== "admin" ||
+        !env.ADMIN_PASSWORD ||
+        password !== env.ADMIN_PASSWORD
+      ) {
+
+        return new Response("Invalid username or password.", {
+          status: 401,
+          headers: {
+            "WWW-Authenticate": 'Basic realm="EclipseGlasses Admin"',
+            "content-type": "text/plain; charset=UTF-8"
+          }
+        });
+
+      }
+
+
+      if (!env.DB) {
+
+        return new Response(
+          "D1 database is not connected.",
+          {
+            status: 500,
+            headers: {
+              "content-type": "text/plain; charset=UTF-8"
+            }
+          }
+        );
+
+      }
+
+
+      try {
+
+        const result =
+          await env.DB
+            .prepare(
+              `SELECT
+                id,
+                quote_number,
+                created_at,
+                name,
+                email,
+                quantity,
+                message,
+                status
+               FROM quotes
+               ORDER BY id DESC`
+            )
+            .all();
+
+
+        const quotes =
+          result.results || [];
+
+
+        const totalQuotes =
+          quotes.length;
+
+
+        const newQuotes =
+          quotes.filter(
+            quote =>
+              String(quote.status || "new").toLowerCase() === "new"
+          ).length;
+
+
+        let rows = "";
+
+
+        if (!quotes.length) {
+
+          rows =
+            '<tr>' +
+              '<td colspan="7" style="padding:50px;text-align:center;color:#777;">' +
+                'No quote requests yet.' +
+              '</td>' +
+            '</tr>';
+
+        } else {
+
+          quotes.forEach(quote => {
+
+            const status =
+              String(
+                quote.status || "new"
+              ).toLowerCase();
+
+            const statusClass =
+              status === "new"
+                ? "status-new"
+                : "status-other";
+
+
+            const created =
+              quote.created_at
+                ? new Date(
+                    quote.created_at
+                  ).toLocaleString(
+                    "en-GB",
+                    {
+                      dateStyle: "medium",
+                      timeStyle: "short"
+                    }
+                  )
+                : "—";
+
+
+            const safeQuote =
+              escapeHTMLServer(
+                quote.quote_number
+              );
+
+            const safeName =
+              escapeHTMLServer(
+                quote.name
+              );
+
+            const safeEmail =
+              escapeHTMLServer(
+                quote.email
+              );
+
+            const safeQuantity =
+              escapeHTMLServer(
+                String(quote.quantity)
+              );
+
+            const safeMessage =
+              escapeHTMLServer(
+                quote.message ||
+                "No message provided."
+              ).replace(
+                /\n/g,
+                "<br>"
+              );
+
+            const safeStatus =
+              escapeHTMLServer(
+                status
+              );
+
+
+            rows +=
+
+              '<tr>' +
+
+                '<td>' +
+                  '<div class="quote-number">' +
+                    safeQuote +
+                  '</div>' +
+                  '<div class="date">' +
+                    escapeHTMLServer(created) +
+                  '</div>' +
+                '</td>' +
+
+                '<td>' +
+                  '<div class="customer-name">' +
+                    safeName +
+                  '</div>' +
+                  '<a class="email" href="mailto:' +
+                    safeEmail +
+                  '">' +
+                    safeEmail +
+                  '</a>' +
+                '</td>' +
+
+                '<td class="quantity">' +
+                  safeQuantity +
+                  ' pairs' +
+                '</td>' +
+
+                '<td>' +
+                  '<span class="status ' +
+                    statusClass +
+                  '">' +
+                    safeStatus +
+                  '</span>' +
+                '</td>' +
+
+                '<td>' +
+                  '<details>' +
+                    '<summary>View message</summary>' +
+                    '<div class="message">' +
+                      safeMessage +
+                    '</div>' +
+                  '</details>' +
+                '</td>' +
+
+                '<td>' +
+                  '<a class="reply" href="mailto:' +
+                    safeEmail +
+                    '?subject=' +
+                    encodeURIComponent(
+                      "Re: EclipseGlasses.eu quote " +
+                      String(quote.quote_number || "")
+                    ) +
+                  '">' +
+                    'Reply' +
+                  '</a>' +
+                '</td>' +
+
+              '</tr>';
+
+          });
+
+        }
+
+
+        const adminHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="robots"
+    content="noindex,nofollow"
+  >
+
+  <title>EclipseGlasses Admin</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #080808;
+      color: #f4f1e9;
+      font-family: Arial, sans-serif;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .topbar {
+      border-bottom: 1px solid rgba(255,255,255,.10);
+      background: #0d0d0d;
+    }
+
+    .topbar-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 22px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -.04em;
+    }
+
+    .logo span {
+      color: #c9a45d;
+    }
+
+    .admin-label {
+      color: #77746d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 55px 30px 80px;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 30px;
+      margin-bottom: 35px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 42px;
+      letter-spacing: -.045em;
+    }
+
+    .subtitle {
+      color: #88857e;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .refresh {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f1e9;
+      color: #080808;
+      text-decoration: none;
+      padding: 11px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.10);
+      margin-bottom: 35px;
+    }
+
+    .stat {
+      background: #101010;
+      padding: 24px;
+    }
+
+    .stat-label {
+      color: #77746d;
+      text-transform: uppercase;
+      letter-spacing: .10em;
+      font-size: 9px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 30px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid rgba(255,255,255,.10);
+      background: #0d0d0d;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1000px;
+    }
+
+    th {
+      text-align: left;
+      padding: 15px 17px;
+      color: #77746d;
+      background: #111;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      font-size: 9px;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(255,255,255,.10);
+    }
+
+    td {
+      padding: 19px 17px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      vertical-align: top;
+      font-size: 13px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tr:hover td {
+      background: rgba(255,255,255,.018);
+    }
+
+    .quote-number {
+      color: #e2c47f;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .date {
+      color: #66635e;
+      font-size: 10px;
+      margin-top: 5px;
+    }
+
+    .customer-name {
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .email {
+      color: #aaa79f;
+      text-decoration: none;
+      font-size: 11px;
+    }
+
+    .email:hover {
+      color: #e2c47f;
+    }
+
+    .quantity {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 3px;
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    .status-new {
+      color: #e2c47f;
+      background: rgba(201,164,93,.12);
+      border: 1px solid rgba(201,164,93,.25);
+    }
+
+    .status-other {
+      color: #aaa79f;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    details {
+      max-width: 330px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: #aaa79f;
+      font-size: 11px;
+    }
+
+    summary:hover {
+      color: #e2c47f;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      background: #151515;
+      border: 1px solid rgba(255,255,255,.06);
+      color: #aaa79f;
+      font-size: 11px;
+      line-height: 1.7;
+      word-break: break-word;
+    }
+
+    .reply {
+      display: inline-block;
+      color: #f4f1e9;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 8px 11px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .reply:hover {
+      border-color: rgba(201,164,93,.5);
+      color: #e2c47f;
+    }
+
+    .footer-note {
+      margin-top: 20px;
+      color: #55534e;
+      font-size: 10px;
+    }
+
+    @media (max-width: 700px) {
+
+      .topbar-inner {
+        padding: 18px;
+      }
+
+      .container {
+        padding: 35px 18px 60px;
+      }
+
+      .heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <header class="topbar">
+
+    <div class="topbar-inner">
+
+      <div class="logo">
+        ECLIPSE<span>GLASSES</span>
+      </div>
+
+      <div class="admin-label">
+        Private admin
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <main class="container">
+
+    <div class="heading">
+
+      <div>
+
+        <h1>
+          Quote requests
+        </h1>
+
+        <div class="subtitle">
+          Your EclipseGlasses.eu bulk enquiries.
+        </div>
+
+      </div>
+
+      <a
+        class="refresh"
+        href="/admin"
+      >
+        Refresh
+      </a>
+
+    </div>
+
+
+    <div class="stats">
+
+      <div class="stat">
+
+        <div class="stat-label">
+          Total requests
+        </div>
+
+        <div class="stat-value">
+          ${totalQuotes}
+        </div>
+
+      </div>
+
+
+      <div class="stat">
+
+        <div class="stat-label">
+          New requests
+        </div>
+
+        <div class="stat-value">
+          ${newQuotes}
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Quote
+            </th>
+
+            <th>
+              Customer
+            </th>
+
+            <th>
+              Quantity
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Message
+            </th>
+
+            <th>
+              Action
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          ${rows}
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+
+    <div class="footer-note">
+      This dashboard is protected by HTTP authentication. Customer information is private.
+    </div>
+
+  </main>
+
+</body>
+</html>`;
+
+
+        return new Response(
+          adminHTML,
+          {
+            headers: {
+              "content-type":
+                "text/html; charset=UTF-8",
+              "cache-control":
+                "no-store",
+              "x-robots-tag":
+                "noindex, nofollow"
+            }
+          }
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Admin dashboard error:",
+          error
+        );
+
+        return new Response(
+          "Unable to load quote requests.",
+          {
+            status: 500,
+            headers: {
+              "content-type":
+                "text/plain; charset=UTF-8"
+            }
+          }
+        );
+
+      }
+
+    }
+
+
+
     if (url.pathname === "/favicon.ico") {
       return new Response(null, { status: 204 });
     }
-    if (url.pathname === "/api/quote" && request.method === "POST") {
-      return Response.json({ success: false, error: "Please email orders@eclipseglasses.eu directly." }, { status: 501 });
+    /*
+    ============================================================
+    QUOTE REQUEST API
+    ============================================================
+    */
+
+    if (
+      url.pathname === "/api/quote" &&
+      request.method === "POST"
+    ) {
+
+      try {
+
+        if (!env.DB) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "The quote database is not connected yet."
+            },
+            500
+          );
+
+        }
+
+        let data;
+
+        try {
+
+          data =
+            await request.json();
+
+        } catch {
+
+          return jsonResponse(
+            {
+              success: false,
+              error: "Invalid request."
+            },
+            400
+          );
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        SPAM HONEYPOT
+        --------------------------------------------------------
+        */
+
+        if (
+          data.website &&
+          String(data.website).trim() !== ""
+        ) {
+
+          return jsonResponse({
+            success: true,
+            quoteNumber: "OK"
+          });
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        CLEAN INPUT
+        --------------------------------------------------------
+        */
+
+        const name =
+          cleanText(
+            data.name,
+            120
+          );
+
+        const email =
+          cleanText(
+            data.email,
+            180
+          ).toLowerCase();
+
+        const quantity =
+          Number.parseInt(
+            data.quantity,
+            10
+          );
+
+        const message =
+          cleanText(
+            data.message,
+            3000
+          );
+
+
+        /*
+        --------------------------------------------------------
+        VALIDATION
+        --------------------------------------------------------
+        */
+
+        if (
+          !name ||
+          name.length < 2
+        ) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "Please enter your name or company name."
+            },
+            400
+          );
+
+        }
+
+
+        if (
+          !email ||
+          !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+            email
+          )
+        ) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "Please enter a valid email address."
+            },
+            400
+          );
+
+        }
+
+
+        if (
+          !Number.isInteger(quantity) ||
+          quantity < 51 ||
+          quantity > 1000000
+        ) {
+
+          return jsonResponse(
+            {
+              success: false,
+              error:
+                "Please enter a quantity of at least 51 pairs."
+            },
+            400
+          );
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        UNIQUE QUOTE NUMBER
+        --------------------------------------------------------
+        */
+
+        const quoteNumber =
+          "QR-" +
+          new Date()
+            .toISOString()
+            .slice(0, 10)
+            .replace(/-/g, "") +
+          "-" +
+          crypto
+            .randomUUID()
+            .slice(0, 6)
+            .toUpperCase();
+
+
+        const createdAt =
+          new Date().toISOString();
+
+
+        /*
+        --------------------------------------------------------
+        SAVE TO D1
+        --------------------------------------------------------
+        */
+
+        await env.DB
+          .prepare(
+            `INSERT INTO quotes
+              (
+                quote_number,
+                created_at,
+                name,
+                email,
+                quantity,
+                message,
+                status
+              )
+             VALUES (?, ?, ?, ?, ?, ?, ?)`
+          )
+          .bind(
+            quoteNumber,
+            createdAt,
+            name,
+            email,
+            quantity,
+            message,
+            "new"
+          )
+          .run();
+
+
+        /*
+        --------------------------------------------------------
+        SEND EMAIL NOTIFICATION
+        --------------------------------------------------------
+        */
+
+        let emailSent = false;
+
+
+        if (env.EMAIL) {
+
+          const safeName =
+            escapeHTMLServer(
+              name
+            );
+
+          const safeEmail =
+            escapeHTMLServer(
+              email
+            );
+
+          const safeQuantity =
+            escapeHTMLServer(
+              String(quantity)
+            );
+
+          const safeMessage =
+            escapeHTMLServer(
+              message ||
+              "No additional message."
+            ).replace(
+              /\n/g,
+              "<br>"
+            );
+
+
+          const emailSubject =
+            "New EclipseGlasses.eu quote request — " +
+            quoteNumber;
+
+
+          const emailHTML =
+            "<!DOCTYPE html>" +
+            "<html>" +
+            "<body style=\"margin:0;background:#f4f1e9;font-family:Arial,sans-serif;color:#111;\">" +
+
+              "<div style=\"max-width:650px;margin:40px auto;background:#ffffff;border:1px solid #ddd;\">" +
+
+                "<div style=\"padding:28px;background:#080808;color:#ffffff;\">" +
+
+                  "<div style=\"font-size:20px;font-weight:700;letter-spacing:-0.03em;\">" +
+                    "ECLIPSE<span style=\"color:#c9a45d;\">GLASSES</span>" +
+                  "</div>" +
+
+                  "<div style=\"margin-top:10px;color:#c9a45d;font-size:12px;text-transform:uppercase;letter-spacing:.12em;\">" +
+                    "New quote request" +
+                  "</div>" +
+
+                "</div>" +
+
+
+                "<div style=\"padding:30px;\">" +
+
+                  "<div style=\"font-size:13px;color:#777;margin-bottom:8px;\">" +
+                    "Quote number" +
+                  "</div>" +
+
+                  "<div style=\"font-size:24px;font-weight:700;margin-bottom:28px;\">" +
+                    escapeHTMLServer(
+                      quoteNumber
+                    ) +
+                  "</div>" +
+
+
+                  "<table style=\"width:100%;border-collapse:collapse;font-size:14px;\">" +
+
+                    "<tr>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;color:#777;width:140px;\">" +
+                        "Name / company" +
+                      "</td>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;font-weight:600;\">" +
+                        safeName +
+                      "</td>" +
+
+                    "</tr>" +
+
+
+                    "<tr>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;color:#777;\">" +
+                        "Email" +
+                      "</td>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;\">" +
+                        safeEmail +
+                      "</td>" +
+
+                    "</tr>" +
+
+
+                    "<tr>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;color:#777;\">" +
+                        "Quantity" +
+                      "</td>" +
+
+                      "<td style=\"padding:12px 0;border-bottom:1px solid #eee;font-weight:600;\">" +
+                        safeQuantity +
+                        " pairs" +
+                      "</td>" +
+
+                    "</tr>" +
+
+                  "</table>" +
+
+
+                  "<div style=\"margin-top:28px;font-size:13px;color:#777;margin-bottom:8px;\">" +
+                    "Message" +
+                  "</div>" +
+
+
+                  "<div style=\"padding:18px;background:#f7f7f7;border-radius:5px;font-size:14px;line-height:1.7;\">" +
+                    safeMessage +
+                  "</div>" +
+
+
+                  "<div style=\"margin-top:30px;\">" +
+
+                    "<a href=\"mailto:" +
+                      safeEmail +
+                      "?subject=Re:%20EclipseGlasses.eu%20quote%20" +
+                      encodeURIComponent(
+                        quoteNumber
+                      ) +
+                    "\" style=\"display:inline-block;background:#080808;color:#ffffff;text-decoration:none;padding:13px 20px;border-radius:4px;font-size:13px;font-weight:600;\">" +
+                      "Reply to customer" +
+                    "</a>" +
+
+                  "</div>" +
+
+                "</div>" +
+
+              "</div>" +
+
+            "</body>" +
+            "</html>";
+
+
+          const emailText =
+            "NEW ECLIPSEGLASSES.EU QUOTE REQUEST\n\n" +
+
+            "Quote number: " +
+            quoteNumber +
+
+            "\n\n" +
+
+            "Name / company: " +
+            name +
+
+            "\n" +
+
+            "Email: " +
+            email +
+
+            "\n" +
+
+            "Quantity: " +
+            quantity +
+            " pairs\n\n" +
+
+            "Message:\n" +
+
+            (
+              message ||
+              "No additional message."
+            ) +
+
+            "\n\n" +
+
+            "Reply directly to: " +
+            email;
+
+
+          try {
+
+            await env.EMAIL.send({
+
+              from:
+                "orders@eclipseglasses.eu",
+
+              to:
+                "orders@eclipseglasses.eu",
+
+              replyTo:
+                email,
+
+              subject:
+                emailSubject,
+
+              html:
+                emailHTML,
+
+              text:
+                emailText
+
+            });
+
+
+            emailSent = true;
+
+
+          } catch (emailError) {
+
+            console.error(
+              "Quote email failed:",
+              emailError
+            );
+
+          }
+
+        }
+
+
+        /*
+        --------------------------------------------------------
+        RESPONSE
+        --------------------------------------------------------
+        */
+
+        return jsonResponse({
+
+          success: true,
+
+          quoteNumber:
+            quoteNumber,
+
+          emailSent:
+            emailSent
+
+        });
+
+
+      } catch (error) {
+
+        console.error(
+          "Quote request error:",
+          error
+        );
+
+
+        return jsonResponse(
+          {
+            success: false,
+            error:
+              "Something went wrong while submitting your request."
+          },
+          500
+        );
+
+      }
+
     }
+
+
+
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
     }
@@ -4488,3 +5798,103 @@ export default {
     return pageResponse();
   }
 };
+
+/*
+============================================================
+SERVER HELPERS
+============================================================
+*/
+
+
+function cleanText(
+  value,
+  maxLength
+) {
+
+  if (
+    value === null ||
+    value === undefined
+  ) {
+
+    return "";
+
+  }
+
+
+  return String(value)
+
+    .replace(
+      /\u0000/g,
+      ""
+    )
+
+    .trim()
+
+    .slice(
+      0,
+      maxLength
+    );
+
+}
+
+
+function escapeHTMLServer(
+  value
+) {
+
+  return String(value)
+
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+
+    .replace(
+      /</g,
+      "&lt;"
+    )
+
+    .replace(
+      />/g,
+      "&gt;"
+    )
+
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function jsonResponse(
+  data,
+  status = 200
+) {
+
+  return new Response(
+    JSON.stringify(data),
+    {
+
+      status:
+        status,
+
+      headers: {
+
+        "content-type":
+          "application/json; charset=UTF-8",
+
+        "cache-control":
+          "no-store"
+
+      }
+
+    }
+  );
+
+}
