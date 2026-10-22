@@ -1402,6 +1402,12 @@ const PAGE_HTML = String.raw`<nav class="nav">
       id="cartItems"
     ></div>
 
+    <div
+      id="cartRetailLimitNotice"
+      class="quote-status retail-limit-notice cart-retail-limit-notice"
+      role="status"
+      aria-live="polite"
+    ></div>
 
     <div class="cart-footer">
 
@@ -2336,6 +2342,11 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   font-weight: 600;
 }
 
+.eg .cart-retail-limit-notice {
+  margin: 0 1.25rem 1rem;
+  flex: 0 0 auto;
+}
+
 .eg .quote-status strong {
   color: var(--color-gold-2);
 }
@@ -3075,9 +3086,6 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
     function showRetailLimitNotice() {
-      const notice = document.getElementById("retailLimitNotice");
-      if (!notice) return;
-
       const language = document.documentElement.lang || "en";
       const messages = {
         en: { title: "Planning a larger order?", body: "Retail orders are limited to 50 pairs. For larger quantities, please ", link: "request a B2B quote", end: "." },
@@ -3086,18 +3094,24 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         es: { title: "¿Necesitas un pedido más grande?", body: "Los pedidos minoristas están limitados a 50 gafas. Para cantidades mayores, ", link: "solicita un presupuesto B2B", end: "." }
       };
       const message = messages[language] || messages.en;
-      notice.innerHTML = '<span class="notice-title">' + message.title + '</span>' +
-        message.body + '<a href="#bulk" onclick="hideRetailLimitNotice()">' +
-        message.link + '</a>' + message.end;
-      notice.classList.add("show");
+      ["retailLimitNotice", "cartRetailLimitNotice"].forEach(id => {
+        const notice = document.getElementById(id);
+        if (!notice) return;
+        notice.innerHTML = '<span class="notice-title">' + message.title + '</span>' +
+          message.body + '<a href="#bulk" onclick="hideRetailLimitNotice()">' +
+          message.link + '</a>' + message.end;
+        notice.classList.add("show");
+      });
     }
 
     function hideRetailLimitNotice() {
-      const notice = document.getElementById("retailLimitNotice");
-      if (notice) {
-        notice.classList.remove("show");
-        notice.textContent = "";
-      }
+      ["retailLimitNotice", "cartRetailLimitNotice"].forEach(id => {
+        const notice = document.getElementById(id);
+        if (notice) {
+          notice.classList.remove("show");
+          notice.textContent = "";
+        }
+      });
     }
 
 
