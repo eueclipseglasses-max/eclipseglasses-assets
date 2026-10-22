@@ -280,7 +280,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               data-qty="1"
             >
 
-              <span class="price-quantity">
+              <span class="price-quantity" data-i18n-qty="1">
                 1 pair
               </span>
 
@@ -488,7 +488,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               Date
             </div>
 
-            <div class="fact-value">
+            <div class="fact-value" data-i18n="factDateValue">
               02 Aug 2027
             </div>
 
@@ -522,7 +522,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               Maximum duration
             </div>
 
-            <div class="fact-value">
+            <div class="fact-value" data-i18n="factMaxDurationValue">
               ~6m 23s
             </div>
 
@@ -612,9 +612,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               ~1m 48s
             </div>
 
-            <div>
-              Andalusia
-            </div>
+            <div data-i18n="regionAndalusia">Andalusia</div>
 
           </div>
 
@@ -646,9 +644,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               ~4m 34s
             </div>
 
-            <div>
-              Spain
-            </div>
+            <div data-i18n="countrySpain">Spain</div>
 
           </div>
 
@@ -3689,6 +3685,12 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       en: {
 
+        factMaxDurationValue:
+          "~6m 23s",
+
+        factDateValue:
+          "02 Aug 2027",
+
         factDate:
           "Date",
 
@@ -3967,6 +3969,12 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       nl: {
+
+        factMaxDurationValue:
+          "~6 min 23 s",
+
+        factDateValue:
+          "2 aug. 2027",
 
         factDate:
           "Datum",
@@ -4247,6 +4255,12 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       fr: {
 
+        factMaxDurationValue:
+          "~6 min 23 s",
+
+        factDateValue:
+          "2 août 2027",
+
         factDate:
           "Date",
 
@@ -4524,6 +4538,12 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       es: {
+
+        factMaxDurationValue:
+          "~6 min 23 s",
+
+        factDateValue:
+          "2 ago. 2027",
 
         factDate:
           "Fecha",
