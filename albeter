@@ -383,7 +383,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               </span>
 
               <span class="price-per">
-                €2.40 / pair
+                €2.00 / pair
               </span>
 
             </div>
