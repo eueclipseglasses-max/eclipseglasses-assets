@@ -300,7 +300,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               data-qty="5"
             >
 
-              <span class="price-quantity">
+              <span class="price-quantity" data-i18n-qty="5">
                 5 pairs
               </span>
 
@@ -320,7 +320,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               data-qty="10"
             >
 
-              <span class="price-quantity">
+              <span class="price-quantity" data-i18n-qty="10">
                 10 pairs
               </span>
 
@@ -340,7 +340,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               data-qty="25"
             >
 
-              <span class="price-quantity">
+              <span class="price-quantity" data-i18n-qty="25">
                 25 pairs
               </span>
 
@@ -360,7 +360,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               data-qty="50"
             >
 
-              <span class="price-quantity">
+              <span class="price-quantity" data-i18n-qty="50">
                 50 pairs
               </span>
 
@@ -484,7 +484,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           <div class="fact">
 
-            <div class="fact-label">
+            <div class="fact-label" data-i18n="factDate">
               Date
             </div>
 
@@ -492,7 +492,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               02 Aug 2027
             </div>
 
-            <div class="fact-sub">
+            <div class="fact-sub" data-i18n="factMonday">
               Monday
             </div>
 
@@ -501,15 +501,15 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           <div class="fact">
 
-            <div class="fact-label">
+            <div class="fact-label" data-i18n="factType">
               Type
             </div>
 
-            <div class="fact-value">
+            <div class="fact-value" data-i18n="factTotal">
               Total
             </div>
 
-            <div class="fact-sub">
+            <div class="fact-sub" data-i18n="factSolarEclipse">
               Solar eclipse
             </div>
 
@@ -518,7 +518,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           <div class="fact">
 
-            <div class="fact-label">
+            <div class="fact-label" data-i18n="factMaxDuration">
               Maximum duration
             </div>
 
@@ -526,7 +526,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               ~6m 23s
             </div>
 
-            <div class="fact-sub">
+            <div class="fact-sub" data-i18n="factGlobalMax">
               Global maximum
             </div>
 
@@ -535,15 +535,15 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           <div class="fact">
 
-            <div class="fact-label">
+            <div class="fact-label" data-i18n="factSpain">
               Spain
             </div>
 
-            <div class="fact-value">
+            <div class="fact-value" data-i18n="factPathTotality">
               Path of totality
             </div>
 
-            <div class="fact-sub">
+            <div class="fact-sub" data-i18n="factSouthernSpain">
               Southern Spain
             </div>
 
@@ -570,15 +570,15 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           <div class="location-row header">
 
-            <div>
+            <div data-i18n="tableLocation">
               Location
             </div>
 
-            <div>
+            <div data-i18n="tableTotality">
               Totality
             </div>
 
-            <div>
+            <div data-i18n="tableRegion">
               Region
             </div>
 
@@ -595,7 +595,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               ~2m 54s
             </div>
 
-            <div>
+            <div data-i18n="regionAndalusia">
               Andalusia
             </div>
 
@@ -629,7 +629,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               ~4m 48s
             </div>
 
-            <div>
+            <div data-i18n="countrySpain">
               Spain
             </div>
 
@@ -3689,6 +3689,58 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       en: {
 
+        factDate:
+          "Date",
+
+        factMonday:
+          "Monday",
+
+        factType:
+          "Type",
+
+        factTotal:
+          "Total",
+
+        factSolarEclipse:
+          "Solar eclipse",
+
+        factMaxDuration:
+          "Maximum duration",
+
+        factGlobalMax:
+          "Global maximum",
+
+        factSpain:
+          "Spain",
+
+        factPathTotality:
+          "Path of totality",
+
+        factSouthernSpain:
+          "Southern Spain",
+
+        tableLocation:
+          "Location",
+
+        tableTotality:
+          "Totality",
+
+        tableRegion:
+          "Region",
+
+        regionAndalusia:
+          "Andalusia",
+
+        countrySpain:
+          "Spain",
+
+        quantityPairs:
+          "pairs",
+
+        pricePerPair:
+          "/ pair",
+
+
         navShop:
           "Shop",
 
@@ -3915,6 +3967,58 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       nl: {
+
+        factDate:
+          "Datum",
+
+        factMonday:
+          "maandag",
+
+        factType:
+          "Type",
+
+        factTotal:
+          "Totaal",
+
+        factSolarEclipse:
+          "Zonsverduistering",
+
+        factMaxDuration:
+          "Maximale duur",
+
+        factGlobalMax:
+          "Wereldwijd maximum",
+
+        factSpain:
+          "Spanje",
+
+        factPathTotality:
+          "Totaliteitszone",
+
+        factSouthernSpain:
+          "Zuid-Spanje",
+
+        tableLocation:
+          "Locatie",
+
+        tableTotality:
+          "Totaliteit",
+
+        tableRegion:
+          "Regio",
+
+        regionAndalusia:
+          "Andalusië",
+
+        countrySpain:
+          "Spanje",
+
+        quantityPairs:
+          "brillen",
+
+        pricePerPair:
+          "/ bril",
+
 
         navShop:
           "Shop",
@@ -4143,6 +4247,58 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       fr: {
 
+        factDate:
+          "Date",
+
+        factMonday:
+          "lundi",
+
+        factType:
+          "Type",
+
+        factTotal:
+          "Totale",
+
+        factSolarEclipse:
+          "Éclipse solaire",
+
+        factMaxDuration:
+          "Durée maximale",
+
+        factGlobalMax:
+          "Maximum mondial",
+
+        factSpain:
+          "Espagne",
+
+        factPathTotality:
+          "Bande de totalité",
+
+        factSouthernSpain:
+          "Sud de l’Espagne",
+
+        tableLocation:
+          "Lieu",
+
+        tableTotality:
+          "Totalité",
+
+        tableRegion:
+          "Région",
+
+        regionAndalusia:
+          "Andalousie",
+
+        countrySpain:
+          "Espagne",
+
+        quantityPairs:
+          "paires",
+
+        pricePerPair:
+          "/ paire",
+
+
         navShop:
           "Boutique",
 
@@ -4368,6 +4524,58 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       es: {
+
+        factDate:
+          "Fecha",
+
+        factMonday:
+          "lunes",
+
+        factType:
+          "Tipo",
+
+        factTotal:
+          "Total",
+
+        factSolarEclipse:
+          "Eclipse solar",
+
+        factMaxDuration:
+          "Duración máxima",
+
+        factGlobalMax:
+          "Máximo mundial",
+
+        factSpain:
+          "España",
+
+        factPathTotality:
+          "Franja de totalidad",
+
+        factSouthernSpain:
+          "Sur de España",
+
+        tableLocation:
+          "Lugar",
+
+        tableTotality:
+          "Totalidad",
+
+        tableRegion:
+          "Región",
+
+        regionAndalusia:
+          "Andalucía",
+
+        countrySpain:
+          "España",
+
+        quantityPairs:
+          "pares",
+
+        pricePerPair:
+          "/ par",
+
 
         navShop:
           "Tienda",
@@ -4707,6 +4915,24 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         const key = element.dataset.i18nAria;
         if (dictionary[key]) element.setAttribute("aria-label", dictionary[key]);
       });
+
+      const numberLocale = ({ en: "en-IE", nl: "nl-BE", fr: "fr-BE", es: "es-ES" })[language] || "en-IE";
+      const money = value => new Intl.NumberFormat(numberLocale, { style: "currency", currency: "EUR" }).format(value);
+      document.querySelectorAll("[data-i18n-qty]").forEach(element => {
+        const quantity = Number(element.dataset.i18nQty);
+        element.textContent = quantity + " " + (dictionary.quantityPairs || "pairs");
+      });
+      document.querySelectorAll(".price-option").forEach(option => {
+        const quantity = Number(option.dataset.qty);
+        const tier = PRICE_TIERS.find(item => quantity >= item.min);
+        if (!tier) return;
+        const total = tier.price * quantity;
+        const value = option.querySelector(".price-value");
+        const per = option.querySelector(".price-per");
+        if (value) value.textContent = money(total);
+        if (per) per.textContent = money(tier.price) + " " + (dictionary.pricePerPair || "/ pair");
+      });
+
 
       localStorage.setItem(
         "eclipse_language",
