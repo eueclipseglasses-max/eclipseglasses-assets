@@ -3108,7 +3108,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
                       index +
                     ')"' +
                   '>' +
-                    'Remove' +
+                    (extraTranslations[document.documentElement.lang] || extraTranslations.en).cartRemove +
                   '</button>' +
 
                 '</div>' +
@@ -3545,7 +3545,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       button.innerHTML =
-        "<span>Sending...</span>";
+        "<span>" + (extraTranslations[document.documentElement.lang] || extraTranslations.en).sending + "</span>";
 
 
       try {
@@ -3609,9 +3609,9 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         status.innerHTML =
 
-          "<strong>Quote request received.</strong><br>" +
+          "<strong>" + (extraTranslations[document.documentElement.lang] || extraTranslations.en).quoteReceived + "</strong><br>" +
 
-          "Your reference number is <strong>" +
+          (extraTranslations[document.documentElement.lang] || extraTranslations.en).quoteReference + " <strong>" +
 
           escapeHTML(
             result.quoteNumber
@@ -3619,7 +3619,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
           "</strong>. " +
 
-          "We'll get back to you as soon as possible.";
+          (extraTranslations[document.documentElement.lang] || extraTranslations.en).quoteFollowup;
 
 
         status.classList.add(
@@ -3649,7 +3649,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
         status.textContent =
           error.message ||
-          "Something went wrong. Please try again.";
+          (extraTranslations[document.documentElement.lang] || extraTranslations.en).quoteError;
 
 
         status.classList.add(
@@ -4601,6 +4601,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
     const extraTranslations = {
       en: {
+        cartRemove:"Remove", quoteReceived:"Quote request received.", quoteReference:"Your reference number is", quoteFollowup:"We'll get back to you as soon as possible.", quoteError:"Something went wrong. Please try again.", sending:"Sending...",
         footerTagline:"Ready for the moment the world goes dark.",
         footerPurpose:"Premium eclipse glasses for the total solar eclipse of 2 August 2027. Made for curious people, families and businesses preparing for totality.",
         footerExplore:"Explore", footerEclipse:"The 2027 eclipse", footerShop:"Shop eclipse glasses", footerSafety:"Viewing safety",
@@ -4615,6 +4616,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         cartEmpty:"Your cart is empty.", cartRemove:"Remove", cartItem:"pair(s)"
       },
       nl: {
+        cartRemove:"Verwijderen", quoteReceived:"Offerteaanvraag ontvangen.", quoteReference:"Je referentienummer is", quoteFollowup:"We nemen zo snel mogelijk contact met je op.", quoteError:"Er ging iets mis. Probeer het opnieuw.", sending:"Verzenden...",
         footerTagline:"Klaar voor het moment waarop de wereld donker wordt.",
         footerPurpose:"Premium eclipsbrillen voor de totale zonsverduistering van 2 augustus 2027. Voor nieuwsgierige mensen, gezinnen en bedrijven die zich voorbereiden op de totaliteit.",
         footerExplore:"Ontdek", footerEclipse:"De eclips van 2027", footerShop:"Eclipsbrillen kopen", footerSafety:"Veilig waarnemen",
@@ -4629,6 +4631,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         cartEmpty:"Je winkelwagen is leeg.", cartRemove:"Verwijderen", cartItem:"paar"
       },
       fr: {
+        cartRemove:"Supprimer", quoteReceived:"Demande de devis reçue.", quoteReference:"Votre numéro de référence est", quoteFollowup:"Nous vous répondrons dès que possible.", quoteError:"Une erreur s’est produite. Veuillez réessayer.", sending:"Envoi...",
         footerTagline:"Prêts pour le moment où le monde s’assombrit.",
         footerPurpose:"Des lunettes d’éclipse premium pour l’éclipse solaire totale du 2 août 2027. Pour les curieux, les familles et les entreprises qui préparent la totalité.",
         footerExplore:"Explorer", footerEclipse:"L’éclipse de 2027", footerShop:"Acheter des lunettes", footerSafety:"Sécurité d’observation",
@@ -4643,6 +4646,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         cartEmpty:"Votre panier est vide.", cartRemove:"Supprimer", cartItem:"paire(s)"
       },
       es: {
+        cartRemove:"Eliminar", quoteReceived:"Solicitud de presupuesto recibida.", quoteReference:"Tu número de referencia es", quoteFollowup:"Nos pondremos en contacto contigo lo antes posible.", quoteError:"Algo salió mal. Inténtalo de nuevo.", sending:"Enviando...",
         footerTagline:"Listos para el momento en que el mundo se oscurezca.",
         footerPurpose:"Gafas premium para el eclipse solar total del 2 de agosto de 2027. Para personas curiosas, familias y empresas que se preparan para la totalidad.",
         footerExplore:"Explorar", footerEclipse:"El eclipse de 2027", footerShop:"Comprar gafas", footerSafety:"Seguridad de observación",
