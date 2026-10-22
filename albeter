@@ -1910,6 +1910,7 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   position: absolute;
   left: 0.8rem;
   bottom: 0.8rem;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -5004,6 +5005,7 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       productScroller.addEventListener("pointerdown", event => {
         if (event.pointerType === "touch") return; // Keep native swipe scrolling on touchscreens.
+        if (event.target.closest(".product-image-hint")) return;
         isDragging = true;
         dragged = false;
         startX = event.clientX;
