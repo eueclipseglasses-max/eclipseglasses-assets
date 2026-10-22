@@ -2327,6 +2327,18 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   background: rgb(201 164 93 / 0.08);
   box-shadow: 0 0 0 1px rgb(201 164 93 / 0.28);
   color: var(--color-muted);
+  opacity: 0;
+  transition: opacity 800ms ease;
+}
+
+.eg .retail-limit-notice.show {
+  display: block;
+  opacity: 1;
+}
+
+.eg .retail-limit-notice.fade-out {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .eg .retail-limit-notice a {
@@ -3086,9 +3098,11 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
     let retailLimitNoticeTimer;
+    let retailLimitFadeTimer;
 
     function showRetailLimitNotice() {
       clearTimeout(retailLimitNoticeTimer);
+      clearTimeout(retailLimitFadeTimer);
       const language = document.documentElement.lang || "en";
       const messages = {
         en: { title: "Planning a larger order?", body: "Retail orders are limited to 50 pairs. For larger quantities, please ", link: "request a B2B quote", end: "." },
@@ -3103,22 +3117,32 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         notice.innerHTML = '<span class="notice-title">' + message.title + '</span>' +
           message.body + '<a href="#bulk" onclick="hideRetailLimitNotice()">' +
           message.link + '</a>' + message.end;
+        notice.classList.remove("fade-out");
         notice.classList.add("show");
       });
 
-      // Keep the warning temporary so it never remains on the page.
+      // Keep the warning temporary, then fade it out smoothly.
       retailLimitNoticeTimer = setTimeout(hideRetailLimitNotice, 6000);
     }
 
     function hideRetailLimitNotice() {
       clearTimeout(retailLimitNoticeTimer);
+      clearTimeout(retailLimitFadeTimer);
       ["retailLimitNotice", "cartRetailLimitNotice"].forEach(id => {
         const notice = document.getElementById(id);
-        if (notice) {
-          notice.classList.remove("show");
-          notice.textContent = "";
+        if (notice && notice.classList.contains("show")) {
+          notice.classList.add("fade-out");
         }
       });
+      retailLimitFadeTimer = setTimeout(() => {
+        ["retailLimitNotice", "cartRetailLimitNotice"].forEach(id => {
+          const notice = document.getElementById(id);
+          if (notice) {
+            notice.classList.remove("show", "fade-out");
+            notice.textContent = "";
+          }
+        });
+      }, 850);
     }
 
 
