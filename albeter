@@ -418,6 +418,12 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           </div>
 
+          <div
+            id="retailLimitNotice"
+            class="quote-status retail-limit-notice"
+            role="status"
+            aria-live="polite"
+          ></div>
 
           <div
             class="shipping-note"
@@ -2310,6 +2316,26 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
   box-shadow: 0 0 0 1px rgb(220 80 80 / 0.35);
 }
 
+.eg .retail-limit-notice {
+  margin-top: 0.85rem;
+  background: rgb(201 164 93 / 0.08);
+  box-shadow: 0 0 0 1px rgb(201 164 93 / 0.28);
+  color: var(--color-muted);
+}
+
+.eg .retail-limit-notice a {
+  color: var(--color-gold-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.eg .retail-limit-notice .notice-title {
+  display: block;
+  margin-bottom: 0.2rem;
+  color: var(--color-cream);
+  font-weight: 600;
+}
+
 .eg .quote-status strong {
   color: var(--color-gold-2);
 }
@@ -3010,19 +3036,14 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
       const currentQuantity = existing ? existing.quantity : 0;
       const retailLimit = 50;
-      const language = document.documentElement.lang || "en";
-      const limitMessages = {
-        en: "Retail orders are limited to 50 pairs. For larger orders, please use the B2B bulk order form.",
-        nl: "Retailbestellingen zijn beperkt tot 50 brillen. Gebruik voor grotere bestellingen het B2B-aanvraagformulier.",
-        fr: "Les commandes de détail sont limitées à 50 paires. Pour les commandes plus importantes, utilisez le formulaire de demande B2B.",
-        es: "Los pedidos minoristas están limitados a 50 gafas. Para pedidos más grandes, utiliza el formulario de solicitud B2B."
-      };
 
       if (quantity > retailLimit || currentQuantity + quantity > retailLimit) {
-        alert(limitMessages[language] || limitMessages.en);
+        showRetailLimitNotice();
         quantityInput.value = Math.max(1, Math.min(retailLimit - currentQuantity, retailLimit));
         return;
       }
+
+      hideRetailLimitNotice();
 
       if (existing) {
 
@@ -3053,6 +3074,33 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
     }
 
 
+    function showRetailLimitNotice() {
+      const notice = document.getElementById("retailLimitNotice");
+      if (!notice) return;
+
+      const language = document.documentElement.lang || "en";
+      const messages = {
+        en: { title: "Planning a larger order?", body: "Retail orders are limited to 50 pairs. For larger quantities, please ", link: "request a B2B quote", end: "." },
+        nl: { title: "Een grotere bestelling gepland?", body: "Gewone bestellingen zijn beperkt tot 50 brillen. Vraag voor grotere aantallen een ", link: "B2B-offerte aan", end: "." },
+        fr: { title: "Vous prévoyez une commande plus importante ?", body: "Les commandes classiques sont limitées à 50 paires. Pour une plus grande quantité, ", link: "demandez un devis B2B", end: "." },
+        es: { title: "¿Necesitas un pedido más grande?", body: "Los pedidos minoristas están limitados a 50 gafas. Para cantidades mayores, ", link: "solicita un presupuesto B2B", end: "." }
+      };
+      const message = messages[language] || messages.en;
+      notice.innerHTML = '<span class="notice-title">' + message.title + '</span>' +
+        message.body + '<a href="#bulk" onclick="hideRetailLimitNotice()">' +
+        message.link + '</a>' + message.end;
+      notice.classList.add("show");
+    }
+
+    function hideRetailLimitNotice() {
+      const notice = document.getElementById("retailLimitNotice");
+      if (notice) {
+        notice.classList.remove("show");
+        notice.textContent = "";
+      }
+    }
+
+
     function changeQuantity(
       index,
       amount
@@ -3067,15 +3115,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         amount;
 
       if (cart[index].quantity > 50) {
-        const language = document.documentElement.lang || "en";
-        const limitMessages = {
-          en: "Retail orders are limited to 50 pairs. For larger orders, please use the B2B bulk order form.",
-          nl: "Retailbestellingen zijn beperkt tot 50 brillen. Gebruik voor grotere bestellingen het B2B-aanvraagformulier.",
-          fr: "Les commandes de détail sont limitées à 50 paires. Pour les commandes plus importantes, utilisez le formulaire de demande B2B.",
-          es: "Los pedidos minoristas están limitados a 50 gafas. Para pedidos más grandes, utiliza el formulario de solicitud B2B."
-        };
         cart[index].quantity = 50;
-        alert(limitMessages[language] || limitMessages.en);
+        showRetailLimitNotice();
       }
 
       if (
