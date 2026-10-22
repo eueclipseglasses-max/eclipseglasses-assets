@@ -3085,7 +3085,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
     }
 
 
+    let retailLimitNoticeTimer;
+
     function showRetailLimitNotice() {
+      clearTimeout(retailLimitNoticeTimer);
       const language = document.documentElement.lang || "en";
       const messages = {
         en: { title: "Planning a larger order?", body: "Retail orders are limited to 50 pairs. For larger quantities, please ", link: "request a B2B quote", end: "." },
@@ -3102,9 +3105,13 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
           message.link + '</a>' + message.end;
         notice.classList.add("show");
       });
+
+      // Keep the warning temporary so it never remains on the page.
+      retailLimitNoticeTimer = setTimeout(hideRetailLimitNotice, 6000);
     }
 
     function hideRetailLimitNotice() {
+      clearTimeout(retailLimitNoticeTimer);
       ["retailLimitNotice", "cartRetailLimitNotice"].forEach(id => {
         const notice = document.getElementById(id);
         if (notice) {
