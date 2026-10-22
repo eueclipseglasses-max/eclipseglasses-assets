@@ -54,7 +54,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
       <div class="nav-right">
 
-        <label for="navToggle" class="nav-burger" aria-label="Menu"><span></span></label>
+        <label for="navToggle" class="nav-burger" aria-label="Menu" data-i18n-aria="menuAria"><span></span></label>
 
         <select
           class="language"
@@ -85,7 +85,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
           onclick="openCart()"
         >
 
-          Cart
+          <span data-i18n="cartLabel">Cart</span>
           (
           <span id="cartCount">
             0
@@ -109,6 +109,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
       <img
         src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2400&q=85"
         alt="Total solar eclipse over a quiet southern coast"
+        data-i18n-alt="heroImageAlt"
         loading="eager"
       >
 
@@ -4840,7 +4841,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         infoDeliveryLabel:"01 / DELIVERY", infoAboutLabel:"02 / ABOUT", infoGroupsLabel:"03 / GROUPS",
         bulkNamePlaceholder:"Name / company", bulkEmailPlaceholder:"Email", bulkQuantityPlaceholder:"Quantity",
         bulkMessagePlaceholder:"Tell us what you need...", quantityAria:"Quantity",
-        cartEmpty:"Your cart is empty.", cartRemove:"Remove", cartItem:"pair(s)"
+        cartEmpty:"Your cart is empty.", cartRemove:"Remove", cartItem:"pair(s)",
+        cartLabel:"Cart", menuAria:"Menu", heroImageAlt:"Total solar eclipse over a quiet southern coast"
       },
       nl: {
         cartRemove:"Verwijderen", quoteReceived:"Offerteaanvraag ontvangen.", quoteReference:"Je referentienummer is", quoteFollowup:"We nemen zo snel mogelijk contact met je op.", quoteError:"Er ging iets mis. Probeer het opnieuw.", sending:"Verzenden...",
@@ -4856,7 +4858,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         infoDeliveryLabel:"01 / LEVERING", infoAboutLabel:"02 / OVER ONS", infoGroupsLabel:"03 / GROEPEN",
         bulkNamePlaceholder:"Naam / bedrijf", bulkEmailPlaceholder:"E-mail", bulkQuantityPlaceholder:"Aantal",
         bulkMessagePlaceholder:"Vertel ons wat je nodig hebt...", quantityAria:"Aantal",
-        cartEmpty:"Je winkelwagen is leeg.", cartRemove:"Verwijderen", cartItem:"paar"
+        cartEmpty:"Je winkelwagen is leeg.", cartRemove:"Verwijderen", cartItem:"paar",
+        cartLabel:"Winkelwagen", menuAria:"Menu", heroImageAlt:"Totale zonsverduistering boven een rustige zuidkust"
       },
       fr: {
         cartRemove:"Supprimer", quoteReceived:"Demande de devis reçue.", quoteReference:"Votre numéro de référence est", quoteFollowup:"Nous vous répondrons dès que possible.", quoteError:"Une erreur s’est produite. Veuillez réessayer.", sending:"Envoi...",
@@ -4872,7 +4875,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         infoDeliveryLabel:"01 / LIVRAISON", infoAboutLabel:"02 / À PROPOS", infoGroupsLabel:"03 / GROUPES",
         bulkNamePlaceholder:"Nom / entreprise", bulkEmailPlaceholder:"E-mail", bulkQuantityPlaceholder:"Quantité",
         bulkMessagePlaceholder:"Indiquez-nous vos besoins...", quantityAria:"Quantité",
-        cartEmpty:"Votre panier est vide.", cartRemove:"Supprimer", cartItem:"paire(s)"
+        cartEmpty:"Votre panier est vide.", cartRemove:"Supprimer", cartItem:"paire(s)",
+        cartLabel:"Panier", menuAria:"Menu", heroImageAlt:"Éclipse solaire totale au-dessus d’une côte méridionale paisible"
       },
       es: {
         cartRemove:"Eliminar", quoteReceived:"Solicitud de presupuesto recibida.", quoteReference:"Tu número de referencia es", quoteFollowup:"Nos pondremos en contacto contigo lo antes posible.", quoteError:"Algo salió mal. Inténtalo de nuevo.", sending:"Enviando...",
@@ -4888,7 +4892,8 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
         infoDeliveryLabel:"01 / ENTREGA", infoAboutLabel:"02 / SOBRE NOSOTROS", infoGroupsLabel:"03 / GRUPOS",
         bulkNamePlaceholder:"Nombre / empresa", bulkEmailPlaceholder:"Correo electrónico", bulkQuantityPlaceholder:"Cantidad",
         bulkMessagePlaceholder:"Cuéntanos qué necesitas...", quantityAria:"Cantidad",
-        cartEmpty:"Tu carrito está vacío.", cartRemove:"Eliminar", cartItem:"par(es)"
+        cartEmpty:"Tu carrito está vacío.", cartRemove:"Eliminar", cartItem:"par(es)",
+        cartLabel:"Carrito", menuAria:"Menú", heroImageAlt:"Eclipse solar total sobre una costa tranquila del sur"
       }
     };
 
@@ -4934,6 +4939,10 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
       document.querySelectorAll("[data-i18n-aria]").forEach(element => {
         const key = element.dataset.i18nAria;
         if (dictionary[key]) element.setAttribute("aria-label", dictionary[key]);
+      });
+      document.querySelectorAll("[data-i18n-alt]").forEach(element => {
+        const key = element.dataset.i18nAlt;
+        if (dictionary[key]) element.setAttribute("alt", dictionary[key]);
       });
 
       const numberLocale = ({ en: "en-IE", nl: "nl-BE", fr: "fr-BE", es: "es-ES" })[language] || "en-IE";
