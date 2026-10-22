@@ -107,7 +107,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
     <div class="hero-photo">
 
       <img
-        src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/onq56hh0tdph1.jpeg"
+        src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/KLASSEKLASSE-modified%20(1).png"
         alt="Total solar eclipse over a quiet southern coast"
         data-i18n-alt="heroImageAlt"
         loading="eager"
