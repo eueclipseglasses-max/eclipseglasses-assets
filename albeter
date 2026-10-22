@@ -362,7 +362,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
               </span>
 
               <span class="price-per">
-                €2.00 / pair
+                €2.40 / pair
               </span>
 
             </div>
@@ -398,6 +398,8 @@ const PAGE_HTML = String.raw`<nav class="nav">
               class="quantity-input"
               type="number"
               min="1"
+              max="50"
+              step="1"
               value="1"
               aria-label="Quantity" data-i18n-aria="quantityAria"
             >
@@ -2993,14 +2995,11 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
 
 
       if (
-        !quantity ||
+        !Number.isInteger(quantity) ||
         quantity < 1
       ) {
-
         quantity = 1;
-
       }
-
 
       const existing =
         cart.find(
@@ -3009,6 +3008,21 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
             "solar-glasses"
         );
 
+      const currentQuantity = existing ? existing.quantity : 0;
+      const retailLimit = 50;
+      const language = document.documentElement.lang || "en";
+      const limitMessages = {
+        en: "Retail orders are limited to 50 pairs. For larger orders, please use the B2B bulk order form.",
+        nl: "Retailbestellingen zijn beperkt tot 50 brillen. Gebruik voor grotere bestellingen het B2B-aanvraagformulier.",
+        fr: "Les commandes de détail sont limitées à 50 paires. Pour les commandes plus importantes, utilisez le formulaire de demande B2B.",
+        es: "Los pedidos minoristas están limitados a 50 gafas. Para pedidos más grandes, utiliza el formulario de solicitud B2B."
+      };
+
+      if (quantity > retailLimit || currentQuantity + quantity > retailLimit) {
+        alert(limitMessages[language] || limitMessages.en);
+        quantityInput.value = Math.max(1, Math.min(retailLimit - currentQuantity, retailLimit));
+        return;
+      }
 
       if (existing) {
 
@@ -3052,6 +3066,17 @@ const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
       cart[index].quantity +=
         amount;
 
+      if (cart[index].quantity > 50) {
+        const language = document.documentElement.lang || "en";
+        const limitMessages = {
+          en: "Retail orders are limited to 50 pairs. For larger orders, please use the B2B bulk order form.",
+          nl: "Retailbestellingen zijn beperkt tot 50 brillen. Gebruik voor grotere bestellingen het B2B-aanvraagformulier.",
+          fr: "Les commandes de détail sont limitées à 50 paires. Pour les commandes plus importantes, utilisez le formulaire de demande B2B.",
+          es: "Los pedidos minoristas están limitados a 50 gafas. Para pedidos más grandes, utiliza el formulario de solicitud B2B."
+        };
+        cart[index].quantity = 50;
+        alert(limitMessages[language] || limitMessages.en);
+      }
 
       if (
         cart[index].quantity <= 0
