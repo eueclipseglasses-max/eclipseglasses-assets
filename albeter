@@ -2272,17 +2272,17 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 
 .eg .bulk-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: 3.5rem;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2.5rem;
   align-items: start;
-  padding: clamp(1.4rem, 4vw, 3.25rem);
+  padding: clamp(1.4rem, 3vw, 2.5rem);
   border-radius: var(--radius-frame);
   background: var(--color-panel);
   box-shadow: var(--shadow-ring);
 }
 
 .eg .bulk-copy p {
-  max-width: 34rem;
+  max-width: none;
   color: var(--color-muted);
   font-size: 0.95rem;
   line-height: 1.8;
