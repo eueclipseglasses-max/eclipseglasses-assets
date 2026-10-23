@@ -2283,7 +2283,7 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 }
 
 .eg .bulk-copy .bulk-custom-note {
-  margin-top: 0.65rem;
+  margin-top: 1.5rem !important;
 }
 
 .eg .bulk-form {
