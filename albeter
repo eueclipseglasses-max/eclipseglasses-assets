@@ -781,6 +781,10 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
       </div>
 
+      <p class="section-description" data-i18n="safetyDocuments" style="margin-top:1.5rem;max-width:850px">
+        Available safety certificates and supporting documentation can be requested by email. Documents are provided subject to availability and confirmation.
+      </p>
+
     </div>
 
   </section>
@@ -928,6 +932,10 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
           <p data-i18n="bulkDescription2">
             Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.
+          </p>
+
+          <p data-i18n="bulkCustomBranding" style="margin-top:1rem">
+            Want glasses with your own logo? <a href="/custom-glasses">Explore custom branding</a> for your company, event or group.
           </p>
 
         </div>
@@ -4050,6 +4058,9 @@ badgePopular: "Most popular",
         safetyDescription:
           "Looking directly at the Sun without appropriate protection can cause permanent eye injury.",
 
+        safetyDocuments:
+          "Available safety certificates and supporting documentation can be requested by email. Documents are provided subject to availability and confirmation.",
+
         safetyOneTitle:
           "Use proper solar viewers",
 
@@ -4108,6 +4119,9 @@ badgePopular: "Most popular",
 
         bulkDescription2:
           "Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.",
+
+        bulkCustomBranding:
+          "Want glasses with your own logo? <a href='/custom-glasses'>Explore custom branding</a> for your company, event or group.",
 
         requestQuote:
           "Request a quote",
@@ -4345,6 +4359,9 @@ badgePopular: "Most popular",
         safetyDescription:
           "Rechtstreeks naar de zon kijken zonder geschikte bescherming kan blijvend oogletsel veroorzaken.",
 
+        safetyDocuments:
+          "Beschikbare veiligheidscertificaten en bijbehorende documentatie kunnen per e-mail worden aangevraagd. Documenten worden verstrekt afhankelijk van beschikbaarheid en bevestiging.",
+
         safetyOneTitle:
           "Gebruik geschikte eclipsbrillen",
 
@@ -4403,6 +4420,9 @@ badgePopular: "Most popular",
 
         bulkDescription2:
           "Vertel ons hoeveel je nodig hebt, waar de bestelling naartoe moet en waarvoor je de brillen voorbereidt. Daarna kunnen we de bestelling rechtstreeks bespreken.",
+
+        bulkCustomBranding:
+          "Brillen met je eigen logo? <a href='/custom-glasses'>Bekijk de mogelijkheden voor personalisatie</a> voor je bedrijf, evenement of groep.",
 
         requestQuote:
           "Offerte aanvragen",
@@ -4640,6 +4660,9 @@ badgePopular: "Most popular",
         safetyDescription:
           "Regarder directement le Soleil sans protection adaptée peut provoquer des lésions oculaires permanentes.",
 
+        safetyDocuments:
+          "Les certificats de sécurité disponibles et les documents justificatifs peuvent être demandés par e-mail, sous réserve de disponibilité et de confirmation.",
+
         safetyOneTitle:
           "Utilisez des lunettes adaptées",
 
@@ -4697,6 +4720,9 @@ badgePopular: "Most popular",
 
         bulkDescription2:
           "Indiquez la quantité souhaitée, la destination et l'utilisation prévue. Nous pourrons ensuite discuter directement de la commande.",
+
+        bulkCustomBranding:
+          "Des lunettes avec votre propre logo ? <a href='/custom-glasses'>Découvrez la personnalisation</a> pour votre entreprise, événement ou groupe.",
 
         requestQuote:
           "Demander un devis",
@@ -4934,6 +4960,9 @@ badgePopular: "Most popular",
         safetyDescription:
           "Mirar directamente al Sol sin protección adecuada puede causar daños oculares permanentes.",
 
+        safetyDocuments:
+          "Los certificados de seguridad y la documentación de respaldo disponibles pueden solicitarse por correo electrónico, sujetos a disponibilidad y confirmación.",
+
         safetyOneTitle:
           "Utiliza protección solar adecuada",
 
@@ -4992,6 +5021,9 @@ badgePopular: "Most popular",
 
         bulkDescription2:
           "Indica la cantidad que necesitas, el destino y para qué estás preparando el pedido. Después podremos hablar directamente sobre la solicitud.",
+
+        bulkCustomBranding:
+          "¿Quieres gafas con tu propio logotipo? <a href='/custom-glasses'>Descubre las opciones de personalización</a> para tu empresa, evento o grupo.",
 
         requestQuote:
           "Solicitar presupuesto",
