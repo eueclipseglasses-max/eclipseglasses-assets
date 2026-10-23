@@ -2274,7 +2274,8 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 }
 
 .eg .bulk-copy .section-title {
-  margin-bottom: 0.65rem;
+  margin-top: 0.75rem;
+  margin-bottom: 0.9rem;
 }
 
 .eg .bulk-copy p {
