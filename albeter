@@ -918,17 +918,9 @@ const PAGE_HTML = String.raw`<nav class="nav">
             Ordering for more than 50?
           </h2>
 
-
-          <br>
-
-
           <p data-i18n="bulkDescription">
             Schools, hotels, travel companies, astronomy groups, event organisers and retailers can request a custom quotation for larger quantities.
           </p>
-
-
-          <br>
-
 
           <p data-i18n="bulkDescription2">
             Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.
@@ -2273,19 +2265,28 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 .eg .bulk-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 2.5rem;
+  gap: 1.4rem;
   align-items: start;
-  padding: clamp(1.4rem, 3vw, 2.5rem);
+  padding: clamp(1rem, 2vw, 1.5rem);
   border-radius: var(--radius-frame);
   background: var(--color-panel);
   box-shadow: var(--shadow-ring);
 }
 
+.eg .bulk-copy .section-title {
+  margin-bottom: 0.65rem;
+}
+
 .eg .bulk-copy p {
   max-width: none;
+  margin: 0.65rem 0;
   color: var(--color-muted);
   font-size: 0.95rem;
-  line-height: 1.8;
+  line-height: 1.6;
+}
+
+.eg .bulk-copy .bulk-custom-note {
+  margin-top: 0.65rem;
 }
 
 .eg .bulk-form {
