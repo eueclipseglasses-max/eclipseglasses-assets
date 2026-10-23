@@ -922,10 +922,6 @@ const PAGE_HTML = String.raw`<nav class="nav">
             Schools, hotels, travel companies, astronomy groups, event organisers and retailers can request a custom quotation for larger quantities.
           </p>
 
-          <p data-i18n="bulkDescription2">
-            Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.
-          </p>
-
           <p class="bulk-custom-note" style="margin-top:.75rem;font-size:.9rem;line-height:1.55;color:var(--color-muted)">
             <span data-i18n="bulkCustomBranding">Interested in glasses with your own branding?</span>
             <a href="/custom-glasses" data-i18n="bulkCustomBrandingLink" style="color:var(--color-gold);text-underline-offset:3px">Explore custom branding</a>
@@ -4424,8 +4420,7 @@ badgePopular: "Most popular",
         bulkDescription:
           "Scholen, hotels, reisorganisaties, astronomiegroepen, evenementenorganisatoren en retailers kunnen een offerte aanvragen.",
 
-        bulkDescription2:
-          "Vertel ons hoeveel je nodig hebt, waar de bestelling naartoe moet en waarvoor je de brillen voorbereidt. Daarna kunnen we de bestelling rechtstreeks bespreken.",
+
 
         bulkCustomBranding:
           "Interesse in brillen met je eigen branding?",
