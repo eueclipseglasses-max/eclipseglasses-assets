@@ -4116,9 +4116,6 @@ badgePopular: "Most popular",
         bulkDescription:
           "Schools, hotels, travel companies, astronomy groups, event organisers and retailers can request a custom quotation for larger quantities.",
 
-        bulkDescription2:
-          "Tell us the quantity you need, where the order should go and what you are preparing for. We can then discuss the order directly.",
-
         bulkCustomBranding:
           "Interested in glasses with your own branding?",
 
@@ -4722,9 +4719,6 @@ badgePopular: "Most popular",
         bulkDescription:
           "Écoles, hôtels, agences de voyage, groupes d'astronomie et entreprises peuvent demander un devis personnalisé.",
 
-        bulkDescription2:
-          "Indiquez la quantité souhaitée, la destination et l'utilisation prévue. Nous pourrons ensuite discuter directement de la commande.",
-
         bulkCustomBranding:
           "Intéressé par des lunettes personnalisées à votre image ?",
 
@@ -5025,9 +5019,6 @@ badgePopular: "Most popular",
 
         bulkDescription:
           "Colegios, hoteles, agencias de viajes, grupos de astronomía y empresas pueden solicitar un presupuesto personalizado.",
-
-        bulkDescription2:
-          "Indica la cantidad que necesitas, el destino y para qué estás preparando el pedido. Después podremos hablar directamente sobre la solicitud.",
 
         bulkCustomBranding:
           "¿Te interesan gafas personalizadas con tu marca?",
