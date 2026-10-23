@@ -29,7 +29,7 @@ const PAGE_HTML = String.raw`<nav class="nav">
         </a>
 
         <a
-          href="#custom" onclick="document.getElementById('navToggle').checked=false"
+          href="/custom-glasses" onclick="document.getElementById('navToggle').checked=false"
           data-i18n="navCustom"
         >
           Custom Branding
@@ -885,39 +885,6 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
   </section>
 
-
-  <section class="section" id="custom">
-    <div class="container">
-      <div class="section-heading">
-        <div>
-          <div class="section-label" data-i18n="customLabel">For businesses</div>
-          <h2 class="section-title" data-i18n="customTitle">Put your brand on eclipse glasses.</h2>
-        </div>
-        <p class="section-description" data-i18n="customDescription">Create a branded giveaway or practical keepsake for your customers, guests, students or event visitors.</p>
-      </div>
-      <div class="info-grid">
-        <div class="info-card">
-          <div class="info-icon">01 / BRANDING</div>
-          <h3 data-i18n="customCardTitle1">Your logo. Your design.</h3>
-          <p data-i18n="customCardText1">Ask about eclipse glasses customised with your company logo, campaign artwork or event identity.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-icon">02 / FOR ORGANISATIONS</div>
-          <h3 data-i18n="customCardTitle2">Made for business orders.</h3>
-          <p data-i18n="customCardText2">A promotional product for hotels, tour operators, schools, retailers, sponsors and event organisers preparing for the 2027 eclipse.</p>
-        </div>
-        <div class="info-card">
-          <div class="info-icon">03 / REQUEST A QUOTE</div>
-          <h3 data-i18n="customCardTitle3">Tell us what you have in mind.</h3>
-          <p data-i18n="customCardText3">Use the business enquiry form below. Include your quantity, deadline and branding requirements. We will confirm available options and pricing.</p>
-        </div>
-      </div>
-      <div style="margin-top:28px;display:flex;justify-content:center">
-        <a href="#bulk" class="button button-primary" data-i18n="customButton">Request a custom quote</a>
-      </div>
-      <p class="section-description" style="margin:18px auto 0;text-align:center;max-width:760px" data-i18n="customDisclaimer">Custom printing, minimum quantities, lead times and pricing must be confirmed for each order.</p>
-    </div>
-  </section>
 
   <section
     class="section bulk"
@@ -5340,6 +5307,18 @@ badgePopular: "Most popular",
       savedLanguage
     );
 
+    if (new URLSearchParams(window.location.search).get("custom") === "1") {
+      const messageField = document.getElementById("bulkMessage");
+      if (messageField) {
+        const customMessages = {
+          en: "I am interested in custom-branded eclipse glasses. Please confirm printing options, minimum quantity, lead time and pricing.\n\nLogo / artwork: \nRequired quantity: \nDeadline: \nDelivery country: ",
+          nl: "Ik ben geïnteresseerd in eclipsbrillen met eigen branding. Bevestig graag de bedrukkingsopties, minimumhoeveelheid, levertijd en prijs.\n\nLogo / ontwerp: \nGewenst aantal: \nDeadline: \nLand van levering: ",
+          fr: "Je suis intéressé(e) par des lunettes d’éclipse personnalisées. Merci de confirmer les options d’impression, la quantité minimale, le délai et le prix.\n\nLogo / visuel : \nQuantité : \nDate limite : \nPays de livraison : ",
+          es: "Me interesan las gafas para eclipses personalizadas con mi marca. Confirmen las opciones de impresión, la cantidad mínima, el plazo y el precio.\n\nLogotipo / diseño: \nCantidad: \nFecha límite: \nPaís de entrega: "
+        };
+        messageField.value = customMessages[savedLanguage] || customMessages.en;
+      }
+    }
 
     renderCart();
 
@@ -5377,6 +5356,11 @@ function pageResponse() {
       "referrer-policy": "strict-origin-when-cross-origin"
     }
   });
+}
+
+function customBrandingResponse() {
+  const html = "<!doctype html>\n<html lang=\"en\"><head>\n<meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n<meta name=\"theme-color\" content=\"#080808\">\n<meta name=\"description\" content=\"Enquire about custom-branded eclipse glasses for your business or event ahead of the 2027 solar eclipse.\">\n<link rel=\"icon\" type=\"image/png\" href=\"https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/KLASSEKLASSE-modified%20(2).png\">\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap\" rel=\"stylesheet\">\n<title>Custom-Branded Eclipse Glasses | EclipseGlasses.eu</title>\n<style>__CSS__\n.cb-header{border-bottom:1px solid var(--color-line);padding:22px 0}.cb-header .container{display:flex;justify-content:space-between;align-items:center}.cb-logo{font-family:var(--font-display);font-weight:800}.cb-logo span,.cb-hero h1 span{color:var(--color-gold-2)}\n.cb-hero{padding:72px 0 48px}.cb-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:42px;align-items:center}.cb-eyebrow{color:var(--color-gold-2);letter-spacing:.16em;text-transform:uppercase;font-size:.72rem;font-weight:700}.cb-hero h1{font-family:var(--font-display);font-size:clamp(2.7rem,6vw,5rem);line-height:1.03;letter-spacing:-.05em;margin:18px 0}.cb-lead{color:var(--color-muted);font-size:1.08rem;line-height:1.8}.cb-visual{min-height:280px;padding:28px;border:1px solid var(--color-line);border-radius:var(--radius-frame);display:flex;flex-direction:column;justify-content:space-between;background:radial-gradient(circle at 50% 40%,rgb(201 164 93 / .18),transparent 50%),#111}.cb-eclipse{width:120px;height:120px;border-radius:50%;align-self:center;background:radial-gradient(circle,#050505 0 42%,#d8b66c 44% 48%,transparent 60%)}.cb-caption{color:var(--color-muted);text-align:center;font-size:.85rem}.cb-cards{padding:10px 0 72px}.cb-cards .info-grid{margin-top:26px}.cb-note{color:var(--color-faint);font-size:.84rem;margin-top:20px}.cb-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}.cb-footer{border-top:1px solid var(--color-line);padding:24px 0;color:var(--color-faint);font-size:.82rem}\n@media(max-width:760px){.cb-grid{grid-template-columns:1fr}.cb-hero{padding:45px 0 30px}.cb-visual{min-height:230px}}\n</style></head><body><main class=\"eg\">\n<header class=\"cb-header\"><div class=\"container\"><a class=\"cb-logo\" href=\"/\">ECLIPSE<span>GLASSES</span></a><a href=\"/\">Back to shop</a></div></header>\n<section class=\"cb-hero\"><div class=\"container cb-grid\"><div><div class=\"cb-eyebrow\">Custom branding · 2027 eclipse</div><h1>Put your brand on <span>eclipse glasses.</span></h1><p class=\"cb-lead\">Create a branded giveaway or practical keepsake for your customers, guests, students or event visitors during the total solar eclipse of 2 August 2027.</p><div class=\"cb-actions\"><a class=\"button button-primary\" href=\"/?custom=1#bulk\">Request a custom quote</a><a class=\"button\" href=\"/#bulk\">Bulk orders</a></div><p class=\"cb-note\">Custom printing, minimum quantities, lead times and pricing must be confirmed for each order.</p></div><div class=\"cb-visual\"><div class=\"cb-logo\">ECLIPSE<span>GLASSES</span></div><div class=\"cb-eclipse\"></div><div class=\"cb-caption\">Your logo. Your event. The 2027 eclipse.</div></div></div></section>\n<section class=\"cb-cards\"><div class=\"container\"><div class=\"section-heading\"><div><div class=\"section-label\">For businesses and organisations</div><h2 class=\"section-title\">A practical promotional product with your identity.</h2></div><p class=\"section-description\">Enquire about branded eclipse glasses for hotels, tour operators, schools, retailers, sponsors and event organisers.</p></div><div class=\"info-grid\">\n<div class=\"info-card\"><div class=\"info-icon\">01 / BRANDING</div><h3>Your logo. Your design.</h3><p>Tell us about your logo, campaign artwork or event identity and we will confirm which options are available.</p></div>\n<div class=\"info-card\"><div class=\"info-icon\">02 / BUSINESS</div><h3>For business orders.</h3><p>Share your expected quantity, deadline, delivery country and branding requirements.</p></div>\n<div class=\"info-card\"><div class=\"info-icon\">03 / QUOTE</div><h3>Request a tailored quote.</h3><p>We will confirm available printing options, minimum quantities, lead times and pricing before you order.</p></div>\n</div><div class=\"cb-actions\"><a class=\"button button-primary\" href=\"/?custom=1#bulk\">Request a custom quote</a></div><p class=\"cb-note\">Personalisation is an enquiry, not a confirmed service. All details are subject to supplier confirmation.</p></div></section>\n<footer class=\"cb-footer\"><div class=\"container\">EclipseGlasses.eu · Custom branding enquiries for the 2027 solar eclipse.</div></footer>\n</main></body></html>";
+  return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-cache", "x-content-type-options": "nosniff", "referrer-policy": "strict-origin-when-cross-origin" } });
 }
 
 export default {
@@ -6599,6 +6583,12 @@ export default {
     }
 
 
+
+    if (url.pathname === "/custom-glasses" || url.pathname === "/custom-glasses/") {
+      if (request.method === "HEAD") return new Response(null, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
+      if (request.method !== "GET") return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
+      return customBrandingResponse();
+    }
 
     if (request.method !== "GET" && request.method !== "HEAD") {
       return new Response("Method Not Allowed", { status: 405, headers: { Allow: "GET, HEAD" } });
