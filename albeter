@@ -29,6 +29,13 @@ const PAGE_HTML = String.raw`<nav class="nav">
         </a>
 
         <a
+          href="#custom" onclick="document.getElementById('navToggle').checked=false"
+          data-i18n="navCustom"
+        >
+          Custom Branding
+        </a>
+
+        <a
           href="#eclipse" onclick="document.getElementById('navToggle').checked=false"
           data-i18n="navEclipse"
         >
@@ -878,6 +885,39 @@ const PAGE_HTML = String.raw`<nav class="nav">
 
   </section>
 
+
+  <section class="section" id="custom">
+    <div class="container">
+      <div class="section-heading">
+        <div>
+          <div class="section-label" data-i18n="customLabel">For businesses</div>
+          <h2 class="section-title" data-i18n="customTitle">Put your brand on eclipse glasses.</h2>
+        </div>
+        <p class="section-description" data-i18n="customDescription">Create a branded giveaway or practical keepsake for your customers, guests, students or event visitors.</p>
+      </div>
+      <div class="info-grid">
+        <div class="info-card">
+          <div class="info-icon">01 / BRANDING</div>
+          <h3 data-i18n="customCardTitle1">Your logo. Your design.</h3>
+          <p data-i18n="customCardText1">Ask about eclipse glasses customised with your company logo, campaign artwork or event identity.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">02 / FOR ORGANISATIONS</div>
+          <h3 data-i18n="customCardTitle2">Made for business orders.</h3>
+          <p data-i18n="customCardText2">A promotional product for hotels, tour operators, schools, retailers, sponsors and event organisers preparing for the 2027 eclipse.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-icon">03 / REQUEST A QUOTE</div>
+          <h3 data-i18n="customCardTitle3">Tell us what you have in mind.</h3>
+          <p data-i18n="customCardText3">Use the business enquiry form below. Include your quantity, deadline and branding requirements. We will confirm available options and pricing.</p>
+        </div>
+      </div>
+      <div style="margin-top:28px;display:flex;justify-content:center">
+        <a href="#bulk" class="button button-primary" data-i18n="customButton">Request a custom quote</a>
+      </div>
+      <p class="section-description" style="margin:18px auto 0;text-align:center;max-width:760px" data-i18n="customDisclaimer">Custom printing, minimum quantities, lead times and pricing must be confirmed for each order.</p>
+    </div>
+  </section>
 
   <section
     class="section bulk"
@@ -5072,6 +5112,7 @@ badgePopular: "Most popular",
 
     const extraTranslations = {
       en: {
+        navCustom:"Custom Branding", customLabel:"BRANDED ECLIPSE GLASSES", customTitle:"Put your brand on eclipse glasses.", customDescription:"Create a branded giveaway or practical keepsake for your customers, guests, students or event visitors.", customCardTitle1:"Your logo. Your design.", customCardText1:"Ask about eclipse glasses customised with your company logo, campaign artwork or event identity.", customCardTitle2:"Made for business orders.", customCardText2:"A promotional product for hotels, tour operators, schools, retailers, sponsors and event organisers preparing for the 2027 eclipse.", customCardTitle3:"Tell us what you have in mind.", customCardText3:"Use the business enquiry form below. Include your quantity, deadline and branding requirements. We will confirm available options and pricing.", customButton:"Request a custom quote", customDisclaimer:"Custom printing, minimum quantities, lead times and pricing must be confirmed for each order.",
         cartRemove:"Remove", quoteReceived:"Quote request received.", quoteReference:"Your reference number is", quoteFollowup:"We'll get back to you as soon as possible.", quoteError:"Something went wrong. Please try again.", sending:"Sending...",
         orderSubject:"EclipseGlasses.eu order enquiry", orderIntro:"Hello,\n\nI would like to order the following:\n\n", orderProductTotal:"Product total:", orderShipping:"Please let me know the shipping cost and the next steps.", orderThanks:"Thank you.",
         footerTagline:"Ready for the moment the world goes dark.",
@@ -5084,11 +5125,12 @@ badgePopular: "Most popular",
         footerNote:"Looking ahead to 2 August 2027.", footerSocialAria:"Social media",
         infoDeliveryLabel:"01 / DELIVERY", infoAboutLabel:"02 / ABOUT", infoGroupsLabel:"03 / GROUPS",
         bulkNamePlaceholder:"Name / company", bulkEmailPlaceholder:"Email", bulkQuantityPlaceholder:"Quantity",
-        bulkMessagePlaceholder:"Tell us what you need...", quantityAria:"Quantity",
+        bulkMessagePlaceholder:"Tell us what you need, including any logo or custom branding requirements...", quantityAria:"Quantity",
         cartEmpty:"Your cart is empty.", cartRemove:"Remove", cartItem:"pair(s)",
         cartLabel:"Cart", menuAria:"Menu", heroImageAlt:"Total solar eclipse over a quiet southern coast"
       },
       nl: {
+        navCustom:"Personalisatie", customLabel:"ECLIPSBRILLEN MET LOGO", customTitle:"Zet jouw merk op eclipsbrillen.", customDescription:"Maak een gepersonaliseerd relatiegeschenk voor klanten, gasten, leerlingen of bezoekers van je evenement.", customCardTitle1:"Jouw logo. Jouw ontwerp.", customCardText1:"Vraag naar eclipsbrillen met het logo van je bedrijf, campagnedesign of evenement.", customCardTitle2:"Voor zakelijke bestellingen.", customCardText2:"Een promotieproduct voor hotels, reisorganisaties, scholen, winkels, sponsors en organisatoren die zich voorbereiden op de eclips van 2027.", customCardTitle3:"Vertel ons je plannen.", customCardText3:"Gebruik het zakelijke aanvraagformulier hieronder. Vermeld het aantal, de deadline en je personalisatiewensen. We bevestigen welke opties en prijzen mogelijk zijn.", customButton:"Vraag een offerte op maat aan", customDisclaimer:"Bedrukking, minimumaantallen, levertijden en prijzen moeten per bestelling worden bevestigd.",
         cartRemove:"Verwijderen", quoteReceived:"Offerteaanvraag ontvangen.", quoteReference:"Je referentienummer is", quoteFollowup:"We nemen zo snel mogelijk contact met je op.", quoteError:"Er ging iets mis. Probeer het opnieuw.", sending:"Verzenden...",
         orderSubject:"Bestelvraag EclipseGlasses.eu", orderIntro:"Hallo,\n\nIk wil graag het volgende bestellen:\n\n", orderProductTotal:"Totaal producten:", orderShipping:"Laat me weten wat de verzendkosten zijn en wat de volgende stappen zijn.", orderThanks:"Bedankt.",
         footerTagline:"Klaar voor het moment waarop de wereld donker wordt.",
@@ -5101,11 +5143,12 @@ badgePopular: "Most popular",
         footerNote:"Op weg naar 2 augustus 2027.", footerSocialAria:"Sociale media",
         infoDeliveryLabel:"01 / LEVERING", infoAboutLabel:"02 / OVER ONS", infoGroupsLabel:"03 / GROEPEN",
         bulkNamePlaceholder:"Naam / bedrijf", bulkEmailPlaceholder:"E-mail", bulkQuantityPlaceholder:"Aantal",
-        bulkMessagePlaceholder:"Vertel ons wat je nodig hebt...", quantityAria:"Aantal",
+        bulkMessagePlaceholder:"Vertel ons wat je nodig hebt, inclusief je logo- of personalisatiewensen...", quantityAria:"Aantal",
         cartEmpty:"Je winkelwagen is leeg.", cartRemove:"Verwijderen", cartItem:"paar",
         cartLabel:"Winkelwagen", menuAria:"Menu", heroImageAlt:"Totale zonsverduistering boven een rustige zuidkust"
       },
       fr: {
+        navCustom:"Personnalisation", customLabel:"LUNETTES D’ÉCLIPSE PERSONNALISÉES", customTitle:"Affichez votre marque sur les lunettes d’éclipse.", customDescription:"Créez un cadeau promotionnel personnalisé pour vos clients, invités, élèves ou visiteurs.", customCardTitle1:"Votre logo. Votre design.", customCardText1:"Renseignez-vous sur les lunettes d’éclipse personnalisées avec le logo de votre entreprise, votre campagne ou votre événement.", customCardTitle2:"Pour les commandes professionnelles.", customCardText2:"Un produit promotionnel pour les hôtels, voyagistes, écoles, détaillants, sponsors et organisateurs d’événements préparant l’éclipse de 2027.", customCardTitle3:"Parlez-nous de votre projet.", customCardText3:"Utilisez le formulaire professionnel ci-dessous. Indiquez la quantité, le délai et vos besoins de personnalisation. Nous confirmerons les options et les prix disponibles.", customButton:"Demander un devis personnalisé", customDisclaimer:"L’impression personnalisée, les quantités minimales, les délais et les prix doivent être confirmés pour chaque commande.",
         cartRemove:"Supprimer", quoteReceived:"Demande de devis reçue.", quoteReference:"Votre numéro de référence est", quoteFollowup:"Nous vous répondrons dès que possible.", quoteError:"Une erreur s’est produite. Veuillez réessayer.", sending:"Envoi...",
         orderSubject:"Demande de commande EclipseGlasses.eu", orderIntro:"Bonjour,\n\nJe souhaite commander les articles suivants :\n\n", orderProductTotal:"Total des produits :", orderShipping:"Veuillez m’indiquer les frais de livraison et les prochaines étapes.", orderThanks:"Merci.",
         footerTagline:"Prêts pour le moment où le monde s’assombrit.",
@@ -5118,11 +5161,12 @@ badgePopular: "Most popular",
         footerNote:"En route vers le 2 août 2027.", footerSocialAria:"Réseaux sociaux",
         infoDeliveryLabel:"01 / LIVRAISON", infoAboutLabel:"02 / À PROPOS", infoGroupsLabel:"03 / GROUPES",
         bulkNamePlaceholder:"Nom / entreprise", bulkEmailPlaceholder:"E-mail", bulkQuantityPlaceholder:"Quantité",
-        bulkMessagePlaceholder:"Indiquez-nous vos besoins...", quantityAria:"Quantité",
+        bulkMessagePlaceholder:"Indiquez vos besoins, y compris vos demandes de logo ou de personnalisation...", quantityAria:"Quantité",
         cartEmpty:"Votre panier est vide.", cartRemove:"Supprimer", cartItem:"paire(s)",
         cartLabel:"Panier", menuAria:"Menu", heroImageAlt:"Éclipse solaire totale au-dessus d’une côte méridionale paisible"
       },
       es: {
+        navCustom:"Personalización", customLabel:"GAFAS DE ECLIPSE PERSONALIZADAS", customTitle:"Pon tu marca en las gafas de eclipse.", customDescription:"Crea un obsequio promocional personalizado para tus clientes, huéspedes, alumnos o visitantes de eventos.", customCardTitle1:"Tu logo. Tu diseño.", customCardText1:"Consulta las opciones de gafas de eclipse personalizadas con el logotipo de tu empresa, el diseño de tu campaña o la identidad de tu evento.", customCardTitle2:"Para pedidos de empresas.", customCardText2:"Un producto promocional para hoteles, operadores turísticos, colegios, comercios, patrocinadores y organizadores de eventos que se preparan para el eclipse de 2027.", customCardTitle3:"Cuéntanos tu idea.", customCardText3:"Utiliza el formulario para empresas que aparece abajo. Indica la cantidad, la fecha límite y tus requisitos de personalización. Confirmaremos las opciones y los precios disponibles.", customButton:"Solicitar presupuesto personalizado", customDisclaimer:"La impresión personalizada, las cantidades mínimas, los plazos y los precios deben confirmarse para cada pedido.",
         cartRemove:"Eliminar", quoteReceived:"Solicitud de presupuesto recibida.", quoteReference:"Tu número de referencia es", quoteFollowup:"Nos pondremos en contacto contigo lo antes posible.", quoteError:"Algo salió mal. Inténtalo de nuevo.", sending:"Enviando...",
         orderSubject:"Consulta de pedido EclipseGlasses.eu", orderIntro:"Hola,\n\nMe gustaría pedir lo siguiente:\n\n", orderProductTotal:"Total de productos:", orderShipping:"Por favor, indícame el coste de envío y los siguientes pasos.", orderThanks:"Gracias.",
         footerTagline:"Listos para el momento en que el mundo se oscurezca.",
@@ -5135,7 +5179,7 @@ badgePopular: "Most popular",
         footerNote:"Rumbo al 2 de agosto de 2027.", footerSocialAria:"Redes sociales",
         infoDeliveryLabel:"01 / ENTREGA", infoAboutLabel:"02 / SOBRE NOSOTROS", infoGroupsLabel:"03 / GRUPOS",
         bulkNamePlaceholder:"Nombre / empresa", bulkEmailPlaceholder:"Correo electrónico", bulkQuantityPlaceholder:"Cantidad",
-        bulkMessagePlaceholder:"Cuéntanos qué necesitas...", quantityAria:"Cantidad",
+        bulkMessagePlaceholder:"Cuéntanos qué necesitas, incluidos los requisitos de logotipo o personalización...", quantityAria:"Cantidad",
         cartEmpty:"Tu carrito está vacío.", cartRemove:"Eliminar", cartItem:"par(es)",
         cartLabel:"Carrito", menuAria:"Menú", heroImageAlt:"Eclipse solar total sobre una costa tranquila del sur"
       }
