@@ -2956,6 +2956,281 @@ body { margin: 0; background: radial-gradient(900px 420px at 8% -10%, rgb(201 16
 }
 
 
+
+
+/* ---------- brand polish: confident, established, conversion-focused ---------- */
+.eg .nav {
+  background: rgb(8 8 8 / 0.88);
+  border-bottom-color: rgb(201 164 93 / 0.18);
+}
+.eg .logo {
+  letter-spacing: -0.055em;
+  font-size: 1.08rem;
+}
+.eg .logo span {
+  color: var(--color-gold-2);
+}
+.eg .nav-links a {
+  transition: color .18s ease;
+}
+.eg .nav-links a:hover {
+  color: var(--color-gold-2);
+}
+.eg .cart-button {
+  border: 1px solid rgb(201 164 93 / .32);
+  background: rgb(201 164 93 / .08);
+  transition: background .18s ease, border-color .18s ease, transform .18s ease;
+}
+.eg .cart-button:hover {
+  background: rgb(201 164 93 / .15);
+  border-color: rgb(201 164 93 / .6);
+  transform: translateY(-1px);
+}
+.eg .hero {
+  gap: clamp(2.5rem, 5vw, 5rem);
+  padding-top: 8.75rem;
+  padding-bottom: 6rem;
+}
+.eg .hero-content {
+  max-width: 38rem;
+}
+.eg .hero h1 {
+  font-size: clamp(3.25rem, 6.2vw, 5.75rem);
+  line-height: .94;
+  letter-spacing: -.065em;
+}
+.eg .hero h1 span {
+  display: block;
+  margin-top: .12em;
+  color: var(--color-gold-2);
+}
+.eg .hero-copy {
+  color: #c3bfb6;
+  max-width: 32rem;
+  font-size: 1.08rem;
+}
+.eg .hero-photo {
+  aspect-ratio: 4 / 5;
+  border: 1px solid rgb(201 164 93 / .18);
+  background: #14120e;
+  box-shadow: 0 34px 90px -42px rgb(0 0 0 / .95), 0 0 0 1px rgb(255 255 255 / .035);
+}
+.eg .hero-photo img {
+  transition: transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.eg .hero-photo:hover img {
+  transform: scale(1.025);
+}
+.eg .pill {
+  border: 1px solid rgb(255 255 255 / .10);
+  background: rgb(255 255 255 / .035);
+  color: #d6d1c7;
+  padding: .43rem .78rem;
+}
+.eg .button {
+  min-height: 3.15rem;
+  border-radius: .7rem;
+  letter-spacing: -.01em;
+}
+.eg .button-primary {
+  background: var(--color-gold-2);
+  color: #17130b;
+  box-shadow: 0 8px 24px rgb(201 164 93 / .13);
+}
+.eg .button-primary:hover {
+  background: #f0d99d;
+  box-shadow: 0 10px 30px rgb(201 164 93 / .2);
+}
+.eg .button-secondary {
+  border: 1px solid rgb(255 255 255 / .14);
+}
+.eg .section {
+  padding-top: clamp(5rem, 8vw, 7.25rem);
+  padding-bottom: clamp(5rem, 8vw, 7.25rem);
+}
+.eg .section + .section {
+  border-top: 1px solid rgb(255 255 255 / .035);
+}
+.eg .section-title {
+  letter-spacing: -.055em;
+}
+.eg .section-label {
+  color: var(--color-gold-2);
+}
+.eg .section-heading {
+  gap: 2.5rem;
+  margin-bottom: 2.75rem;
+}
+.eg .section-description {
+  max-width: 34rem;
+  color: #aaa79f;
+}
+.eg .shop-grid {
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+.eg .product-image-frame {
+  padding: clamp(.6rem, 1.6vw, 1rem);
+  border: 1px solid rgb(201 164 93 / .16);
+  border-radius: 1.5rem;
+  background: linear-gradient(145deg, rgb(201 164 93 / .07), transparent 48%), #11100e;
+  box-shadow: 0 24px 70px -45px #000;
+}
+.eg .product-image-scroll {
+  border-radius: 1rem;
+  scrollbar-color: #806b43 #171512;
+}
+.eg .product-image-scroll img {
+  border-radius: .85rem;
+}
+.eg .product-image-hint {
+  padding: .8rem .25rem .15rem;
+  color: #b6b0a4;
+}
+.eg .product-info h3 {
+  letter-spacing: -.04em;
+}
+.eg .price-grid {
+  gap: .65rem;
+}
+.eg .price-option {
+  position: relative;
+  border: 1px solid rgb(255 255 255 / .095);
+  border-radius: .85rem;
+  background: linear-gradient(145deg, rgb(255 255 255 / .035), rgb(255 255 255 / .012));
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.eg .price-option:hover {
+  border-color: rgb(201 164 93 / .42);
+  transform: translateY(-2px);
+}
+.eg .price-option.active {
+  border-color: rgb(226 196 127 / .8);
+  background: linear-gradient(145deg, rgb(201 164 93 / .13), rgb(201 164 93 / .045));
+  box-shadow: inset 0 0 0 1px rgb(201 164 93 / .08);
+}
+.eg .price-badge {
+  border-radius: 999px;
+  background: var(--color-gold-2);
+  color: #17130b;
+  letter-spacing: .025em;
+}
+.eg .quantity-input,
+.eg input,
+.eg select,
+.eg textarea {
+  border-radius: .7rem;
+}
+.eg .shipping-note {
+  color: #969187;
+  font-size: .82rem;
+}
+.eg .eclipse-overview,
+.eg .facts,
+.eg .safety-card,
+.eg .info-card,
+.eg .bulk-grid,
+.eg .faq-item {
+  border-color: rgb(255 255 255 / .085);
+}
+.eg .fact,
+.eg .safety-card,
+.eg .info-card {
+  background: linear-gradient(145deg, rgb(255 255 255 / .035), rgb(255 255 255 / .012));
+}
+.eg .fact-value {
+  letter-spacing: -.04em;
+}
+.eg .safety-card,
+.eg .info-card {
+  border-radius: 1rem;
+  transition: border-color .2s ease, transform .2s ease, background .2s ease;
+}
+.eg .safety-card:hover,
+.eg .info-card:hover {
+  transform: translateY(-3px);
+  border-color: rgb(201 164 93 / .28);
+  background: linear-gradient(145deg, rgb(201 164 93 / .055), rgb(255 255 255 / .012));
+}
+.eg .safety-number,
+.eg .info-icon {
+  color: var(--color-gold-2);
+}
+.eg .bulk-grid {
+  border-radius: 1.5rem;
+  background: radial-gradient(600px 260px at 0% 0%, rgb(201 164 93 / .10), transparent 70%), #10100e;
+  box-shadow: 0 25px 75px -55px #000;
+}
+.eg .bulk-form,
+.eg .bulk-form input,
+.eg .bulk-form select,
+.eg .bulk-form textarea {
+  border-radius: .7rem;
+}
+.eg .faq-item {
+  border-radius: .8rem;
+  overflow: hidden;
+}
+.eg .faq-item + .faq-item {
+  margin-top: .65rem;
+}
+.eg .faq-item summary {
+  padding: 1.15rem 1.25rem;
+}
+.eg .faq-item[open] summary {
+  color: var(--color-gold-2);
+}
+.eg .final-cta {
+  background: radial-gradient(700px 320px at 50% 0%, rgb(201 164 93 / .09), transparent 72%);
+}
+.eg .footer {
+  border-top-color: rgb(201 164 93 / .16);
+}
+.eg a:focus-visible,
+.eg button:focus-visible,
+.eg input:focus-visible,
+.eg select:focus-visible,
+.eg textarea:focus-visible,
+.eg summary:focus-visible {
+  outline: 2px solid var(--color-gold-2);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .eg *, .eg *::before, .eg *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+@media (max-width: 900px) {
+  .eg .hero {
+    gap: 2.5rem;
+    padding-top: 7.5rem;
+    padding-bottom: 4.5rem;
+  }
+}
+@media (max-width: 760px) {
+  .eg .hero {
+    padding-top: 6.5rem;
+    padding-bottom: 3.75rem;
+  }
+  .eg .hero h1 {
+    font-size: clamp(2.85rem, 11vw, 4rem);
+  }
+  .eg .hero-photo {
+    aspect-ratio: 5 / 4;
+    max-height: none;
+  }
+  .eg .section-heading {
+    margin-bottom: 2rem;
+  }
+  .eg .price-option:hover,
+  .eg .safety-card:hover,
+  .eg .info-card:hover {
+    transform: none;
+  }
+}
 `;
 
 const PAGE_SCRIPT = String.raw`const PRICE_TIERS = [
@@ -5368,8 +5643,8 @@ function pageResponse() {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#080808">
   <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/KLASSEKLASSE-modified%20(2).png">
-  <meta name="description" content="Premium eclipse glasses for the total solar eclipse of 2 August 2027. Individual orders and bulk supply for businesses.">
-  <title>EclipseGlasses — 2027 Total Solar Eclipse</title>
+  <meta name="description" content="Solar eclipse glasses for the 2 August 2027 total solar eclipse. Clear ordering for individuals, groups and business buyers, with bulk enquiries and custom branding options.">
+  <title>EclipseGlasses.eu | Solar Eclipse Glasses for 2027</title>
   <link rel="preconnect" href="https://images.unsplash.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
