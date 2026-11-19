@@ -13,17 +13,22 @@ const HTML = String.raw`<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
-:root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--panel2:#1a2029;--border:#2a313c;--muted:#929ba8;--text:#f1f3f6;--input:#0d1117;--orange:#ef4444;--green:#35c98b;--soft-red:#351d22;--soft-red-text:#ffaaa0;--map-bg:#171c24;--shadow:0 8px 24px rgba(0,0,0,.16)}
+:root{color-scheme:dark;--bg:#211d19;--panel:#2b2520;--panel2:#362d26;--border:#514235;--muted:#c2a98b;--text:#f5d5a8;--input:#211b17;--orange:#c58a52;--green:#a4a878;--soft-red:#49302b;--soft-red-text:#f0b59a;--map-bg:#2c2721;--shadow:0 8px 24px rgba(0,0,0,.22)}
 :root[data-theme="light"]{color-scheme:light;--bg:#f1e2c6;--panel:#fff8e9;--panel2:#ead9bb;--border:#d6bd96;--muted:#806b55;--text:#3c2c20;--input:#fffaf0;--orange:#a96f43;--green:#68794e;--soft-red:#f3e3d8;--soft-red-text:#92563a;--map-bg:#ead9bb;--shadow:0 8px 24px rgba(83,57,32,.09)}
 :root[data-theme="light"] body{font-family:"Cormorant Garamond",Georgia,serif;font-size:16px}
 :root[data-theme="light"] .map-cluster-label{font-family:"Cormorant Garamond",Georgia,serif}
 :root[data-theme="light"] h1,:root[data-theme="light"] h2,:root[data-theme="light"] h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--text)}
 :root[data-theme="light"] footer{color:var(--muted)}
+:root[data-theme="dark"] body{font-family:"Cormorant Garamond",Georgia,serif;font-size:16px}
+:root[data-theme="dark"] .map-cluster-label{font-family:"Cormorant Garamond",Georgia,serif}
+:root[data-theme="dark"] h1,:root[data-theme="dark"] h2,:root[data-theme="dark"] h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--text)}
+:root[data-theme="dark"] footer{color:var(--muted)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif;transition:background .2s,color .2s}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel);}
+:root[data-theme="dark"] header{background:#171412;}
 :root[data-theme="light"] header{background:#FBEED8;}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
 .logo{width:48px;height:48px;object-fit:contain;display:block;border-radius:0;flex:0 0 48px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
