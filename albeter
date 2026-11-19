@@ -11,8 +11,8 @@ const HTML = String.raw`<!DOCTYPE html>
 <title>De Lijn Radar | Vlaanderen</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--panel2:#171c24;--border:#282e38;--muted:#929ba8;--text:#f1f3f6;--input:#0d1117;--orange:#ef4444;--green:#35c98b}
-:root[data-theme="light"]{color-scheme:light;--bg:#f4f5f7;--panel:#ffffff;--panel2:#f0f2f5;--border:#e1e4e9;--muted:#667085;--text:#171b22;--input:#ffffff;--orange:#dc3838;--green:#16865b}
+:root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--panel2:#1a2029;--border:#2a313c;--muted:#929ba8;--text:#f1f3f6;--input:#0d1117;--orange:#ef4444;--green:#35c98b;--soft-red:#351d22;--soft-red-text:#ffaaa0;--map-bg:#171c24;--shadow:0 8px 24px rgba(0,0,0,.16)}
+:root[data-theme="light"]{color-scheme:light;--bg:#f3f5f8;--panel:#ffffff;--panel2:#f5f6f8;--border:#dfe3e9;--muted:#667085;--text:#202631;--input:#ffffff;--orange:#d93636;--green:#16865b;--soft-red:#fff0ef;--soft-red-text:#b42318;--map-bg:#e9edf2;--shadow:0 8px 24px rgba(26,38,55,.06)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif;transition:background .2s,color .2s}
 button,input,textarea,select{font:inherit}
@@ -24,8 +24,9 @@ header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:
 .header-right{display:flex;align-items:center;gap:12px}
 .status{font-size:11px;color:var(--green)}
 button{border:0;border-radius:7px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:700}
-button.secondary{background:#242a34;color:var(--text);border:1px solid var(--border)}
-button.danger{background:#49251e;color:#ffb29b}
+button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
+button.danger{background:var(--soft-red);color:var(--soft-red-text);border:1px solid var(--border)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 button:disabled{opacity:.5;cursor:not-allowed}
 main{max-width:1450px;margin:auto;padding:30px 4%}
 .heading{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:22px}
@@ -34,16 +35,16 @@ h1{font-size:30px;margin:9px 0}
 h2,h3{margin-top:0}
 .muted{color:var(--muted)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.stat,.panel{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:18px}
+.stat,.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
 .stat span{color:var(--muted);font-size:12px}
 .stat strong{display:block;font-size:27px;margin-top:10px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}
-#map{height:590px;border-radius:9px;background:#1a2028;z-index:1}
+#map{height:590px;border-radius:9px;background:var(--map-bg);z-index:1;border:1px solid var(--border)}
 .map-panel{padding:12px}
 .panel-title{display:flex;justify-content:space-between;align-items:center;padding:8px 5px 15px}
 .side{display:flex;flex-direction:column;gap:15px}
 .field{margin:13px 0}
-label{display:block;color:#aab2bf;font-size:12px;margin-bottom:7px}
+label{display:block;color:var(--muted);font-size:12px;margin-bottom:7px}
 input,textarea,select{width:100%;background:var(--input);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:12px;outline:none}
 input:focus,textarea:focus,select:focus{border-color:var(--orange)}
 textarea{min-height:75px;resize:vertical}
@@ -53,12 +54,20 @@ textarea{min-height:75px;resize:vertical}
 .auth-wrap h1{font-size:25px}
 .tabs{display:flex;gap:8px;margin:20px 0}
 .tabs button{flex:1}
-.report{padding:12px 0;border-bottom:1px solid var(--border)}
-.report:last-child{border:0}
-.report strong{display:block;margin-bottom:6px}
-.tag{display:inline-block;border-radius:5px;background:var(--panel2);color:var(--muted);padding:5px 7px;font-size:10px;margin-top:6px}
-.tag.orange{background:#451b22;color:#ff7777}
+.report{display:flex;flex-direction:column;gap:11px;padding:15px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;margin:0 0 11px;min-width:0}
+.report:last-child{margin-bottom:0}
+.report-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.report-title{font-size:14px;font-weight:700;line-height:1.4;color:var(--text)}
+.report-time{font-size:11px;color:var(--muted);white-space:nowrap}
+.report-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.tag{display:inline-flex;align-items:center;gap:5px;border-radius:6px;background:var(--panel);border:1px solid var(--border);color:var(--muted);padding:6px 8px;font-size:11px;line-height:1.2}
+.tag.orange{background:var(--soft-red);border-color:transparent;color:var(--soft-red-text)}
+.report-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:2px}
+.report-actions button{flex:1;min-width:110px}
 .notice{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
+#reportsList,#pendingList{display:flex;flex-direction:column;gap:0}
+.leaflet-control-attribution{background:var(--panel)!important;color:var(--muted)!important}
+.leaflet-control-attribution a{color:var(--muted)!important}
 .error{color:#ff927c;font-size:12px;margin-top:10px}
 .success{color:var(--green);font-size:12px;margin-top:10px}
 footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
@@ -104,18 +113,17 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  </div>
  <div class="layout">
   <section class="panel map-panel">
-   <div class="panel-title"><div><h3>Stadskaart</h3><span class="muted">De Lijn-netwerk · Vlaanderen</span></div><span class="tag">LIVE GEGEVENS</span></div>
+   <div class="panel-title"><div><h3>Netwerkkaart</h3><span class="muted">De Lijn-netwerk · Vlaanderen</span></div><span class="tag">LIVE GEGEVENS</span></div>
    <div id="map"></div>
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
   <aside class="side">
    <section class="panel hidden" id="reportForm">
     <h3>Waarneming insturen</h3>
-    <p class="notice">Selecteer een lijn en halte. Beschrijf een vertraging of vervoersprobleem dat je zelf hebt waargenomen.</p>
+    <p class="notice">Selecteer de lijn en halte waar je een vervoersprobleem hebt waargenomen.</p>
     <form id="newReport">
      <div class="field"><label>De Lijn-nummer en traject</label><select id="routeSelect" required><option value="">Lijnen laden...</option></select></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Kies eerst een lijn</option></select></div>
-     <div class="field"><label>Beschrijving van de vertraging of storing</label><textarea id="description" required maxlength="500" placeholder="Beschrijf de vertraging of het vervoersprobleem..."></textarea></div>
      <div class="field"><button type="button" class="secondary full" id="gpsButton">Controleer mijn locatie bij deze halte</button><div id="gpsMessage" class="notice">GPS-controle is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
      <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local" required></div>
      <button class="full">Melding indienen</button>
@@ -142,7 +150,9 @@ let mode='login', map, markers, tileLayer;
 const $=id=>document.getElementById(id);
 function applyTheme(theme){
  document.documentElement.dataset.theme=theme;
- $('themeButton').textContent=theme==='light'?'☾ Donker':'☼ Licht';
+ const themeColor=document.querySelector('meta[name="theme-color"]');
+ if(themeColor)themeColor.content=theme==='light'?'#f3f5f8':'#0b0d11';
+ $('themeButton').textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
  if(tileLayer){
   tileLayer.setUrl(theme==='light'
    ?'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
@@ -194,7 +204,21 @@ function initMap(){
   },()=>{}, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
  }
 }
-function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'short',timeStyle:'short'});}
+function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
+function reportCard(r,admin=false){
+ const route='Lijn '+(r.route_short_name||'—');
+ const stop=r.stop_name||r.location_name||'Halte onbekend';
+ const gps=r.gps_confirmed
+  ?'<span class="tag">✓ GPS bevestigd</span>'
+  :'<span class="tag orange">GPS niet bevestigd</span>';
+ const actions=admin
+  ?'<div class="report-actions"><button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button><button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button></div>'
+  :'';
+ return '<article class="report">'+
+  '<div class="report-head"><span class="report-title">'+esc(route)+' · '+esc(stop)+'</span><time class="report-time">'+esc(formatDate(r.observed_at))+'</time></div>'+
+  '<div class="report-meta"><span class="tag">'+esc(route)+'</span><span class="tag">'+esc(stop)+'</span>'+gps+'</div>'+
+  actions+'</article>';
+}
 let gpsCheck=null;
 async function loadRoutes(){
  const data=await api('/api/routes');
@@ -224,7 +248,7 @@ async function loadReports(){
  $('countActive').textContent=data.reports.length;
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=data.reports.filter(r=>r.created_at.slice(0,10)===today).length;
- $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>'<div class="report"><strong>'+esc(r.location_name)+'</strong><span class="muted">'+esc(formatDate(r.observed_at))+'</span><p>'+esc(r.description)+'</p><span class="tag">Lijn '+esc(r.route_short_name||'')+' · '+esc(r.stop_name||'')+'</span> '+(r.gps_confirmed?'<span class="tag">GPS bevestigd</span>':'<span class="tag orange">GPS niet bevestigd</span>')+'</div>').join('')||'<p class="muted">Nog geen goedgekeurde meldingen.</p>';
+ $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<p class="muted">Nog geen meldingen geregistreerd.</p>';
  for(const r of data.reports){
   L.circleMarker([r.latitude,r.longitude],{
    radius:8,
@@ -232,7 +256,7 @@ async function loadReports(){
    weight:2,
    fillColor:'#ef4444',
    fillOpacity:1
-  }).addTo(markers).bindPopup('<strong>'+esc(r.location_name)+'</strong><br>'+esc(r.description)+'<br><small>'+esc(formatDate(r.observed_at))+'</small>');
+  }).addTo(markers).bindPopup('<strong>'+esc('Lijn '+(r.route_short_name||'—')+' · '+(r.stop_name||r.location_name||'Halte'))+'</strong><br><small>'+esc(formatDate(r.observed_at))+'</small><br><small>'+ (r.gps_confirmed?'GPS bevestigd':'GPS niet bevestigd')+'</small>');
  }
 }
 $('newReport').addEventListener('submit',async e=>{
@@ -241,7 +265,6 @@ $('newReport').addEventListener('submit',async e=>{
   if(!$('routeSelect').value || !$('stopSelect').value) throw new Error('Kies eerst een lijn en halte.');
   await api('/api/reports',{method:'POST',body:JSON.stringify({
    route_id:$('routeSelect').value,stop_id:$('stopSelect').value,
-   description:$('description').value,
    gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,
    observed_at:new Date($('observed').value).toISOString()
   })});
@@ -252,15 +275,7 @@ $('newReport').addEventListener('submit',async e=>{
 async function loadPending(){
  const data=await api('/api/admin/pending');
  $('pendingList').innerHTML=data.reports.map(r=>
-  '<div class="report">'+
-  '<strong>'+esc(r.location_name)+'</strong>'+
-  '<p>'+esc(r.description)+'</p>'+
-  '<span class="tag">Lijn '+esc(r.route_short_name||'')+' · '+esc(r.stop_name||'')+'</span> '+(r.gps_confirmed?'<span class="tag">GPS bevestigd</span>':'<span class="tag orange">GPS niet bevestigd</span>')+
-  '<p class="muted">'+esc(formatDate(r.observed_at))+'</p>'+
-  '<p>'+
-  '<button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button> '+
-  '<button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button>'+
-  '</p></div>'
+  reportCard(r,true)
  ).join('')||'<p class="muted">Geen openstaande meldingen.</p>';
 }
 $('pendingList').addEventListener('click',async e=>{
@@ -409,7 +424,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "radar-shell-v3";
+      const CACHE = "radar-shell-v4";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
@@ -589,15 +604,12 @@ async function handleApi(request, env) {
     const b = await request.json().catch(()=>null);
 
     if (!b ||
-        typeof b.description !== "string" ||
-        !b.description.trim() ||
-        b.description.length > 500 ||
         typeof b.route_id !== "string" ||
         typeof b.stop_id !== "string" ||
         !b.observed_at ||
         !Number.isFinite(Date.parse(b.observed_at))) {
       return json({
-        error:"Kies een lijn, halte en geldig tijdstip en vul een beschrijving in."
+        error:"Kies een lijn, halte en geldig waarnemingstijdstip."
       },400);
     }
 
@@ -672,7 +684,7 @@ async function handleApi(request, env) {
     `).bind(
       randomId(),
       user.id,
-      b.description.trim(),
+      "",
       stop.stop_name,
       stop.stop_lat,
       stop.stop_lon,
