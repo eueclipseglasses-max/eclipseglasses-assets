@@ -105,7 +105,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
  <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
@@ -193,6 +193,7 @@ function applyMapTone(){
   :'none';
 }
 function applyTheme(theme){
+  $('brandLogo').src=theme==='dark'?'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMDONKER.png':'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png';
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#f3f5f8':'#0b0d11';
