@@ -286,12 +286,6 @@ async function loadReports(){
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=data.reports.filter(r=>r.created_at.slice(0,10)===today).length;
  $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<p class="muted">Nog geen meldingen geregistreerd.</p>';
- for(const r of data.reports){
-  const el=document.createElement('div');el.className='report-marker';el.setAttribute('aria-label','Vervoersmelding');
-  const popup=new maplibregl.Popup({offset:14}).setHTML('<strong>'+esc('Lijn '+(r.route_short_name||'—')+' · '+(r.stop_name||r.location_name||'Halte'))+'</strong><br><small>'+esc(formatDate(r.observed_at))+'</small><br><small>'+(r.gps_confirmed?'GPS bevestigd':'GPS niet bevestigd')+'</small>');
-  const marker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([Number(r.longitude),Number(r.latitude)]).setPopup(popup).addTo(map);
-  reportMarkers.push(marker);
- }
 }
 $('newReport').addEventListener('submit',async e=>{
  e.preventDefault();$('reportMessage').textContent='Melding wordt ingediend...';
@@ -458,7 +452,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "radar-shell-v9";
+      const CACHE = "radar-shell-v10";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
