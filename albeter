@@ -539,16 +539,16 @@ async function handleApi(request, env) {
 
   if (path === "/manifest.webmanifest" && method === "GET") {
     return new Response(JSON.stringify({
-      name: "De Lijn Radar",
-      short_name: "Radar",
+      name: "De Golem",
+      short_name: "De Golem",
       start_url: "/",
       display: "standalone",
-      background_color: "#0b0d11",
-      theme_color: "#0b0d11",
+      background_color: "#FBEED8",
+      theme_color: "#FBEED8",
       icons: [{
-        src: "/icon.svg",
+        src: "https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT.png",
         sizes: "any",
-        type: "image/svg+xml"
+        type: "image/png"
       }]
     }), {
       headers: {"Content-Type":"application/manifest+json"}
@@ -557,14 +557,14 @@ async function handleApi(request, env) {
 
   if (path === "/icon.svg" && method === "GET") {
     return new Response(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="#0b0d11"/><text x="256" y="350" font-size="300" text-anchor="middle" font-weight="bold" fill="#ef4444">R</text></svg>',
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><image href="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT.png" width="512" height="512" preserveAspectRatio="xMidYMid meet"/></svg>',
       {headers:{"Content-Type":"image/svg+xml"}}
     );
   }
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "radar-shell-v14";
+      const CACHE = "degolem-shell-v15";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
