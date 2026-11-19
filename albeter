@@ -286,6 +286,9 @@ function searchMapStop(){
  const s=mapStops.find(x=>String(x.stop_name).toLocaleLowerCase('nl-BE')===q)||mapStops.find(x=>String(x.stop_name).toLocaleLowerCase('nl-BE').includes(q));
  if(!s){$('stopSearch').setCustomValidity('Geen halte gevonden.');$('stopSearch').reportValidity();return;}
  $('stopSearch').setCustomValidity('');hideStops=false;onlyReportedStops=false;
+ if(isTramStop(s))showTramStops=true;
+ if(stopHasBusRoute(s)||!isTramStop(s))showBusStops=true;
+ updateTransportFilterButtons();
  $('toggleStopsButton').textContent='Haltes verbergen';$('toggleStopsButton').setAttribute('aria-pressed','false');
  map.once('moveend',()=>{const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});});
  map.flyTo({center:[Number(s.stop_lon),Number(s.stop_lat)],zoom:15});
