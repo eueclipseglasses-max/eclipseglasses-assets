@@ -8,7 +8,7 @@ const HTML = String.raw`<!DOCTYPE html>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>De Lijn Radar | Oostende</title>
+<title>De Lijn Radar | Vlaanderen</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--border:#282e38;--muted:#929ba8;--orange:#ef4444;--green:#35c98b}
@@ -69,7 +69,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><div class="logo">R</div><div>RADAR<small>DE LIJN · OOSTENDE</small></div></div>
+ <div class="brand"><div class="logo">R</div><div>RADAR<small>DE LIJN · VLAANDEREN</small></div></div>
  <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
@@ -93,7 +93,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 
 <main id="appScreen" class="hidden">
  <div class="heading">
-  <div><div class="eyebrow">MONITORING / WEST-VLAANDEREN</div><h1>Reizigersmeldingen</h1><p class="muted">Vertragingen en vervoersproblemen in Oostende.</p></div>
+  <div><div class="eyebrow">MONITORING / VLAANDEREN</div><h1>Reizigersmeldingen</h1><p class="muted">Vervoersmeldingen op het volledige De Lijn-netwerk.</p></div>
   <button id="reportCta" onclick="openAuth()">Inloggen om te melden</button>
  </div>
  <div class="stats">
@@ -103,7 +103,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  </div>
  <div class="layout">
   <section class="panel map-panel">
-   <div class="panel-title"><div><h3>Stadskaart</h3><span class="muted">Oostende, België</span></div><span class="tag">LIVE GEGEVENS</span></div>
+   <div class="panel-title"><div><h3>Stadskaart</h3><span class="muted">De Lijn-netwerk · Vlaanderen</span></div><span class="tag">LIVE GEGEVENS</span></div>
    <div id="map"></div>
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
@@ -132,7 +132,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    </section>
   </aside>
  </div>
- <footer>DE LIJN RADAR · OOSTENDE · 2026</footer>
+ <footer>DE LIJN RADAR · VLAANDEREN · 2026</footer>
 </main>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -168,11 +168,16 @@ function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').class
 function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
- map=L.map('map').setView([51.224,2.911],14);
+ map=L.map('map').setView([51.05,4.45],8);
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
   maxZoom:19,attribution:'&copy; OpenStreetMap'
  }).addTo(map);
  markers=L.layerGroup().addTo(map);
+ if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos=>{
+   map.setView([pos.coords.latitude,pos.coords.longitude],15,{animate:true});
+  },()=>{}, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
+ }
 }
 function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'short',timeStyle:'short'});}
 let gpsCheck=null;
