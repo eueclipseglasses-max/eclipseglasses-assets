@@ -5,12 +5,12 @@ const HTML = String.raw`<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0b0d11">
-<meta name="map-provider" content="OpenStreetMap">
+<meta name="map-provider" content="OpenFreeMap">
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>De Lijn Radar | Vlaanderen</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
 :root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--panel2:#1a2029;--border:#2a313c;--muted:#929ba8;--text:#f1f3f6;--input:#0d1117;--orange:#ef4444;--green:#35c98b;--soft-red:#351d22;--soft-red-text:#ffaaa0;--map-bg:#171c24;--shadow:0 8px 24px rgba(0,0,0,.16)}
 :root[data-theme="light"]{color-scheme:light;--bg:#f3f5f8;--panel:#ffffff;--panel2:#f5f6f8;--border:#dfe3e9;--muted:#667085;--text:#202631;--input:#ffffff;--orange:#d93636;--green:#16865b;--soft-red:#fff0ef;--soft-red-text:#b42318;--map-bg:#e9edf2;--shadow:0 8px 24px rgba(26,38,55,.06)}
@@ -67,13 +67,16 @@ textarea{min-height:75px;resize:vertical}
 .report-actions button{flex:1;min-width:110px}
 .notice{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
 #reportsList,#pendingList{display:flex;flex-direction:column;gap:0}
-.leaflet-control-attribution{background:var(--panel)!important;color:var(--muted)!important}
-.leaflet-control-attribution a{color:var(--muted)!important}
+.maplibregl-ctrl-attrib{background:var(--panel)!important;color:var(--muted)!important}
+.maplibregl-ctrl-attrib a{color:var(--muted)!important}
 .error{color:#ff927c;font-size:12px;margin-top:10px}
 .success{color:var(--green);font-size:12px;margin-top:10px}
 footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel);color:var(--text)}
-.leaflet-container a{color:var(--orange)}
+.maplibregl-popup-content{background:var(--panel);color:var(--text);border-radius:9px;box-shadow:var(--shadow)}
+.maplibregl-popup-close-button{color:var(--text);font-size:18px;padding:4px 8px}
+.maplibregl-ctrl-group{background:var(--panel)!important;border:1px solid var(--border)!important}
+.maplibregl-ctrl-group button{background-color:var(--panel)!important}
+.report-marker{width:17px;height:17px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 1px 7px #0008}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}#map{height:450px}}
 @media(max-width:560px){main{padding:22px 13px}.stats{gap:7px}.stat{padding:12px}.stat strong{font-size:21px}.stat span{font-size:10px}.heading{align-items:flex-start}.heading button{font-size:11px;padding:10px}.side{display:flex}#map{height:390px}header{padding:0 13px}.status{display:none}}
 </style>
@@ -145,19 +148,17 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  <footer>DE LIJN RADAR · VLAANDEREN · 2026</footer>
 </main>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
-let mode='login', map, markers, tileLayer;
+let mode='login', map;
+const reportMarkers=[];
 const $=id=>document.getElementById(id);
 function applyTheme(theme){
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#f3f5f8':'#0b0d11';
  $('themeButton').textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
- if(map){
-  const pane=map.getPane('tilePane');
-  if(pane)pane.style.filter=theme==='dark'?'invert(100%) hue-rotate(180deg) brightness(92%) contrast(88%)':'none';
- }
+ if(map)map.setStyle(theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/liberty');
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
 function toggleTheme(){
@@ -193,13 +194,9 @@ function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').class
 function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
- map=L.map('map').setView([51.05,4.45],8);
- tileLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19,attribution:'&copy; OpenStreetMap-bijdragers'
- }).addTo(map);
- const pane=map.getPane('tilePane');
- if(pane && document.documentElement.dataset.theme==='dark')pane.style.filter='invert(100%) hue-rotate(180deg) brightness(92%) contrast(88%)';
- markers=L.layerGroup().addTo(map);
+ map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/liberty',center:[4.45,51.05],zoom:8,attributionControl:true});
+ map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+ map.on('error',e=>console.error('Kaartfout:',e.error||e));
  if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(pos=>{
    map.setView([pos.coords.latitude,pos.coords.longitude],15,{animate:true});
@@ -246,19 +243,17 @@ $('gpsButton').addEventListener('click',()=>{
 });
 async function loadReports(){
  const data=await api('/api/reports');
- markers.clearLayers();
+ reportMarkers.forEach(marker=>marker.remove());
+ reportMarkers.length=0;
  $('countActive').textContent=data.reports.length;
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=data.reports.filter(r=>r.created_at.slice(0,10)===today).length;
  $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<p class="muted">Nog geen meldingen geregistreerd.</p>';
  for(const r of data.reports){
-  L.circleMarker([r.latitude,r.longitude],{
-   radius:8,
-   color:'#ffffff',
-   weight:2,
-   fillColor:'#ef4444',
-   fillOpacity:1
-  }).addTo(markers).bindPopup('<strong>'+esc('Lijn '+(r.route_short_name||'—')+' · '+(r.stop_name||r.location_name||'Halte'))+'</strong><br><small>'+esc(formatDate(r.observed_at))+'</small><br><small>'+ (r.gps_confirmed?'GPS bevestigd':'GPS niet bevestigd')+'</small>');
+  const el=document.createElement('div');el.className='report-marker';el.setAttribute('aria-label','Vervoersmelding');
+  const popup=new maplibregl.Popup({offset:14}).setHTML('<strong>'+esc('Lijn '+(r.route_short_name||'—')+' · '+(r.stop_name||r.location_name||'Halte'))+'</strong><br><small>'+esc(formatDate(r.observed_at))+'</small><br><small>'+(r.gps_confirmed?'GPS bevestigd':'GPS niet bevestigd')+'</small>');
+  const marker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([Number(r.longitude),Number(r.latitude)]).setPopup(popup).addTo(map);
+  reportMarkers.push(marker);
  }
 }
 $('newReport').addEventListener('submit',async e=>{
@@ -787,7 +782,7 @@ export default {
           "Cache-Control":"no-store",
           "X-Content-Type-Options":"nosniff",
           "Referrer-Policy":"strict-origin-when-cross-origin",
-          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://*.tile.openstreetmap.org connect-src 'self';"
+          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://tiles.openfreemap.org; font-src 'self' data: https://tiles.openfreemap.org; worker-src blob:;"
         }
       });
 
