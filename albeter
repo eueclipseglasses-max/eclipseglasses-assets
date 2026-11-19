@@ -70,13 +70,13 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <body>
 <header>
  <div class="brand"><div class="logo">R</div><div>RADAR<small>DE LIJN · OOSTENDE</small></div></div>
- <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="authButton" class="secondary" onclick="logout()">Uitloggen</button></div>
+ <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
-<section id="authScreen" class="auth-wrap">
+<section id="authScreen" class="auth-wrap hidden">
  <div class="eyebrow">DE LIJN RADAR / ACCOUNT</div>
  <h1 id="authTitle">Welkom terug</h1>
- <p class="muted">Log in om meldingen te bekijken en toe te voegen.</p>
+ <p class="muted">Log in om zelf meldingen in te sturen. De kaart en goedgekeurde meldingen zijn openbaar.</p>
  <div class="tabs">
   <button id="loginTab" onclick="setMode('login')">Inloggen</button>
   <button id="registerTab" class="secondary" onclick="setMode('register')">Registreren</button>
@@ -87,13 +87,14 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
   <button class="full" id="authSubmit">Inloggen</button>
  </form>
  <div id="authMessage" class="error"></div>
+ <button type="button" class="secondary full" style="margin-top:12px" onclick="showPublicDashboard()">Terug naar openbaar dashboard</button>
  <p class="notice">Je accountgegevens worden beveiligd opgeslagen. Deel nooit je wachtwoord met anderen.</p>
 </section>
 
 <main id="appScreen" class="hidden">
  <div class="heading">
   <div><div class="eyebrow">MONITORING / WEST-VLAANDEREN</div><h1>Reizigersmeldingen</h1><p class="muted">Vertragingen en vervoersproblemen in Oostende.</p></div>
-  <button onclick="document.getElementById('reportForm').scrollIntoView({behavior:'smooth'})">+ Nieuwe melding</button>
+  <button id="reportCta" onclick="openAuth()">Inloggen om te melden</button>
  </div>
  <div class="stats">
   <div class="stat"><span>Goedgekeurde meldingen</span><strong id="countActive">0</strong></div>
@@ -107,7 +108,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
   <aside class="side">
-   <section class="panel" id="reportForm">
+   <section class="panel hidden" id="reportForm">
     <h3>Waarneming insturen</h3>
     <p class="notice">Selecteer een lijn en halte. Beschrijf een vertraging of vervoersprobleem dat je zelf hebt waargenomen.</p>
     <form id="newReport">
@@ -161,10 +162,10 @@ $('authForm').addEventListener('submit',async e=>{
   await startApp();
  }catch(err){$('authMessage').textContent=err.message;}
 });
-async function logout(){
- try{await api('/api/auth/logout',{method:'POST',body:'{}'});}catch{}
- $('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton').classList.add('hidden');
-}
+async function logout(){try{await api('/api/auth/logout',{method:'POST',body:'{}'});}catch{} await startPublicApp();}
+function authAction(){if($('reportForm').classList.contains('hidden'))openAuth();else logout();}
+function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton').classList.add('hidden');setMode('login');}
+function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
  map=L.map('map').setView([51.224,2.911],14);
@@ -260,18 +261,19 @@ $('pendingList').addEventListener('click',async e=>{
  }
 });
 async function startApp(){
- const data=await api('/api/me');
- $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
- $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';
- if(data.user.role==='admin'){$('adminPanel').classList.remove('hidden');}
- initMap();setTimeout(()=>map.invalidateSize(),100);
- await loadRoutes();
- await loadReports();
- if(data.user.role==='admin')await loadPending();
+ const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
+ $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=()=>$('reportForm').scrollIntoView({behavior:'smooth'});
+ $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
+ initMap();setTimeout(()=>map.invalidateSize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
+}
+async function startPublicApp(){
+ $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
+ $('reportForm').classList.add('hidden');$('adminPanel').classList.add('hidden');$('reportCta').textContent='Inloggen om te melden';$('reportCta').onclick=openAuth;
+ $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.invalidateSize(),100);await loadReports();
 }
 $('authButton').classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
-api('/api/me').then(startApp).catch(()=>{$('authScreen').classList.remove('hidden');$('appScreen').classList.add('hidden');});
+api('/api/me').then(startApp).catch(()=>startPublicApp().catch(err=>console.error('Dashboard:',err)));
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -507,9 +509,6 @@ async function handleApi(request, env) {
   }
 
   if (path === "/api/routes" && method === "GET") {
-    const user = await currentUser(request,env);
-    if (!user) return json({error:"Log eerst in"},401);
-
     const result = await env.DB.prepare(`
       SELECT route_id, route_short_name, route_long_name
       FROM transit_routes
@@ -522,9 +521,6 @@ async function handleApi(request, env) {
   if (path.startsWith("/api/routes/") &&
       path.endsWith("/stops") &&
       method === "GET") {
-
-    const user = await currentUser(request,env);
-    if (!user) return json({error:"Log eerst in"},401);
 
     const routeId = decodeURIComponent(
       path.slice("/api/routes/".length, -"/stops".length)
@@ -542,9 +538,6 @@ async function handleApi(request, env) {
   }
 
   if (path === "/api/reports" && method === "GET") {
-    const user = await currentUser(request,env);
-    if (!user) return json({error:"Log eerst in"},401);
-
     const result = await env.DB.prepare(`
       SELECT
         r.id,
@@ -553,7 +546,7 @@ async function handleApi(request, env) {
         r.latitude,
         r.longitude,
         r.observed_at,
-        r.created_at,
+        COALESCE(r.created_at,r.observed_at) AS created_at,
         r.gps_confirmed,
         tr.route_short_name,
         ts.stop_name
