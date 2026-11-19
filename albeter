@@ -48,9 +48,9 @@ h2,h3{margin-top:0}
 .map-tools button{padding:9px 12px;font-size:12px}
 .map-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:9px 4px 2px;color:var(--muted);font-size:11px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
-.legend-blue{background:#2583eb}.legend-red{background:#e53935}
+.legend-blue{background:#2583eb}.legend-orange{background:#f28c28}.legend-red{background:#e53935}
 .map-cluster-label{font:700 11px Arial,sans-serif;text-align:center;pointer-events:none}
-:root[data-theme="dark"] #map .maplibregl-canvas{filter:grayscale(1) brightness(.90) contrast(1.06)!important}
+:root[data-theme="dark"] #map .maplibregl-canvas{filter:grayscale(1) brightness(.98) contrast(1.03)!important}
 :root[data-theme="light"] #map .maplibregl-canvas{filter:none!important}
 .map-panel{padding:12px}
 .panel-title{display:flex;justify-content:space-between;align-items:center;padding:8px 5px 15px}
@@ -137,7 +137,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
    </div>
    <div id="map"></div>
-   <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Halte</span><span><i class="legend-dot legend-red"></i>Actieve melding</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
+   <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Actieve melding</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
   <aside class="side">
@@ -176,7 +176,7 @@ const $=id=>document.getElementById(id);
 function applyMapTone(){
  if(!map)return;
  map.getCanvas().style.filter=document.documentElement.dataset.theme==='dark'
-  ?'grayscale(1) brightness(.90) contrast(1.06)'
+  ?'grayscale(1) brightness(.98) contrast(1.03)'
   :'none';
 }
 function applyTheme(theme){
@@ -286,6 +286,11 @@ function searchMapStop(){
  map.once('moveend',()=>{const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});});
  map.flyTo({center:[Number(s.stop_lon),Number(s.stop_lat)],zoom:15});
 }
+function isTramStop(stop){
+ const ids=String(stop.route_ids||'').split(',').filter(Boolean);
+ return ids.some(id=>{const route=allRoutes.find(r=>String(r.route_id)===id);return route&&/tram|kusttram/i.test(String(route.route_short_name||'')+' '+String(route.route_long_name||''));});
+}
+function stopDotColor(stop,red){return red?'#e53935':(isTramStop(stop)?'#f28c28':'#2583eb');}
 function drawStopDots(){
  if(!map||!stopDotCanvas||!mapStops.length)return;
  const box=$('map').getBoundingClientRect(),dpr=window.devicePixelRatio||1;
@@ -306,9 +311,9 @@ function drawStopDots(){
   for(const group of groups.values()){
    const lng=group.reduce((a,d)=>a+d.lng,0)/group.length,lat=group.reduce((a,d)=>a+d.lat,0)/group.length;
    const p=map.project([lng,lat]);if(p.x< -24||p.y< -24||p.x>box.width+24||p.y>box.height+24)continue;
-   const red=group.some(d=>d.red);
-   if(group.length===1){drawStopDot(ctx,p.x,p.y,red?6:4.2,red?'#e53935':'#2583eb');screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
-   ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);ctx.fillStyle=red?'#c93232':'#1769bd';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+   const red=group.some(d=>d.red),tramCount=group.filter(d=>isTramStop(d.stop)).length;
+   if(group.length===1){drawStopDot(ctx,p.x,p.y,red?6:4.2,stopDotColor(group[0].stop,red));screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
+   ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);ctx.fillStyle=red?'#c93232':(tramCount>group.length/2?'#d9781d':'#1769bd');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();
    ctx.fillStyle='#fff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(group.length),p.x,p.y);
    screenStopDots.push({x:p.x,y:p.y,cluster:group});
   }
@@ -318,12 +323,12 @@ function drawStopDots(){
    const red=activeReportStopIds.has(String(s.stop_id));if(onlyReportedStops&&!red)continue;
    const lng=Number(s.stop_lon),lat=Number(s.stop_lat);if(!bounds.contains([lng,lat]))continue;
    const p=map.project([lng,lat]);if(p.x< -8||p.y< -8||p.x>box.width+8||p.y>box.height+8)continue;
-   drawStopDot(ctx,p.x,p.y,red?6:4.2,red?'#e53935':'#2583eb');screenStopDots.push({x:p.x,y:p.y,stop:s});
+   drawStopDot(ctx,p.x,p.y,red?6:4.2,stopDotColor(s,red));screenStopDots.push({x:p.x,y:p.y,stop:s});
   }
  }
 }
 function drawStopDot(ctx,x,y,r,color){
- ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=1.4;ctx.strokeStyle='#fff';ctx.stroke();
+ ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=1.4;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();
 }
 function handleStopDotClick(e){
  let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if(!hit)return;
