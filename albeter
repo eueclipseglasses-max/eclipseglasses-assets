@@ -153,10 +153,9 @@ function applyTheme(theme){
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#f3f5f8':'#0b0d11';
  $('themeButton').textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
- if(tileLayer){
-  tileLayer.setUrl(theme==='light'
-   ?'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
-   :'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
+ if(map){
+  const pane=map.getPane('tilePane');
+  if(pane)pane.style.filter=theme==='dark'?'invert(100%) hue-rotate(180deg) brightness(92%) contrast(88%)':'none';
  }
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
@@ -194,9 +193,11 @@ function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
  map=L.map('map').setView([51.05,4.45],8);
- tileLayer=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
-  maxZoom:20,attribution:'&copy; OpenStreetMap &copy; CARTO'
+ tileLayer=L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19,attribution:'&copy; OpenStreetMap-bijdragers'
  }).addTo(map);
+ const pane=map.getPane('tilePane');
+ if(pane && document.documentElement.dataset.theme==='dark')pane.style.filter='invert(100%) hue-rotate(180deg) brightness(92%) contrast(88%)';
  markers=L.layerGroup().addTo(map);
  if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -785,7 +786,7 @@ export default {
           "Cache-Control":"no-store",
           "X-Content-Type-Options":"nosniff",
           "Referrer-Policy":"strict-origin-when-cross-origin",
-          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com; connect-src 'self';"
+          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://*.tile.openstreetmap.org connect-src 'self';"
         }
       });
 
