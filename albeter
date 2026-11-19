@@ -9,7 +9,8 @@ const HTML = String.raw`<!DOCTYPE html>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>De Lijn Radar | Vlaanderen</title>
+<title>De Golem | Vlaanderen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
 :root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--panel2:#1a2029;--border:#2a313c;--muted:#929ba8;--text:#f1f3f6;--input:#0d1117;--orange:#ef4444;--green:#35c98b;--soft-red:#351d22;--soft-red-text:#ffaaa0;--map-bg:#171c24;--shadow:0 8px 24px rgba(0,0,0,.16)}
@@ -20,7 +21,7 @@ button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel);}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
-.logo{background:var(--orange);color:#fff;border-radius:10px;padding:12px;font-size:19px}
+.logo{width:48px;height:48px;object-fit:contain;display:block;border-radius:0;flex:0 0 48px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
 .brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.5px;margin-top:4px}
 .header-right{display:flex;align-items:center;gap:12px}
 .status{font-size:11px;color:var(--green)}
@@ -94,12 +95,12 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><div class="logo">R</div><div>RADAR<small>DE LIJN · VLAANDEREN</small></div></div>
+ <div class="brand"><img class="logo" src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
  <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <section id="authScreen" class="auth-wrap hidden">
- <div class="eyebrow">DE LIJN RADAR / ACCOUNT</div>
+ <div class="eyebrow">DE GOLEM / ACCOUNT</div>
  <h1 id="authTitle">Welkom terug</h1>
  <p class="muted">Log in om zelf meldingen in te sturen. De kaart en goedgekeurde meldingen zijn openbaar.</p>
  <div class="tabs">
@@ -166,7 +167,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    </section>
   </aside>
  </div>
- <footer>DE LIJN RADAR · VLAANDEREN · 2026</footer>
+ <footer>DE GOLEM · VLAANDEREN · 2026</footer>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
