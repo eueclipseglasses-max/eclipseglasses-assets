@@ -40,7 +40,8 @@ h2,h3{margin-top:0}
 .stat span{color:var(--muted);font-size:12px}
 .stat strong{display:block;font-size:27px;margin-top:10px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}
-#map{height:590px;border-radius:9px;background:var(--map-bg);z-index:1;border:1px solid var(--border)}
+#map{height:590px;border-radius:9px;background:var(--map-bg);z-index:1;border:1px solid var(--border);position:relative;overflow:hidden}
+.stop-dot-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none}
 :root[data-theme="dark"] #map .maplibregl-canvas{filter:grayscale(1) brightness(.72) contrast(1.12)!important}
 :root[data-theme="light"] #map .maplibregl-canvas{filter:none!important}
 .map-panel{padding:12px}
@@ -154,6 +155,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <script>
 let mode='login', map;
 const reportMarkers=[];
+let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[];
 const $=id=>document.getElementById(id);
 function applyMapTone(){
  if(!map)return;
@@ -207,6 +209,9 @@ function initMap(){
  if(map)return;
  map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:[4.45,51.05],zoom:8,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
+ stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
+ map.on('load',()=>loadMapStops().catch(err=>console.error('Haltes laden:',err)));
+ map.on('move',drawStopDots);map.on('resize',drawStopDots);map.on('click',handleStopDotClick);
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -231,8 +236,28 @@ function reportCard(r,admin=false){
 }
 let gpsCheck=null;
 async function loadRoutes(){
- const data=await api('/api/routes');
- $('routeSelect').innerHTML='<option value="">Kies een lijn</option>'+data.routes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');
+ const data=await api('/api/routes');allRoutes=data.routes||[];
+ $('routeSelect').innerHTML='<option value="">Kies een lijn</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');
+}
+async function loadMapStops(){
+ const data=await api('/api/stops');mapStops=(data.stops||[]).filter(s=>Number.isFinite(Number(s.stop_lat))&&Number.isFinite(Number(s.stop_lon)));drawStopDots();
+}
+function drawStopDots(){
+ if(!map||!stopDotCanvas||!mapStops.length)return;
+ const box=$('map').getBoundingClientRect(),dpr=window.devicePixelRatio||1;
+ stopDotCanvas.width=Math.round(box.width*dpr);stopDotCanvas.height=Math.round(box.height*dpr);
+ const ctx=stopDotCanvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,box.width,box.height);screenStopDots=[];
+ const bounds=map.getBounds();
+ for(const s of mapStops){const lng=Number(s.stop_lon),lat=Number(s.stop_lat);if(!bounds.contains([lng,lat]))continue;const p=map.project([lng,lat]);if(p.x< -8||p.y< -8||p.x>box.width+8||p.y>box.height+8)continue;
+  const red=activeReportStopIds.has(String(s.stop_id));ctx.beginPath();ctx.arc(p.x,p.y,red?6.5:5.5,0,Math.PI*2);ctx.fillStyle=red?'#e53935':'#2583eb';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#fff';ctx.stroke();screenStopDots.push({x:p.x,y:p.y,stop:s});
+ }
+}
+function handleStopDotClick(e){
+ let hit=null,best=13;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot.stop;}}if(!hit)return;
+ const routeIds=String(hit.route_ids||'').split(',').filter(Boolean),routes=allRoutes.filter(r=>routeIds.includes(r.route_id));if(!routes.length)return;
+ const node=document.createElement('div');node.innerHTML='<strong>'+esc(hit.stop_name)+'</strong><p style="margin:7px 0 5px">Kies de lijn:</p><select id="mapStopRoute" style="width:100%;margin-bottom:8px">'+routes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('')+'</select><button type="button" id="mapStopChoose" style="width:100%">Deze halte kiezen</button>';
+ const popup=new maplibregl.Popup({offset:12}).setDOMContent(node).setLngLat([Number(hit.stop_lon),Number(hit.stop_lat)]).addTo(map);
+ node.querySelector('#mapStopChoose').addEventListener('click',async()=>{if($('reportForm').classList.contains('hidden')){popup.remove();openAuth();return;}const routeId=node.querySelector('#mapStopRoute').value;try{$('routeSelect').value=routeId;await loadStops(routeId);$('stopSelect').value=hit.stop_id;$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportMessage').textContent='Halte en lijn geselecteerd. Vul het tijdstip in en dien je melding in.';popup.remove();}catch(err){$('reportMessage').textContent=err.message;}});
 }
 async function loadStops(routeId){
  $('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Haltes laden...</option>';
@@ -256,6 +281,7 @@ async function loadReports(){
  const data=await api('/api/reports');
  reportMarkers.forEach(marker=>marker.remove());
  reportMarkers.length=0;
+ activeReportStopIds=new Set((data.reports||[]).map(r=>String(r.stop_id||'')).filter(Boolean));drawStopDots();
  $('countActive').textContent=data.reports.length;
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=data.reports.filter(r=>r.created_at.slice(0,10)===today).length;
@@ -312,7 +338,7 @@ async function startApp(){
 async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.add('hidden');$('adminPanel').classList.add('hidden');$('reportCta').textContent='Inloggen om te melden';$('reportCta').onclick=openAuth;
- $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadReports();
+ $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();
 }
 $('authButton').classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -432,7 +458,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "radar-shell-v8";
+      const CACHE = "radar-shell-v9";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
@@ -580,10 +606,21 @@ async function handleApi(request, env) {
     return json({stops:result.results||[]});
   }
 
+  if (path === "/api/stops" && method === "GET") {
+    const result = await env.DB.prepare(`
+      SELECT s.stop_id,s.stop_name,s.stop_lat,s.stop_lon,GROUP_CONCAT(DISTINCT rs.route_id) AS route_ids
+      FROM transit_stops s JOIN route_stops rs ON rs.stop_id=s.stop_id
+      WHERE s.stop_lat IS NOT NULL AND s.stop_lon IS NOT NULL
+      GROUP BY s.stop_id,s.stop_name,s.stop_lat,s.stop_lon ORDER BY s.stop_name
+    `).all();
+    return json({stops:result.results||[]});
+  }
+
   if (path === "/api/reports" && method === "GET") {
     const result = await env.DB.prepare(`
       SELECT
         r.id,
+        r.stop_id,
         r.description,
         r.location_name,
         r.latitude,
