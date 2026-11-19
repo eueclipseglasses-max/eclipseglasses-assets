@@ -41,7 +41,8 @@ h2,h3{margin-top:0}
 .stat strong{display:block;font-size:27px;margin-top:10px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}
 #map{height:590px;border-radius:9px;background:var(--map-bg);z-index:1;border:1px solid var(--border);position:relative;overflow:hidden}
-.stop-dot-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.stop-dot-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+#map .maplibregl-popup{z-index:1000!important}
 .map-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
 .map-tools input{flex:1;min-width:190px;padding:9px 11px}
 .map-tools button{padding:9px 12px;font-size:12px}
@@ -170,7 +171,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <script>
 let mode='login', map;
 const reportMarkers=[];
-let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[],hideStops=false,onlyReportedStops=false;
+let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[],hideStops=false,onlyReportedStops=false,clusterZoomLevel=8;
 const $=id=>document.getElementById(id);
 function applyMapTone(){
  if(!map)return;
@@ -225,8 +226,10 @@ function initMap(){
  map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:[4.45,51.05],zoom:8,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
- map.on('load',()=>{loadMapStops().catch(err=>console.error('Haltes laden:',err));});
- map.on('move',drawStopDots);map.on('resize',drawStopDots);map.on('click',handleStopDotClick);
+ map.on('load',()=>{clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>console.error('Haltes laden:',err));});
+ map.on('move',drawStopDots);map.on('resize',drawStopDots);
+ map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
+ map.on('click',handleStopDotClick);
  $('toggleStopsButton').addEventListener('click',()=>{
   hideStops=!hideStops;$('toggleStopsButton').setAttribute('aria-pressed',String(hideStops));
   $('toggleStopsButton').textContent=hideStops?'Haltes tonen':'Haltes verbergen';drawStopDots();
@@ -289,7 +292,7 @@ function drawStopDots(){
  stopDotCanvas.width=Math.round(box.width*dpr);stopDotCanvas.height=Math.round(box.height*dpr);
  const ctx=stopDotCanvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,box.width,box.height);screenStopDots=[];
  if(hideStops)return;
- const zoom=map.getZoom(),visible=[];
+ const zoom=clusterZoomLevel;
  if(zoom<10){
   // Clusters are grouped by fixed geographic cells, not screen pixels.
   // Panning therefore moves the cluster with the map without changing its membership.
@@ -524,7 +527,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "radar-shell-v13";
+      const CACHE = "radar-shell-v14";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
