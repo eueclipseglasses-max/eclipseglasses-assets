@@ -938,7 +938,7 @@ export default {
     try {
       const url = new URL(request.url);
 
-      if (["/manifest.webmanifest","/icon.svg","/sw.js"].includes(url.pathname)) {
+      if (["/manifest.webmanifest","/icon.svg","/app-icon.png","/sw.js"].includes(url.pathname)) {
         return await handleApi(request,env);
       }
 
