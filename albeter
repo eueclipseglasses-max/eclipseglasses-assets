@@ -835,7 +835,8 @@ async function handleApi(request, env) {
         r.longitude,
         r.observed_at,
         r.gps_confirmed,
-        tr.route_short_name,
+        CASE WHEN r.route_id='all' THEN '—' ELSE tr.route_short_name END AS route_short_name,
+        r.route_id,
         ts.stop_name
       FROM reports r
       LEFT JOIN transit_routes tr ON tr.route_id=r.route_id
