@@ -11,19 +11,20 @@ const HTML = String.raw`<!DOCTYPE html>
 <title>De Lijn Radar | Vlaanderen</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-:root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--border:#282e38;--muted:#929ba8;--orange:#ef4444;--green:#35c98b}
+:root{color-scheme:dark;--bg:#0b0d11;--panel:#12161d;--panel2:#171c24;--border:#282e38;--muted:#929ba8;--text:#f1f3f6;--input:#0d1117;--orange:#ef4444;--green:#35c98b}
+:root[data-theme="light"]{color-scheme:light;--bg:#f4f5f7;--panel:#ffffff;--panel2:#f0f2f5;--border:#e1e4e9;--muted:#667085;--text:#171b22;--input:#ffffff;--orange:#dc3838;--green:#16865b}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#f1f3f6;font:14px Arial,sans-serif}
+body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif;transition:background .2s,color .2s}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:#101319}
+header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel);}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
 .logo{background:var(--orange);color:#fff;border-radius:10px;padding:12px;font-size:19px}
 .brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.5px;margin-top:4px}
 .header-right{display:flex;align-items:center;gap:12px}
 .status{font-size:11px;color:var(--green)}
 button{border:0;border-radius:7px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:700}
-button.secondary{background:#242a34;color:#e9edf3;border:1px solid var(--border)}
+button.secondary{background:#242a34;color:var(--text);border:1px solid var(--border)}
 button.danger{background:#49251e;color:#ffb29b}
 button:disabled{opacity:.5;cursor:not-allowed}
 main{max-width:1450px;margin:auto;padding:30px 4%}
@@ -43,7 +44,7 @@ h2,h3{margin-top:0}
 .side{display:flex;flex-direction:column;gap:15px}
 .field{margin:13px 0}
 label{display:block;color:#aab2bf;font-size:12px;margin-bottom:7px}
-input,textarea,select{width:100%;background:#0d1117;border:1px solid #343c49;color:white;border-radius:7px;padding:12px;outline:none}
+input,textarea,select{width:100%;background:var(--input);border:1px solid var(--border);color:var(--text);border-radius:7px;padding:12px;outline:none}
 input:focus,textarea:focus,select:focus{border-color:var(--orange)}
 textarea{min-height:75px;resize:vertical}
 .full{width:100%}
@@ -55,13 +56,13 @@ textarea{min-height:75px;resize:vertical}
 .report{padding:12px 0;border-bottom:1px solid var(--border)}
 .report:last-child{border:0}
 .report strong{display:block;margin-bottom:6px}
-.tag{display:inline-block;border-radius:5px;background:#252b35;color:#b7c0ce;padding:5px 7px;font-size:10px;margin-top:6px}
+.tag{display:inline-block;border-radius:5px;background:var(--panel2);color:var(--muted);padding:5px 7px;font-size:10px;margin-top:6px}
 .tag.orange{background:#451b22;color:#ff7777}
 .notice{font-size:12px;color:var(--muted);line-height:1.6;margin-top:12px}
 .error{color:#ff927c;font-size:12px;margin-top:10px}
 .success{color:var(--green);font-size:12px;margin-top:10px}
 footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
-.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#171d25;color:#f1f3f6}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--panel);color:var(--text)}
 .leaflet-container a{color:var(--orange)}
 @media(max-width:850px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}#map{height:450px}}
 @media(max-width:560px){main{padding:22px 13px}.stats{gap:7px}.stat{padding:12px}.stat strong{font-size:21px}.stat span{font-size:10px}.heading{align-items:flex-start}.heading button{font-size:11px;padding:10px}.side{display:flex}#map{height:390px}header{padding:0 13px}.status{display:none}}
@@ -70,7 +71,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <body>
 <header>
  <div class="brand"><div class="logo">R</div><div>RADAR<small>DE LIJN · VLAANDEREN</small></div></div>
- <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <section id="authScreen" class="auth-wrap hidden">
@@ -137,8 +138,22 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-let mode='login', map, markers;
+let mode='login', map, markers, tileLayer;
 const $=id=>document.getElementById(id);
+function applyTheme(theme){
+ document.documentElement.dataset.theme=theme;
+ $('themeButton').textContent=theme==='light'?'☾ Donker':'☼ Licht';
+ if(tileLayer){
+  tileLayer.setUrl(theme==='light'
+   ?'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png'
+   :'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png');
+ }
+ try{localStorage.setItem('radar-theme',theme);}catch(e){}
+}
+function toggleTheme(){
+ applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+}
+try{applyTheme(localStorage.getItem('radar-theme')||'dark');}catch(e){document.documentElement.dataset.theme='dark';}
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(path,options={}) {
  const r=await fetch(path,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
@@ -169,8 +184,8 @@ function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
  map=L.map('map').setView([51.05,4.45],8);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  maxZoom:19,attribution:'&copy; OpenStreetMap'
+ tileLayer=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+  maxZoom:20,attribution:'&copy; OpenStreetMap &copy; CARTO'
  }).addTo(map);
  markers=L.layerGroup().addTo(map);
  if(navigator.geolocation){
