@@ -158,7 +158,7 @@ function applyTheme(theme){
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#f3f5f8':'#0b0d11';
  $('themeButton').textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
- if(map)map.setStyle(theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/liberty');
+ if(map)map.setStyle(theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark');
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
 function toggleTheme(){
@@ -194,7 +194,7 @@ function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').class
 function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
- map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/liberty',center:[4.45,51.05],zoom:8,attributionControl:true});
+ map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:[4.45,51.05],zoom:8,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  if(navigator.geolocation){
