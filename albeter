@@ -250,7 +250,7 @@ function initMap(){
 }
 function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
 function reportCard(r,admin=false){
- const route='Lijn '+(r.route_short_name||'—');
+ const route=r.route_id==='all'?'— Geen specifieke lijn / alle lijnen':'Lijn '+(r.route_short_name||'—');
  const stop=r.stop_name||r.location_name||'Halte onbekend';
  const gps=r.gps_confirmed
   ?'<span class="tag">✓ GPS bevestigd</span>'
@@ -266,7 +266,7 @@ function reportCard(r,admin=false){
 let gpsCheck=null;
 async function loadRoutes(){
  const data=await api('/api/routes');allRoutes=data.routes||[];
- $('routeSelect').innerHTML='<option value="">Kies een lijn</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');
+ $('routeSelect').innerHTML='<option value="">Kies een lijn</option><option value="all">— Geen specifieke lijn / alle lijnen</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');
 }
 async function loadMapStops(){
  const data=await api('/api/stops');mapStops=(data.stops||[]).filter(s=>Number.isFinite(Number(s.stop_lat))&&Number.isFinite(Number(s.stop_lon)));
@@ -330,7 +330,7 @@ function handleStopDotClick(e){
  if(hit.cluster){const coords=hit.cluster.map(d=>[Number(d.stop.stop_lon),Number(d.stop.stop_lat)]);const b=coords.reduce((acc,coord)=>acc.extend(coord),new maplibregl.LngLatBounds(coords[0],coords[0]));map.fitBounds(b,{padding:65,maxZoom:13});return;}
  const stop=hit.stop;
  const routeIds=String(stop.route_ids||'').split(',').filter(Boolean),routes=allRoutes.filter(r=>routeIds.includes(r.route_id));if(!routes.length)return;
- const node=document.createElement('div');node.innerHTML='<strong>'+esc(stop.stop_name)+'</strong><p style="margin:7px 0 5px">Kies de lijn:</p><select id="mapStopRoute" style="width:100%;margin-bottom:8px">'+routes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('')+'</select><button type="button" id="mapStopChoose" style="width:100%">Deze halte kiezen</button>';
+ const node=document.createElement('div');node.innerHTML='<strong>'+esc(stop.stop_name)+'</strong><p style="margin:7px 0 5px">Kies de lijn:</p><select id="mapStopRoute" style="width:100%;margin-bottom:8px"><option value="all">— Geen specifieke lijn / alle lijnen</option>'+routes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('')+'</select><button type="button" id="mapStopChoose" style="width:100%">Deze halte kiezen</button>';
  const popup=new maplibregl.Popup({offset:12}).setDOMContent(node).setLngLat([Number(stop.stop_lon),Number(stop.stop_lat)]).addTo(map);
  node.querySelector('#mapStopChoose').addEventListener('click',async()=>{if($('reportForm').classList.contains('hidden')){popup.remove();openAuth();return;}const routeId=node.querySelector('#mapStopRoute').value;try{$('routeSelect').value=routeId;await loadStops(routeId);$('stopSelect').value=stop.stop_id;$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportMessage').textContent='Halte en lijn geselecteerd. Vul het tijdstip in en dien je melding in.';popup.remove();}catch(err){$('reportMessage').textContent=err.message;}});
 }
@@ -338,7 +338,7 @@ async function loadStops(routeId){
  $('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Haltes laden...</option>';
  gpsCheck=null;$('gpsMessage').textContent='GPS-controle is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.';
  if(!routeId){$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';return;}
- const data=await api('/api/routes/'+encodeURIComponent(routeId)+'/stops');
+ const data=routeId==='all'?await api('/api/stops'):await api('/api/routes/'+encodeURIComponent(routeId)+'/stops');
  $('stopSelect').innerHTML='<option value="">Kies een halte</option>'+data.stops.map(s=>'<option value="'+esc(s.stop_id)+'">'+esc(s.stop_name)+'</option>').join('');
  $('stopSelect').disabled=false;
 }
@@ -697,7 +697,8 @@ async function handleApi(request, env) {
         r.observed_at,
         COALESCE(r.created_at,r.observed_at) AS created_at,
         r.gps_confirmed,
-        tr.route_short_name,
+        CASE WHEN r.route_id='all' THEN '—' ELSE tr.route_short_name END AS route_short_name,
+        r.route_id,
         ts.stop_name
       FROM reports r
       LEFT JOIN transit_routes tr ON tr.route_id=r.route_id
@@ -719,6 +720,7 @@ async function handleApi(request, env) {
 
     if (!b ||
         typeof b.route_id !== "string" ||
+        !b.route_id ||
         typeof b.stop_id !== "string" ||
         !b.observed_at ||
         !Number.isFinite(Date.parse(b.observed_at))) {
@@ -727,16 +729,17 @@ async function handleApi(request, env) {
       },400);
     }
 
-    const stop = await env.DB.prepare(`
-      SELECT
-        s.stop_id,
-        s.stop_name,
-        s.stop_lat,
-        s.stop_lon
-      FROM route_stops rs
-      JOIN transit_stops s ON s.stop_id=rs.stop_id
-      WHERE rs.route_id=? AND rs.stop_id=?
-    `).bind(b.route_id,b.stop_id).first();
+    const stop = b.route_id === "all"
+      ? await env.DB.prepare(`
+          SELECT stop_id,stop_name,stop_lat,stop_lon
+          FROM transit_stops WHERE stop_id=?
+        `).bind(b.stop_id).first()
+      : await env.DB.prepare(`
+          SELECT s.stop_id,s.stop_name,s.stop_lat,s.stop_lon
+          FROM route_stops rs
+          JOIN transit_stops s ON s.stop_id=rs.stop_id
+          WHERE rs.route_id=? AND rs.stop_id=?
+        `).bind(b.route_id,b.stop_id).first();
 
     if (!stop) {
       return json({
