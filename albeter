@@ -45,7 +45,7 @@ h2,h3{margin-top:0}
 #map .maplibregl-popup{z-index:1000!important}
 .map-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
 .map-tools input{flex:1;min-width:190px;padding:9px 11px}
-.map-tools button{padding:9px 12px;font-size:12px}
+.map-tools button{padding:9px 12px;font-size:12px}.map-tools button.filter-active{border-color:#2583eb;background:rgba(37,131,235,.16);color:var(--text)}.map-tools button.filter-tram.filter-active{border-color:#f28c28;background:rgba(242,140,40,.16)}
 .map-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:9px 4px 2px;color:var(--muted);font-size:11px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 .legend-blue{background:#2583eb}.legend-orange{background:#f28c28}.legend-red{background:#e53935}
@@ -135,6 +135,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <button type="button" class="secondary" id="searchStopButton">Zoeken</button>
     <button type="button" class="secondary" id="toggleStopsButton" aria-pressed="false">Haltes verbergen</button>
     <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
+    <button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button>
+    <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
    </div>
    <div id="map"></div>
    <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Actieve melding</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
@@ -171,7 +173,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <script>
 let mode='login', map;
 const reportMarkers=[];
-let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[],hideStops=false,onlyReportedStops=false,clusterZoomLevel=8;
+let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[],hideStops=false,onlyReportedStops=false,showBusStops=true,showTramStops=true,clusterZoomLevel=8;
 const $=id=>document.getElementById(id);
 function applyMapTone(){
  if(!map)return;
@@ -239,6 +241,8 @@ function initMap(){
   onlyReportedStops=!onlyReportedStops;$('toggleReportedButton').setAttribute('aria-pressed',String(onlyReportedStops));
   $('toggleReportedButton').textContent=onlyReportedStops?'Alle haltes tonen':'Alleen meldingen';drawStopDots();
  });
+ $('filterBusButton').addEventListener('click',()=>{showBusStops=!showBusStops;updateTransportFilterButtons();drawStopDots();});
+ $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();drawStopDots();});
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
  $('stopSearch').addEventListener('input',updateStopSearchOptions);
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
@@ -290,6 +294,18 @@ function isTramStop(stop){
  const ids=String(stop.route_ids||'').split(',').filter(Boolean);
  return ids.some(id=>{const route=allRoutes.find(r=>String(r.route_id)===id);return route&&/tram|kusttram/i.test(String(route.route_short_name||'')+' '+String(route.route_long_name||''));});
 }
+function stopHasBusRoute(stop){
+ const ids=String(stop.route_ids||'').split(',').filter(Boolean);
+ return ids.some(id=>{const route=allRoutes.find(r=>String(r.route_id)===id);return route&&!/tram|kusttram/i.test(String(route.route_short_name||'')+' '+String(route.route_long_name||''));});
+}
+function stopMatchesTransportFilter(stop){
+ const tram=isTramStop(stop),bus=stopHasBusRoute(stop)||!tram;
+ return (showBusStops&&bus)||(showTramStops&&tram);
+}
+function updateTransportFilterButtons(){
+ $('filterBusButton').setAttribute('aria-pressed',String(showBusStops));$('filterBusButton').classList.toggle('filter-active',showBusStops);
+ $('filterTramButton').setAttribute('aria-pressed',String(showTramStops));$('filterTramButton').classList.toggle('filter-active',showTramStops);
+}
 function stopDotColor(stop,red){return red?'#e53935':(isTramStop(stop)?'#f28c28':'#2583eb');}
 function drawStopDots(){
  if(!map||!stopDotCanvas||!mapStops.length)return;
@@ -303,6 +319,7 @@ function drawStopDots(){
   // Panning therefore moves the cluster with the map without changing its membership.
   const cell=0.04*Math.pow(2,9-zoom),groups=new Map();
   for(const s of mapStops){
+   if(!stopMatchesTransportFilter(s))continue;
    const red=activeReportStopIds.has(String(s.stop_id));if(onlyReportedStops&&!red)continue;
    const lng=Number(s.stop_lon),lat=Number(s.stop_lat),key=Math.floor(lng/cell)+':'+Math.floor(lat/cell);
    if(!groups.has(key))groups.set(key,[]);
