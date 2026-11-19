@@ -215,8 +215,8 @@ function reportCard(r,admin=false){
   ?'<div class="report-actions"><button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button><button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button></div>'
   :'';
  return '<article class="report">'+
-  '<div class="report-head"><span class="report-title">'+esc(route)+' · '+esc(stop)+'</span><time class="report-time">'+esc(formatDate(r.observed_at))+'</time></div>'+
-  '<div class="report-meta"><span class="tag">'+esc(route)+'</span><span class="tag">'+esc(stop)+'</span>'+gps+'</div>'+
+  '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time">'+esc(formatDate(r.observed_at))+'</time></div>'+
+  '<div class="report-meta"><span class="tag">'+esc(route)+'</span>'+gps+'</div>'+
   actions+'</article>';
 }
 let gpsCheck=null;
