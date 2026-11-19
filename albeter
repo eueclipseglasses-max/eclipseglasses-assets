@@ -41,6 +41,8 @@ h2,h3{margin-top:0}
 .stat strong{display:block;font-size:27px;margin-top:10px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}
 #map{height:590px;border-radius:9px;background:var(--map-bg);z-index:1;border:1px solid var(--border)}
+:root[data-theme="dark"] #map .maplibregl-canvas{filter:grayscale(1) brightness(.72) contrast(1.12)!important}
+:root[data-theme="light"] #map .maplibregl-canvas{filter:none!important}
 .map-panel{padding:12px}
 .panel-title{display:flex;justify-content:space-between;align-items:center;padding:8px 5px 15px}
 .side{display:flex;flex-direction:column;gap:15px}
@@ -430,7 +432,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "radar-shell-v7";
+      const CACHE = "radar-shell-v8";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
