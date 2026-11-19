@@ -199,7 +199,7 @@ function initMap(){
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  if(navigator.geolocation){
   navigator.geolocation.getCurrentPosition(pos=>{
-   map.setView([pos.coords.latitude,pos.coords.longitude],15,{animate:true});
+   map.flyTo({center:[pos.coords.longitude,pos.coords.latitude],zoom:15});
   },()=>{}, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
  }
 }
@@ -296,12 +296,12 @@ async function startApp(){
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
  $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=()=>$('reportForm').scrollIntoView({behavior:'smooth'});
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
- initMap();setTimeout(()=>map.invalidateSize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
+ initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.add('hidden');$('adminPanel').classList.add('hidden');$('reportCta').textContent='Inloggen om te melden';$('reportCta').onclick=openAuth;
- $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.invalidateSize(),100);await loadReports();
+ $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadReports();
 }
 $('authButton').classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
