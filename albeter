@@ -145,8 +145,8 @@ function applyTheme(theme){
  $('themeButton').textContent=theme==='light'?'☾ Donker':'☼ Licht';
  if(tileLayer){
   tileLayer.setUrl(theme==='light'
-   ?'https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png'
-   :'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png');
+   ?'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png'
+   :'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png');
  }
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
@@ -184,7 +184,7 @@ function showPublicDashboard(){startPublicApp();}
 function initMap(){
  if(map)return;
  map=L.map('map').setView([51.05,4.45],8);
- tileLayer=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{
+ tileLayer=L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
   maxZoom:20,attribution:'&copy; OpenStreetMap &copy; CARTO'
  }).addTo(map);
  markers=L.layerGroup().addTo(map);
@@ -773,7 +773,7 @@ export default {
           "Cache-Control":"no-store",
           "X-Content-Type-Options":"nosniff",
           "Referrer-Policy":"strict-origin-when-cross-origin",
-          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://*.tile.openstreetmap.org; connect-src 'self';"
+          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com; img-src 'self' data: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com; connect-src 'self';"
         }
       });
 
