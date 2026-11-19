@@ -50,7 +50,7 @@ h2,h3{margin-top:0}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
 .legend-blue{background:#2583eb}.legend-red{background:#e53935}
 .map-cluster-label{font:700 11px Arial,sans-serif;text-align:center;pointer-events:none}
-:root[data-theme="dark"] #map .maplibregl-canvas{filter:grayscale(1) brightness(.72) contrast(1.12)!important}
+:root[data-theme="dark"] #map .maplibregl-canvas{filter:grayscale(1) brightness(.90) contrast(1.06)!important}
 :root[data-theme="light"] #map .maplibregl-canvas{filter:none!important}
 .map-panel{padding:12px}
 .panel-title{display:flex;justify-content:space-between;align-items:center;padding:8px 5px 15px}
@@ -176,7 +176,7 @@ const $=id=>document.getElementById(id);
 function applyMapTone(){
  if(!map)return;
  map.getCanvas().style.filter=document.documentElement.dataset.theme==='dark'
-  ?'grayscale(1) brightness(.78) contrast(1.12)'
+  ?'grayscale(1) brightness(.90) contrast(1.06)'
   :'none';
 }
 function applyTheme(theme){
