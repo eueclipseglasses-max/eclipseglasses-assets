@@ -265,7 +265,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
      <div class="field"><label>De Lijn-nummer en traject <span id="routeBadge" class="route-badge"></span></label><select id="routeSelect" required><option value="">Lijnen worden geladen…</option></select></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Selecteer eerst een lijn</option></select></div>
      <div class="field"><button type="button" class="secondary full" id="gpsButton">Ik sta hier nu</button><div id="gpsMessage" class="notice">GPS-check is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
-     <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local" required></div>
+     <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local"></div>
      <button class="full" id="submitReportButton">Verstuur</button>
      <div id="reportMessage" class="error"></div>
     </form>
@@ -297,6 +297,34 @@ const reportMarkers=[];
 const activeReportCreatedAt=new Map();
 let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[],hideStops=false,onlyReportedStops=false,showBusStops=true,showTramStops=true,clusterZoomLevel=8;
 const $=id=>document.getElementById(id);
+// Water en groen op de OpenFreeMap-kaart een kleur geven (positron = licht, dark = donker).
+// Werkt per bronlaag, dus los van de exacte laagnamen. Parken en gras zitten in 'landcover',
+// die deze stijlen niet tekenen: daarvoor voegen we een eigen laag toe onder het water.
+function kaartKleuren(){
+ if(!map||!map.getStyle())return;
+ const donker=document.documentElement.dataset.theme==='dark';
+ const K=donker?{water:'#1d3f5e',waterlijn:'#2a5478',park:'#21452f',gras:'#1d3a28',bos:'#1b3a26',sport:'#22412d'}
+  :{water:'#a9d3f0',waterlijn:'#8cc3ea',park:'#c4e3b2',gras:'#d6ebc6',bos:'#b9dba6',sport:'#cfe7bf'};
+ const lagen=map.getStyle().layers||[];
+ const bron=(lagen.find(l=>l['source-layer']==='landcover'||l['source-layer']==='water')||{}).source,voorWater=(lagen.find(l=>l['source-layer']==='water')||{}).id;
+ for(const l of lagen){
+  const sl=l['source-layer'];
+  try{
+   if(sl==='water'&&l.type==='fill')map.setPaintProperty(l.id,'fill-color',K.water);
+   else if(sl==='waterway'&&l.type==='line')map.setPaintProperty(l.id,'line-color',K.waterlijn);
+   else if(sl==='landcover'&&l.type==='fill'&&/wood/.test(l.id)){map.setPaintProperty(l.id,'fill-color',K.bos);map.setPaintProperty(l.id,'fill-opacity',0.9);}
+   else if(sl==='park'&&l.type==='fill'){map.setPaintProperty(l.id,'fill-color',K.park);map.setPaintProperty(l.id,'fill-opacity',0.6);}
+  }catch(e){}
+ }
+ if(bron&&!map.getLayer('golem-groen')){
+  try{
+   map.addLayer({id:'golem-groen',type:'fill',source:bron,'source-layer':'landcover',filter:['match',['get','class'],['grass','wood','forest'],true,false],
+    paint:{'fill-color':['match',['get','subclass'],['park','garden','recreation_ground','village_green','playground'],K.park,['wood','forest'],K.bos,K.gras],'fill-opacity':0.9}},voorWater);
+   map.addLayer({id:'golem-groen-terrein',type:'fill',source:bron,'source-layer':'landuse',filter:['match',['get','class'],['cemetery','pitch','stadium','playground','park'],true,false],
+    paint:{'fill-color':K.sport,'fill-opacity':0.8}},voorWater);
+  }catch(e){console.warn('Kaartkleuren:',e);}
+ }
+}
 function applyMapTone(){
  if(!map)return;
  map.getCanvas().style.filter=document.documentElement.dataset.theme==='dark'
@@ -390,7 +418,7 @@ function initMap(){
  const city=CITY_DATA.find(c=>c.id===selectedCity);const isOostende=selectedCity==='oostende';map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:city?[city.lon,city.lat]:[4.45,51.05],zoom:city?11:8,minZoom:isOostende?10.5:undefined,maxBounds:isOostende?[[2.80,51.13],[3.10,51.29]]:undefined,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
- map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
+ map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;kaartKleuren();addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
  map.on('move',drawStopDots);map.on('resize',drawStopDots);
  map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
  map.on('click',handleStopDotClick);map.on('moveend',addRouteLinesToMap);
@@ -478,10 +506,11 @@ function rondHoeken(c){
  }
  uit.push(c[c.length-1]);return uit;
 }
+function lijnVersieParam(){const v=lijnIndex&&lijnIndex.gemaakt;return v?'?v='+encodeURIComponent(v):'';}
 function decodeerLijn(a){const c=[];let x=0,y=0;for(let i=0;i+1<a.length;i+=2){x+=a[i];y+=a[i+1];c.push([x/1e5,y/1e5]);}return rondHoeken(c);}
 function laadTegel(k){
  if(lijnTegels.has(k))return Promise.resolve(lijnTegels.get(k));
- if(!lijnBezig.has(k))lijnBezig.set(k,fetch('/kaartdata/net/'+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{const f=d&&Array.isArray(d.f)?d.f.map(x=>({g:x[0],r:x[1],c:decodeerLijn(x[2])})):null;lijnTegels.set(k,f);lijnBezig.delete(k);return f;}));
+ if(!lijnBezig.has(k))lijnBezig.set(k,fetch('/kaartdata/net/'+k+'.json'+lijnVersieParam()).then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{const f=d&&Array.isArray(d.f)?d.f.map(x=>({g:x[0],r:x[1],c:decodeerLijn(x[2])})):null;lijnTegels.set(k,f);lijnBezig.delete(k);return f;}));
  return lijnBezig.get(k);
 }
 const geldigeKleur=k=>/^#[0-9A-Fa-f]{6}$/.test(k||'');
@@ -509,16 +538,22 @@ function toonRouteBadge(){const el=$('routeBadge');if(!el)return;const rid=gekoz
 function addRouteLinesToMap(){clearTimeout(lijnTimer);lijnTimer=setTimeout(()=>{tekenLijnen().catch(err=>console.warn('Lijntrajecten:',err));},150);}
 // Welke lijnen krijgen kleur? Standaard geen enkele (rustig grijs net). Kleur verschijnt voor:
 // de gekozen lijn en de lijnen van een aangetikte halte of straat. Meldingen kleuren alleen hun stukje lijn.
+// Alle richtingen en varianten van dezelfde lijn (zelfde nummer en kleur).
+function lijnBroers(rid){
+ const idx=lijnIndex,i=idx&&idx.lijnen[rid];if(!i)return [rid];
+ if(!idx.perGroep){idx.perGroep={};for(const [r,x] of Object.entries(idx.lijnen))(idx.perGroep[x.g]=idx.perGroep[x.g]||[]).push(r);}
+ return idx.perGroep[i.g]||[rid];
+}
 function focusRoutes(){
  const f=new Map();
- for(const rid of tijdelijkeFocus)f.set(rid,'tijdelijk');
- const sel=gekozenLijnId();if(sel)f.set(sel,'kies');
+ for(const rid of tijdelijkeFocus)for(const b of lijnBroers(rid))f.set(b,'tijdelijk');
+ const sel=gekozenLijnId();if(sel)for(const b of lijnBroers(sel))f.set(b,'kies');
  return f;
 }
 // Traject van één lijn (richting) met de plaats van elke halte erop; alleen geladen als er een melding op die lijn is.
 function laadRouteVolgorde(rid){
  if(routeVolgorde.has(rid))return Promise.resolve(routeVolgorde.get(rid));
- if(!routeVolgordeBezig.has(rid))routeVolgordeBezig.set(rid,fetch('/kaartdata/route/'+String(rid).replace(/[^A-Za-z0-9]/g,'_')+'.json').then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{
+ if(!routeVolgordeBezig.has(rid))routeVolgordeBezig.set(rid,fetch('/kaartdata/route/'+String(rid).replace(/[^A-Za-z0-9]/g,'_')+'.json'+lijnVersieParam()).then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{
   let v=null;
   if(d&&Array.isArray(d.l)&&Array.isArray(d.h)){
    const lijnen=d.l.map(a=>{const c=[];let x=0,y=0;for(let i=0;i+1<a.length;i+=2){x+=a[i];y+=a[i+1];c.push([x/1e5,y/1e5]);}const kx=111320*Math.cos((c[0]?c[0][1]:51)*Math.PI/180),cum=[0];for(let i=1;i<c.length;i++)cum.push(cum[i-1]+Math.hypot((c[i][0]-c[i-1][0])*kx,(c[i][1]-c[i-1][1])*110574));return {c,cum};});
@@ -875,10 +910,10 @@ $('newReport').addEventListener('submit',async e=>{
   await api('/api/reports',{method:'POST',body:JSON.stringify({
    route_id:$('routeSelect').value,stop_id:$('stopSelect').value,
    gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,
-   observed_at:new Date($('observed').value).toISOString()
+   observed_at:($('observed').value?new Date($('observed').value):new Date()).toISOString()
   })});
   $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.';$('reportMessage').className='success';
-  $('newReport').reset();gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});await loadReports();
+  $('newReport').reset();$('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});await loadReports();
  }catch(err){$('reportMessage').className='error';$('reportMessage').textContent=err.message;}
  finally{$('submitReportButton').disabled=false;}
 });
@@ -1311,7 +1346,8 @@ async function handleApi(request, env) {
   if (path === "/api/reports" && method === "POST") {
     const user = await currentUser(request,env);
     const ip=request.headers.get("CF-Connecting-IP")||"unknown";
-    if(!await rateLimitCommunity(env,"report:"+await hashText(ip),3,3600000))
+    // Beheerders (om te testen) hebben geen limiet; anderen max. 3 meldingen per uur.
+    if(user?.role!=="admin" && !await rateLimitCommunity(env,"report:"+await hashText(ip),3,3600000))
       return json({error:"Maximum van 3 meldingen per uur bereikt. Probeer later opnieuw."},429);
     const b = await request.json().catch(()=>null);
 
@@ -1504,12 +1540,15 @@ async function kaartdata(request,pathname){
   if(request.method!=="GET"&&request.method!=="HEAD") return new Response("Method not allowed",{status:405});
   const naam=pathname.slice("/kaartdata/".length);
   if(!/^(index\.json|net\/-?\d{1,5}_-?\d{1,5}\.json|route\/[A-Za-z0-9_]{1,80}\.json)$/.test(naam)) return new Response("Niet gevonden",{status:404});
-  const kort=naam==="index.json";
-  const res=await fetch(KAARTDATA_BRON+naam,{cf:{cacheTtl:kort?900:86400,cacheEverything:true}});
+  // ?v=<bouwtijd>: tegels en routes van één bouw horen bij elkaar; een nieuwe bouw krijgt nieuwe URL's.
+  const v=new URL(request.url).searchParams.get("v")||"";
+  if(v&&!/^[0-9A-Za-z:.\-]{1,40}$/.test(v)) return new Response("Niet gevonden",{status:404});
+  const kort=naam==="index.json",ttl=kort?300:(v?2592000:3600);
+  const res=await fetch(KAARTDATA_BRON+naam+(v&&!kort?"?v="+encodeURIComponent(v):""),{cf:{cacheTtl:ttl,cacheEverything:true}});
   if(!res.ok) return new Response("Niet gevonden",{status:res.status===404?404:502});
   return new Response(res.body,{headers:{
     "Content-Type":"application/json; charset=utf-8",
-    "Cache-Control":kort?"public, max-age=900":"public, max-age=86400",
+    "Cache-Control":"public, max-age="+ttl+(v&&!kort?", immutable":""),
     "X-Content-Type-Options":"nosniff"
   }});
 }

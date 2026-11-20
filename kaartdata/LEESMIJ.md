@@ -19,13 +19,13 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
    - `index.json` met per lijn de kleur, de soort, het gebied en de tegels;
    - `net/<x>_<y>.json` per tegel;
    - `RAPPORT.md`.
-6. De Worker (`albeter`) geeft die bestanden door via `/kaartdata/...`. De kaart laadt alleen de tegels die in beeld zijn (vanaf zoom 10,5), plus de tegels van de gekozen lijn.
+6. De Worker (`albeter`) geeft die bestanden door via `/kaartdata/...`. De app vraagt tegels en routes op met `?v=<bouwtijd>` uit `index.json`, zodat na een nieuwe bouw nooit oude en nieuwe bestanden door elkaar gebruikt worden. De kaart laadt alleen de tegels die in beeld zijn (vanaf zoom 10,5), plus de tegels van de gekozen lijn.
 
 ## Op de kaart
 
 - **Standaard rustig:** alle lijnen zijn één dunne grijze lijn per straat.
 - **Kleur verschijnt alleen waar het iets betekent:**
-  - de lijn die je kiest in het formulier;
+  - de lijn die je kiest in het formulier (beide richtingen, zodat een eindhalte met een lus niet onderbroken lijkt);
   - de lijnen van een halte of straat waarop je tikt, zolang de popup open is (bij meer dan 5 lijnnummers niet, dan wordt het te druk);
   - een melding op een lijn kleurt alleen het stuk van die halte tot de volgende halte rood (met een pulserende gloed) en het stuk daarna geel, in de rijrichting van de lijn.
 - **Zelfde kleur = één strook:** gekleurde lijnen die dezelfde straat delen, liggen naast elkaar. Lijnen met dezelfde kleur, zoals de witte streeklijnen, delen één strook.
@@ -33,6 +33,7 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
   - Hoeken worden afgerond, met een straal van hoogstens 15 m.
   - Waar een lijn invoegt of afbuigt, schuift ze geleidelijk op over ongeveer 60 m in plaats van met een sprong.
 - **Meldingen in de tijd:** een melding of een herbevestiging ("nog daar") is 25 minuten "vers": het haltebolletje pulseert rood. Daarna wordt het grijs (ook het stuk lijn) en na 1 uur verdwijnt de melding.
+- **Achtergrondkaart:** water blauw en parken, gras en bos groen (functie `kaartKleuren` in `albeter`).
 - **Haltes:** geel voor bus, paars voor tram. Ze zijn klein en worden groter naarmate je inzoomt.
 - **Eigen locatie:** een blauw bolletje. Tik op de knop onder + en − om ernaartoe te gaan. Heb je eerder al toestemming gegeven, dan staat het bolletje er meteen.
 - **Gsm:** tik je op een halte of lijn, dan verschijnen de keuzes onderaan in een blad met grote knoppen. Dat blad kun je scrollen en sluiten met ×.
