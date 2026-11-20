@@ -21,8 +21,20 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
    - `RAPPORT.md`.
 6. De Worker (`albeter`) geeft die bestanden door via `/kaartdata/...`. De kaart laadt alleen de tegels die in beeld zijn (vanaf zoom 10,5), plus de tegels van de gekozen lijn.
 
+## Op de kaart
+
+- **Standaard rustig:** alle lijnen zijn één dunne grijze lijn per straat.
+- **Kleur verschijnt alleen waar het iets betekent:**
+  - de lijn die je kiest in het formulier;
+  - de lijnen van een halte of straat waarop je tikt, zolang de popup open is (bij meer dan 5 lijnnummers niet, dan wordt het te druk);
+  - lijnen met een controle: rood. Is de melding jonger dan 20 minuten, dan pulseert er een rode gloed rond de lijn.
+- **Zelfde kleur = één strook:** gekleurde lijnen die dezelfde straat delen, liggen naast elkaar. Lijnen met dezelfde kleur, zoals de witte streeklijnen, delen één strook.
+- **Vloeiende lijnen:**
+  - Hoeken worden afgerond, met een straal van hoogstens 15 m.
+  - Waar een lijn invoegt of afbuigt, schuift ze geleidelijk op over ongeveer 60 m in plaats van met een sprong.
+- **Badges overal:** het lijnbadge (kleur en cijferkleur zoals het lijnbord) staat in de popups van lijnen en haltes, naast de lijnkeuze in het formulier, bij elke melding en bij de controles in de haltepopup.
+
 De kleur komt uit OpenStreetMap (tag `colour` van het traject of de lijn). Ontbreekt die, dan krijgt een buslijn blauw en een tramlijn oranje, zoals de haltes.
-Dezelfde kleur staat als badge bij het lijnnummer in de keuzelijst die verschijnt als je op een lijn of op een halte tikt.
 
 ## Wat moet je zelf doen?
 
