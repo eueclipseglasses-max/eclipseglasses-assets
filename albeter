@@ -186,7 +186,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <section id="authScreen" class="auth-wrap hidden">
  <div class="eyebrow">DE GOLEM / ACCOUNT</div>
  <h1 id="authTitle">Welkom terug</h1>
- <p class="muted">Log in om zelf meldingen in te sturen. De kaart en goedgekeurde meldingen zijn openbaar.</p>
+ <p class="muted">Een account is optioneel. Je kunt ook zonder account verkeersmeldingen insturen.</p>
  <div class="tabs">
   <button id="loginTab" onclick="setMode('login')">Inloggen</button>
   <button id="registerTab" class="secondary" onclick="setMode('register')">Registreren</button>
@@ -204,7 +204,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <main id="appScreen" class="hidden">
  <div class="heading">
   <div><div class="eyebrow">MONITORING / VLAANDEREN</div><h1>Reizigersmeldingen</h1><p class="muted">Vervoersmeldingen op het volledige De Lijn-netwerk.</p></div>
-  <button id="reportCta" onclick="openAuth()">Inloggen om te melden</button>
+  <button id="reportCta" onclick="openReportForm()">+ Nieuwe melding</button>
  </div>
  <div class="stats">
   <div class="stat"><span>Goedgekeurde meldingen</span><strong id="countActive">0</strong></div>
@@ -228,15 +228,15 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
   <aside class="side">
-   <section class="panel hidden" id="reportForm">
+   <section class="panel" id="reportForm">
     <h3>Waarneming insturen</h3>
-    <p class="notice">Selecteer de lijn en halte waar je een vervoersprobleem hebt waargenomen.</p>
+    <p class="notice">Meld vertragingen en vervoersproblemen. Een account is niet nodig.</p>
     <form id="newReport">
      <div class="field"><label>De Lijn-nummer en traject</label><select id="routeSelect" required><option value="">Lijnen laden...</option></select></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Kies eerst een lijn</option></select></div>
      <div class="field"><button type="button" class="secondary full" id="gpsButton">Controleer mijn locatie bij deze halte</button><div id="gpsMessage" class="notice">GPS-controle is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
      <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local" required></div>
-     <button class="full">Melding indienen</button>
+     <button class="full" id="submitReportButton">Melding indienen</button>
      <div id="reportMessage" class="error"></div>
     </form>
    </section>
@@ -246,7 +246,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    </section>
    <section class="panel hidden" id="adminPanel">
     <h3>Beheer</h3>
-    <p class="notice">Controleer nieuwe gebruikersmeldingen voordat ze openbaar verschijnen.</p>
+    <p class="notice">Nieuwe meldingen verschijnen meteen als niet bevestigd. Beheer kan ze achteraf controleren.</p>
     <div id="pendingList"></div>
    </section>
   </aside>
@@ -339,19 +339,22 @@ function initMap(){
  }
 }
 function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
+function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
+function reportAgeOpacity(s){const age=Math.max(0,Date.now()-new Date(s).getTime());return Math.max(.18,1-Math.min(age/(3*3600000),.82));}
+function openReportForm(){$('reportForm').classList.remove('hidden');$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});}
 function reportCard(r,admin=false){
  const route=r.route_id==='all'?'— Geen specifieke lijn / alle lijnen':'Lijn '+(r.route_short_name||'—');
  const stop=r.stop_name||r.location_name||'Halte onbekend';
  const gps=r.gps_confirmed
   ?'<span class="tag">✓ GPS bevestigd</span>'
   :'<span class="tag orange">GPS niet bevestigd</span>';
- const actions=admin
-  ?'<div class="report-actions"><button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button><button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button></div>'
-  :'';
- return '<article class="report">'+
-  '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time">'+esc(formatDate(r.observed_at))+'</time></div>'+
-  '<div class="report-meta"><span class="tag">'+esc(route)+'</span>'+gps+'</div>'+
-  actions+'</article>';
+ const status=r.status==='approved'?'<span class="tag">✓ Bevestigd</span>':'<span class="tag orange">Niet bevestigd</span>';
+ const actions='<div class="report-actions community-votes"><button class="secondary" data-vote="still" data-id="'+esc(r.id)+'">Nog daar · '+Number(r.still_count||0)+'</button><button class="secondary" data-vote="gone" data-id="'+esc(r.id)+'">Weg · '+Number(r.gone_count||0)+'</button></div>';
+ const adminActions=admin?'<div class="report-actions"><button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button><button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button></div>':'';
+ return '<article class="report" style="opacity:'+reportAgeOpacity(r.created_at)+'">'+
+  '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time" title="'+esc(formatDate(r.created_at))+'">'+esc(timeAgo(r.created_at))+'</time></div>'+
+  '<div class="report-meta"><span class="tag">'+esc(route)+'</span>'+status+gps+'</div>'+
+  actions+adminActions+'</article>';
 }
 let gpsCheck=null;
 async function loadRoutes(){
@@ -474,7 +477,7 @@ async function loadReports(){
  $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<p class="muted">Nog geen meldingen geregistreerd.</p>';
 }
 $('newReport').addEventListener('submit',async e=>{
- e.preventDefault();$('reportMessage').textContent='Melding wordt ingediend...';
+ e.preventDefault();$('reportMessage').textContent='Melding wordt ingediend...';$('submitReportButton').disabled=true;
  try{
   if(!$('routeSelect').value || !$('stopSelect').value) throw new Error('Kies eerst een lijn en halte.');
   await api('/api/reports',{method:'POST',body:JSON.stringify({
@@ -482,9 +485,10 @@ $('newReport').addEventListener('submit',async e=>{
    gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,
    observed_at:new Date($('observed').value).toISOString()
   })});
-  $('reportMessage').textContent='Melding ontvangen en wacht op controle.';
-  $('newReport').reset();gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});
+  $('reportMessage').textContent='Melding is meteen zichtbaar als niet bevestigd.';
+  $('newReport').reset();gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});await loadReports();
  }catch(err){$('reportMessage').textContent=err.message;}
+ finally{$('submitReportButton').disabled=false;}
 });
 async function loadPending(){
  const data=await api('/api/admin/pending');
@@ -492,6 +496,11 @@ async function loadPending(){
   reportCard(r,true)
  ).join('')||'<p class="muted">Geen openstaande meldingen.</p>';
 }
+$('reportsList').addEventListener('click',async e=>{
+ const button=e.target.closest('button[data-vote]');if(!button)return;button.disabled=true;
+ try{await api('/api/reports/vote',{method:'POST',body:JSON.stringify({id:button.dataset.id,vote:button.dataset.vote})});await loadReports();}
+ catch(err){alert(err.message);}finally{button.disabled=false;}
+});
 $('pendingList').addEventListener('click',async e=>{
  const button=e.target.closest('button[data-id]');
  if(!button)return;
@@ -511,13 +520,13 @@ $('pendingList').addEventListener('click',async e=>{
 });
 async function startApp(){
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
- $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=()=>$('reportForm').scrollIntoView({behavior:'smooth'});
+ $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
- $('reportForm').classList.add('hidden');$('adminPanel').classList.add('hidden');$('reportCta').textContent='Inloggen om te melden';$('reportCta').onclick=openAuth;
+ $('reportForm').classList.remove('hidden');$('adminPanel').classList.add('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();
 }
 $('authButton').classList.add('hidden');
@@ -599,10 +608,24 @@ function validEmail(email) {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+async function ensureCommunityTables(env) {
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_votes (report_id TEXT NOT NULL,voter_key TEXT NOT NULL,vote TEXT NOT NULL CHECK(vote IN ('still','gone')),created_at TEXT NOT NULL,PRIMARY KEY(report_id,voter_key))`).run();
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_rate_limits (rate_key TEXT NOT NULL,created_at TEXT NOT NULL)`).run();
+  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_community_rate_key_time ON community_rate_limits(rate_key,created_at)").run();
+}
+async function rateLimitCommunity(env,key,limit,windowMs) {
+  const now=new Date().toISOString();
+  await env.DB.prepare("DELETE FROM community_rate_limits WHERE created_at < ?").bind(new Date(Date.now()-24*3600000).toISOString()).run();
+  const row=await env.DB.prepare("SELECT COUNT(*) AS n FROM community_rate_limits WHERE rate_key=? AND created_at > ?").bind(key,new Date(Date.now()-windowMs).toISOString()).first();
+  if(Number(row?.n||0)>=limit)return false;
+  await env.DB.prepare("INSERT INTO community_rate_limits(rate_key,created_at) VALUES(?,?)").bind(key,now).run();
+  return true;
+}
 async function handleApi(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
+  if(path.startsWith("/api/reports")) await ensureCommunityTables(env);
 
   if (method !== "GET") {
     const origin = request.headers.get("Origin");
@@ -658,7 +681,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v15";
+      const CACHE = "degolem-shell-v16";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
@@ -828,13 +851,16 @@ async function handleApi(request, env) {
         r.observed_at,
         COALESCE(r.created_at,r.observed_at) AS created_at,
         r.gps_confirmed,
+        r.status,
+        (SELECT COUNT(*) FROM community_votes v WHERE v.report_id=r.id AND v.vote='still') AS still_count,
+        (SELECT COUNT(*) FROM community_votes v WHERE v.report_id=r.id AND v.vote='gone') AS gone_count,
         CASE WHEN r.route_id='all' THEN '—' ELSE tr.route_short_name END AS route_short_name,
         r.route_id,
         ts.stop_name
       FROM reports r
       LEFT JOIN transit_routes tr ON tr.route_id=r.route_id
       LEFT JOIN transit_stops ts ON ts.stop_id=r.stop_id
-      WHERE r.status='approved'
+      WHERE r.status IN ('pending','approved')
         AND r.expires_at > ?
       ORDER BY r.observed_at DESC
       LIMIT 100
@@ -845,8 +871,9 @@ async function handleApi(request, env) {
 
   if (path === "/api/reports" && method === "POST") {
     const user = await currentUser(request,env);
-    if (!user) return json({error:"Log eerst in"},401);
-
+    const ip=request.headers.get("CF-Connecting-IP")||"unknown";
+    if(!await rateLimitCommunity(env,"report:"+await hashText(ip),3,3600000))
+      return json({error:"Maximum van 3 meldingen per uur bereikt. Probeer later opnieuw."},429);
     const b = await request.json().catch(()=>null);
 
     if (!b ||
@@ -931,7 +958,7 @@ async function handleApi(request, env) {
       VALUES(?,?,?,?,?,?,?,'pending',?,?,?,?)
     `).bind(
       randomId(),
-      user.id,
+      user?.id ?? null,
       "",
       stop.stop_name,
       stop.stop_lat,
@@ -948,6 +975,23 @@ async function handleApi(request, env) {
       message:"Melding wacht op moderatie.",
       gps_confirmed:!!gpsConfirmed
     },201);
+  }
+
+  if(path === "/api/reports/vote" && method === "POST") {
+    const b=await request.json().catch(()=>null);
+    if(!b || typeof b.id!=="string" || !["still","gone"].includes(b.vote))return json({error:"Ongeldige bevestiging."},400);
+    const report=await env.DB.prepare("SELECT id,status FROM reports WHERE id=? AND status IN ('pending','approved') AND expires_at>?").bind(b.id,new Date().toISOString()).first();
+    if(!report)return json({error:"Deze melding is niet meer actief."},404);
+    const user=await currentUser(request,env),ip=request.headers.get("CF-Connecting-IP")||"unknown";
+    const voterKey=user?"user:"+user.id:"ip:"+await hashText(ip);
+    if(!await rateLimitCommunity(env,"vote:"+voterKey,60,3600000))return json({error:"Je bevestigt te vaak. Probeer later opnieuw."},429);
+    try{await env.DB.prepare("INSERT INTO community_votes(report_id,voter_key,vote,created_at) VALUES(?,?,?,?)").bind(b.id,voterKey,b.vote,new Date().toISOString()).run();}
+    catch(e){return json({error:"Je hebt deze melding al beoordeeld."},409);}
+    const c=await env.DB.prepare("SELECT SUM(CASE WHEN vote='still' THEN 1 ELSE 0 END) AS still_count,SUM(CASE WHEN vote='gone' THEN 1 ELSE 0 END) AS gone_count FROM community_votes WHERE report_id=?").bind(b.id).first();
+    const still=Number(c?.still_count||0),gone=Number(c?.gone_count||0);
+    if(gone>=3 && gone>=still+2)await env.DB.prepare("UPDATE reports SET status='rejected' WHERE id=? AND status='pending'").bind(b.id).run();
+    else if(still>=3 && still>=gone+2)await env.DB.prepare("UPDATE reports SET status='approved' WHERE id=? AND status='pending'").bind(b.id).run();
+    return json({success:true,still,gone});
   }
 
   if (path === "/api/admin/pending" && method === "GET") {
@@ -996,7 +1040,7 @@ async function handleApi(request, env) {
     }
 
     await env.DB.prepare(
-      "UPDATE reports SET status=? WHERE id=? AND status='pending'"
+      "UPDATE reports SET status=? WHERE id=? AND status IN ('pending','approved')"
     ).bind(b.status,b.id).run();
 
     return json({success:true});
