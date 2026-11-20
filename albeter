@@ -41,21 +41,13 @@ header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:
 :root[data-theme="dark"] header{background:#1B1715;}
 :root[data-theme="light"] header{background:#FBEED8;}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
-.logo{width:48px;height:48px;object-fit:contain;display:block;border-radius:0;flex:0 0 48px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
+.logo{width:48px;height:48px;object-fit:contain;display:block;border-radius:0;flex:0 0 48px}.logo[role="button"]{cursor:pointer}.logo[role="button"]:focus-visible{outline:2px solid var(--orange);outline-offset:4px;border-radius:4px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
 .brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.5px;margin-top:4px}
 .header-right{display:flex;align-items:center;gap:12px}
 .status{font-size:11px;color:var(--green)}
 button{border:0;border-radius:7px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:700}
 button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-#themeButton.golem-toggle{position:relative;display:grid;place-items:center;width:62px;height:48px;min-width:62px;padding:3px;border:0;background:transparent;box-shadow:none;border-radius:50%;overflow:visible;transition:transform .25s ease,filter .3s ease}
-#themeButton.golem-toggle:hover{transform:translateY(-2px)}
-#themeButton.golem-toggle:active{transform:translateY(1px) scale(.96)}
-.golem-stone{position:relative;display:flex;align-items:center;justify-content:center;gap:7px;width:43px;height:37px;border-radius:48% 52% 45% 55% / 54% 47% 53% 46%;background:radial-gradient(ellipse at 34% 23%,#fff8e9 0%,#ead9bb 48%,#cbb28e 100%);border:1px solid #bda783;box-shadow:inset 0 2px 3px #fff9e8, inset 0 -3px 5px #9b8060aa,0 3px 7px #0003;transition:background .5s ease,box-shadow .5s ease,border-radius .5s ease}
-.golem-eye{display:block;width:7px;height:3px;border-radius:50%;background:#69533e;transform:scaleY(.55);transition:height .55s cubic-bezier(.2,.8,.2,1),transform .55s ease,background .4s ease,box-shadow .5s ease}
-:root[data-theme="dark"] .golem-eye{height:8px;transform:scaleY(1);background:#ffd34e;box-shadow:0 0 4px 2px #ffc928,0 0 11px 4px #ffb900aa}
-:root[data-theme="dark"] .golem-stone{box-shadow:inset 0 2px 3px #fff9e8, inset 0 -3px 5px #9b8060aa,0 0 12px #ffc92830,0 3px 7px #0006}
-#themeButton.golem-toggle:focus-visible{outline:2px solid #dcae45;outline-offset:3px}
-@media(prefers-reduced-motion:reduce){#themeButton.golem-toggle,.golem-stone,.golem-eye{transition:none}}
+
 button.danger{background:var(--soft-red);color:var(--soft-red-text);border:1px solid var(--border)}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 button:disabled{opacity:.5;cursor:not-allowed}
@@ -213,8 +205,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true" alt="De Golem-logo"><div><div class="brand-name">De Golem</div></div></div>
- <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="themeButton" class="golem-toggle" type="button" onclick="toggleTheme()" aria-label="Schakel naar LICHT" aria-pressed="false"><span class="golem-stone" aria-hidden="true"><span class="golem-eye"></span><span class="golem-eye"></span></span></button><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true" alt="De Golem-logo" role="button" tabindex="0" aria-label="Schakel tussen licht en donker" title="Schakel licht/donker" onclick="toggleTheme()" onkeydown="if(event.keyCode===13||event.keyCode===32){event.preventDefault();toggleTheme()}"><div><div class="brand-name">De Golem</div></div></div>
+ <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <section id="cityGate" class="city-gate"><div class="eyebrow">DE GOLEM / JOUW REGIO</div><h1>Waar ben je?</h1><p class="muted">We zoeken automatisch je stad. Je bevestigt zelf voordat we de lokale kaart openen.</p><div id="cityDetection" class="city-confirm"><strong>Je locatie wordt bepaald…</strong><p class="muted">Even geduld.</p></div><div class="city-top"><h3 style="margin:0">Andere steden</h3><span class="muted" style="font-size:11px">Binnenkort beschikbaar</span></div><div id="cityOptions" class="city-grid"></div><button id="cityInterestButton" class="secondary city-request" type="button" onclick="requestCityInterest()" disabled>Zet mijn stad vooruit</button><div id="cityStatus" class="city-status" aria-live="polite"></div><p class="notice">Oostende is geopend als testregio. Andere steden worden geopend zodra minstens 20 verschillende melders er in de afgelopen 30 dagen actief waren. Locatiegegevens worden alleen gebruikt om een stad voor te stellen.</p></section>
@@ -316,13 +308,6 @@ function applyTheme(theme){
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
  const logo=$('brandLogo');
  if(logo)logo.src=theme==='dark'?'https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true':'/app-icon.png';
- const button=$('themeButton');
- if(button){
-  button.classList.toggle('is-awake',theme==='dark');
-  button.setAttribute('aria-label',theme==='light'?'De Golem slaapt. Tik om hem te wekken en de donkere modus te activeren.':'De Golem waakt. Tik om hem te laten slapen en de lichte modus te activeren.');
-  button.setAttribute('aria-pressed',String(theme==='dark'));
-  button.title=theme==='light'?'De Golem wekken':'De Golem laten slapen';
- }
  if(map){
   const styleUrl=theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark';
   if(map.getStyle()?.sprite!==styleUrl){
