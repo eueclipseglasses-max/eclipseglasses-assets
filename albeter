@@ -986,17 +986,27 @@ async function handleApi(request, env) {
           };
           (roadData.features||[]).forEach(f=>collectLines(f.geometry));
           if(roadSegments.length){
-            const cosLat=Math.cos(51.23*Math.PI/180),metresLat=111320;
+            const cosLat=Math.cos(51.23*Math.PI/180),metresLat=111320,cell=0.0005,roadGrid=new Map();
+            roadSegments.forEach(seg=>{
+              const minX=Math.floor(Math.min(seg[0][0],seg[1][0])/cell),maxX=Math.floor(Math.max(seg[0][0],seg[1][0])/cell);
+              const minY=Math.floor(Math.min(seg[0][1],seg[1][1])/cell),maxY=Math.floor(Math.max(seg[0][1],seg[1][1])/cell);
+              for(let x=minX;x<=maxX;x++)for(let y=minY;y<=maxY;y++){
+                const key=x+":"+y;if(!roadGrid.has(key))roadGrid.set(key,[]);roadGrid.get(key).push(seg);
+              }
+            });
             const snapPoint=p=>{
+              const gx=Math.floor(p[0]/cell),gy=Math.floor(p[1]/cell);
               const px=p[0]*metresLat*cosLat,py=p[1]*metresLat;
               let best=null,bestD=Infinity;
-              for(const seg of roadSegments){
-                const ax=seg[0][0]*metresLat*cosLat,ay=seg[0][1]*metresLat;
-                const bx=seg[1][0]*metresLat*cosLat,by=seg[1][1]*metresLat;
-                const dx=bx-ax,dy=by-ay,den=dx*dx+dy*dy;
-                const t=den?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/den)):0;
-                const x=ax+t*dx,y=ay+t*dy,d=Math.hypot(px-x,py-y);
-                if(d<bestD){bestD=d;best=[x/(metresLat*cosLat),y/metresLat];}
+              for(let ox=-3;ox<=3;ox++)for(let oy=-3;oy<=3;oy++){
+                for(const seg of roadGrid.get((gx+ox)+":"+(gy+oy))||[]){
+                  const ax=seg[0][0]*metresLat*cosLat,ay=seg[0][1]*metresLat;
+                  const bx=seg[1][0]*metresLat*cosLat,by=seg[1][1]*metresLat;
+                  const dx=bx-ax,dy=by-ay,den=dx*dx+dy*dy;
+                  const t=den?Math.max(0,Math.min(1,((px-ax)*dx+(py-ay)*dy)/den)):0;
+                  const x=ax+t*dx,y=ay+t*dy,d=Math.hypot(px-x,py-y);
+                  if(d<bestD){bestD=d;best=[x/(metresLat*cosLat),y/metresLat];}
+                }
               }
               return best&&bestD<=75?[best[0],best[1],...p.slice(2)]:p;
             };
