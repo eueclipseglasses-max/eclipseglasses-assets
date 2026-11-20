@@ -298,7 +298,7 @@ const $=id=>document.getElementById(id);
 function applyMapTone(){
  if(!map)return;
  map.getCanvas().style.filter=document.documentElement.dataset.theme==='dark'
-  ?'grayscale(1) brightness(.98) contrast(1.03)'
+  ?'brightness(.98) contrast(1.03)'
   :'none';
 }
 function applyTheme(theme){
