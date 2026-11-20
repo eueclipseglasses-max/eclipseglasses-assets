@@ -430,7 +430,7 @@ async function addRouteLinesToMap(){
  if(officialRouteShapeCity!==selectedCity&&!officialRouteShapePromise){
   officialRouteShapePromise=(async()=>{
    try{
-    const data=await api('/api/route-shapes?city='+encodeURIComponent(selectedCity||'oostende')+'&v=3');
+    const data=await api('/api/route-shapes?city='+encodeURIComponent(selectedCity||'oostende')+'&v=4');
     officialRouteShapeCity=selectedCity;
     officialRouteShapeData=data.geojson||{type:'FeatureCollection',features:[]};
    }catch(error){console.error('Officiële reiswegen konden niet laden:',error);}
@@ -949,7 +949,7 @@ async function handleApi(request, env) {
       const shift=(coords)=>{
         if(!Array.isArray(coords))return coords;
         if(typeof coords[0]==="number"&&typeof coords[1]==="number"){
-          return [coords[0]+(cityId==="oostende"?0.000175:0),coords[1]+(cityId==="oostende"?0.000072:0),...coords.slice(2)];
+          return [coords[0]+(cityId==="oostende"?0.00055:0),coords[1]+(cityId==="oostende"?0.00010:0),...coords.slice(2)];
         }
         return coords.map(shift);
       };
