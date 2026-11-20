@@ -101,8 +101,80 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 .maplibregl-ctrl-group{background:var(--panel)!important;border:1px solid var(--border)!important}
 .maplibregl-ctrl-group button{background-color:var(--panel)!important}
 .report-marker{width:17px;height:17px;border-radius:50%;background:#ef4444;border:3px solid #fff;box-shadow:0 1px 7px #0008}
-@media(max-width:850px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}#map{height:450px}}
-@media(max-width:560px){main{padding:22px 13px}.stats{gap:7px}.stat{padding:12px}.stat strong{font-size:21px}.stat span{font-size:10px}.heading{align-items:flex-start}.heading button{font-size:11px;padding:10px}.side{display:flex}#map{height:390px}header{padding:0 13px}.status{display:none}}
+@media(max-width:850px){
+ .layout{grid-template-columns:minmax(0,1fr);gap:14px}
+ .side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+ #map{height:450px}
+}
+@media(max-width:600px){
+ body{overflow-x:hidden}
+ header{height:auto;min-height:62px;padding:9px 12px;gap:8px}
+ .brand{gap:8px;min-width:0;letter-spacing:0}
+ .logo{width:40px;height:40px;flex-basis:40px}
+ .brand-name{font-size:23px}
+ .brand small{font-size:8px;letter-spacing:1px}
+ .header-right{gap:6px;flex-shrink:0}
+ .header-right button{padding:9px 10px;font-size:11px;white-space:nowrap}
+ .status{display:none}
+ main{padding:16px 11px}
+ .heading{display:flex;flex-direction:column;align-items:stretch;gap:12px;margin-bottom:15px}
+ .heading>div{min-width:0}
+ .eyebrow{font-size:9px}
+ h1{font-size:25px;margin:5px 0}
+ .heading .muted{font-size:12px;line-height:1.45;margin:0}
+ .heading button{width:100%;font-size:13px;padding:12px}
+ .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:13px}
+ .stat{min-width:0;padding:10px 8px;border-radius:9px}
+ .stat span{display:block;font-size:9px;line-height:1.25;min-height:23px;overflow-wrap:anywhere}
+ .stat strong{font-size:20px;margin-top:5px;overflow-wrap:anywhere}
+ .stat #userRole{font-size:13px!important}
+ .layout{gap:12px}
+ .map-panel{padding:10px}
+ .panel-title{gap:8px;padding:5px 2px 11px;align-items:flex-start}
+ .panel-title h3{font-size:17px;margin:0 0 3px}
+ .panel-title .muted{font-size:10px}
+ .panel-title .tag{font-size:9px;padding:5px 6px;white-space:nowrap}
+ .map-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:9px}
+ .map-tools input{grid-column:1/-1;min-width:0;width:100%;padding:11px;font-size:16px}
+ .map-tools button{width:100%;min-width:0;min-height:40px;padding:9px 7px;font-size:11px;line-height:1.2;white-space:normal}
+ #toggleReportedButton{grid-column:1/-1}
+ #map{height:min(58vh,470px);min-height:330px;border-radius:8px}
+ .map-legend{gap:8px 12px;padding:9px 2px 2px;font-size:10px;line-height:1.4}
+ .map-legend>span:last-child{flex-basis:100%}
+ .notice{font-size:11px;line-height:1.5}
+ .side{display:flex;flex-direction:column;gap:12px;min-width:0}
+ .panel{min-width:0;padding:14px;border-radius:10px}
+ .panel h3{font-size:17px;margin-bottom:10px}
+ .field{margin:11px 0}
+ label{font-size:11px}
+ input,textarea,select{font-size:16px;padding:12px;min-width:0}
+ .report{padding:12px;gap:9px;margin-bottom:9px}
+ .report-head{align-items:flex-start;gap:5px}
+ .report-title{font-size:13px;min-width:0;overflow-wrap:anywhere}
+ .report-time{font-size:10px}
+ .report-actions{gap:7px}
+ .report-actions button{min-width:0;min-height:40px;font-size:11px;padding:9px 7px}
+ .auth-wrap{margin:18px 11px;padding:20px 16px}
+ .tabs{gap:7px;margin:15px 0}
+ .maplibregl-ctrl-top-right{top:8px;right:8px}
+ .maplibregl-ctrl-bottom-right{right:5px;bottom:5px}
+ .maplibregl-ctrl-group button{width:32px;height:32px}
+ .maplibregl-popup{max-width:calc(100vw - 36px)!important}
+ .maplibregl-popup-content{max-width:calc(100vw - 48px);max-height:55vh;overflow:auto;padding:12px 25px 12px 12px;font-size:13px}
+ .maplibregl-popup-content select,.maplibregl-popup-content button{font-size:14px;min-height:40px}
+ footer{padding:18px 0;font-size:9px;text-align:center}
+}
+@media(max-width:370px){
+ header{padding-left:9px;padding-right:9px}
+ .brand-name{font-size:21px}
+ .logo{width:36px;height:36px;flex-basis:36px}
+ .header-right button{padding:8px;font-size:10px}
+ main{padding-left:8px;padding-right:8px}
+ .stat{padding:9px 6px}
+ .stat span{font-size:8px}
+ .stat strong{font-size:18px}
+ .map-tools button{font-size:10px}
+}
 </style>
 </head>
 <body>
