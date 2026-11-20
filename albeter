@@ -10,6 +10,9 @@ const HTML = String.raw`<!DOCTYPE html>
 <meta property="og:description" content="Bekijk en meld platte banden op het De Lijn-netwerk.">
 <meta property="og:type" content="website">
 <meta property="og:image" content="/app-icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="De Golem | Platte banden">
+<meta name="twitter:description" content="Bekijk en meld platte banden op het De Lijn-netwerk.">
 <meta name="map-provider" content="OpenFreeMap">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/app-icon.png">
@@ -217,7 +220,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <main id="appScreen">
  <div class="heading">
   <div><div class="eyebrow">MONITORING / VLAANDEREN</div><h1>Platte banden op de kaart</h1><p class="muted">Meldingen van platte banden op het De Lijn-netwerk.</p></div>
-  <button id="reportCta" onclick="openReportForm()">Platte band melden</button>
+  <button id="reportCta" onclick="openReportForm()">Platte band gezien? Meld het</button>
  </div>
  <div class="stats">
   <div class="stat"><span>Actieve meldingen</span><strong id="countActive">0</strong></div>
@@ -248,9 +251,9 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <form id="newReport">
      <div class="field"><label>De Lijn-nummer en traject</label><select id="routeSelect" required><option value="">Lijnen worden geladen…</option></select></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Selecteer eerst een lijn</option></select></div>
-     <div class="field"><button type="button" class="secondary full" id="gpsButton">Controleer mijn locatie</button><div id="gpsMessage" class="notice">GPS-check is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
+     <div class="field"><button type="button" class="secondary full" id="gpsButton">Ik sta hier nu</button><div id="gpsMessage" class="notice">GPS-check is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
      <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local" required></div>
-     <button class="full" id="submitReportButton">Melding indienen</button>
+     <button class="full" id="submitReportButton">Verstuur</button>
      <div id="reportMessage" class="error"></div>
     </form>
    </section>
@@ -272,7 +275,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
-const REPORT_LIFETIME_HOURS=3;
+const REPORT_LIFETIME_HOURS=0.75;
 let mode='login', map;
 const reportMarkers=[];
 const activeReportCreatedAt=new Map();
@@ -370,8 +373,9 @@ function initMap(){
 }
 function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
 function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
-function reportAgeOpacity(s){const age=Math.max(0,Date.now()-new Date(s).getTime());return Math.max(.18,1-Math.min(age/(REPORT_LIFETIME_HOURS*3600000),.82));}
-function openReportForm(){$('reportForm').classList.remove('hidden');$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
+function reportAgeOpacity(s){const age=Math.max(0,Date.now()-new Date(s).getTime());return age>=20*60000?.55:1;}
+function reportMarkerColor(stopId,stop){const created=activeReportCreatedAt.get(String(stopId));return created&&Date.now()-new Date(created).getTime()>=20*60000?'#929292':stopDotColor(stop,true);}
+function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton').classList.remove('hidden');$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
 function reportCard(r,admin=false){
  const route=r.route_id==='all'?'— Geen specifieke lijn / alle lijnen':'Lijn '+(r.route_short_name||'—');
  const stop=r.stop_name||r.location_name||'Halte onbekend';
@@ -455,8 +459,8 @@ function drawStopDots(){
    const p=map.project([lng,lat]);if(p.x< -24||p.y< -24||p.x>box.width+24||p.y>box.height+24)continue;
    const red=group.some(d=>d.red),tramCount=group.filter(d=>isTramStop(d.stop)).length;
    const opacity=red?Math.max(...group.filter(d=>d.red).map(d=>stopReportOpacity(d.stop.stop_id))):1;
-   if(group.length===1){drawStopDot(ctx,p.x,p.y,red?6:4.2,stopDotColor(group[0].stop,red),red?stopReportOpacity(group[0].stop.stop_id):1);screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
-   ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);ctx.fillStyle=red?'#c93232':(tramCount>group.length/2?'#d9781d':'#1769bd');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();ctx.restore();
+   if(group.length===1){drawStopDot(ctx,p.x,p.y,red?6:4.2,red?reportMarkerColor(group[0].stop.stop_id,group[0].stop):stopDotColor(group[0].stop,false),red?stopReportOpacity(group[0].stop.stop_id):1);screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
+   ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);const aged=group.filter(d=>d.red).every(d=>{const t=activeReportCreatedAt.get(String(d.stop.stop_id));return t&&Date.now()-new Date(t).getTime()>=20*60000;});ctx.fillStyle=red?(aged?'#929292':'#c93232'):(tramCount>group.length/2?'#d9781d':'#1769bd');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();ctx.restore();
    ctx.fillStyle='#fff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(group.length),p.x,p.y);
    screenStopDots.push({x:p.x,y:p.y,cluster:group});
   }
@@ -466,7 +470,7 @@ function drawStopDots(){
    const red=activeReportStopIds.has(String(s.stop_id));if(onlyReportedStops&&!red)continue;
    const lng=Number(s.stop_lon),lat=Number(s.stop_lat);if(!bounds.contains([lng,lat]))continue;
    const p=map.project([lng,lat]);if(p.x< -8||p.y< -8||p.x>box.width+8||p.y>box.height+8)continue;
-   drawStopDot(ctx,p.x,p.y,red?6:4.2,stopDotColor(s,red),red?stopReportOpacity(s.stop_id):1);screenStopDots.push({x:p.x,y:p.y,stop:s});
+   drawStopDot(ctx,p.x,p.y,red?6:4.2,red?reportMarkerColor(s.stop_id,s):stopDotColor(s,false),red?stopReportOpacity(s.stop_id):1);screenStopDots.push({x:p.x,y:p.y,stop:s});
   }
  }
 }
@@ -519,7 +523,7 @@ async function loadReports(){
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=data.reports.filter(r=>r.created_at.slice(0,10)===today).length;
  const latest=$('latestReportStatus');if(data.reports.length){const newest=data.reports.reduce((a,b)=>new Date(a.created_at)>new Date(b.created_at)?a:b);latest.innerHTML='<strong>Laatste melding:</strong> '+esc(timeAgo(newest.created_at));latest.classList.remove('hidden');}else{latest.textContent='';latest.classList.add('hidden');}
- $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<div class="empty-state"><strong>Nog geen meldingen in de buurt.</strong><p>Wees de eerste en meld een platte band.</p></div>';
+ $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<div class="empty-state"><strong>Het is rustig.</strong><p>Zag je een platte band? Meld het, dan zien anderen het meteen.</p></div>';
 }
 $('newReport').addEventListener('submit',async e=>{
  e.preventDefault();$('reportMessage').textContent='Melding wordt ingediend…';$('submitReportButton').disabled=true;
@@ -565,13 +569,13 @@ $('pendingList').addEventListener('click',async e=>{
 });
 async function startApp(){
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
- $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
+ $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
- $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
- $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
+ $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.add('hidden');$('authButton').textContent='Inloggen';
+ $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);
  const results=await Promise.allSettled([loadRoutes(),loadReports()]);
  if(results[0].status==='rejected')$('reportMessage').textContent='De lijnen konden niet laden. Probeer het opnieuw.';
@@ -601,7 +605,7 @@ const json = (data, status = 200, extra = {}) =>
     }
   });
 
-const REPORT_LIFETIME_HOURS=3;
+const REPORT_LIFETIME_HOURS=0.75;
 const randomId = () => crypto.randomUUID();
 
 async function hashText(value) {
@@ -1161,7 +1165,7 @@ export default {
         return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pagina niet gevonden · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:16px Georgia,serif;min-height:100vh;display:grid;place-items:center;text-align:center"><main style="padding:32px"><h1>Deze pagina bestaat niet.</h1><p>Misschien is de link verouderd.</p><a href="/" style="color:#925b35">Terug naar De Golem</a></main></body></html>',{status:404,headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
       }
       const infoPages={
-        "/over":["Over De Golem","De Golem is een gemeenschapskaart waarop bezoekers meldingen van platte banden op het De Lijn-netwerk kunnen bekijken en delen."],
+        "/over":["Over De Golem","De Golem is een onafhankelijk initiatief waarop reizigers meldingen van platte banden op het De Lijn-netwerk kunnen bekijken en delen. De Golem is niet verbonden aan De Lijn."],
         "/contact":["Contact","Heb je een vraag of opmerking over De Golem? Gebruik voorlopig de optie Misbruik melden voor inhoudelijke meldingen. Een algemeen contactadres wordt toegevoegd zodra het officieel is vastgelegd."],
         "/privacy":["Privacy","Je kunt een melding insturen zonder account. Voor misbruikpreventie verwerkt de dienst technische gegevens zoals een gehashte netwerkidentificatie en tijdstip. Meldingen worden tijdelijk bewaard en verdwijnen na de ingestelde bewaartermijn. GPS-controle is optioneel; de exacte GPS-coördinaten worden niet publiek getoond of opgeslagen."],
         "/voorwaarden":["Voorwaarden","Gebruik De Golem alleen voor correcte, te goeder trouw gedeelde waarnemingen. Plaats geen persoonsgegevens, beledigingen of bewust foutieve meldingen. Meldingen zijn gebruikerswaarnemingen en worden niet onafhankelijk gegarandeerd. Beheerders kunnen inhoud verwijderen of afwijzen."],
@@ -1179,7 +1183,10 @@ export default {
         page=page.replace(/async function loadPending\(\)\{[\s\S]*?\n\}\n(?=\$\('reportsList'\)\.addEventListener)/,"");
         page=page.replace(/\$\('pendingList'\)\.addEventListener\('click'[\s\S]*?\n\}\);\n/,"");
       }
-      page=page.replace('<meta property="og:image" content="/app-icon.png">','<meta property="og:image" content="'+url.origin+'/app-icon.png">');
+      page=page.replace('<meta property="og:image" content="/app-icon.png">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="De Golem | Platte banden">
+<meta name="twitter:description" content="Bekijk en meld platte banden op het De Lijn-netwerk.">','<meta property="og:image" content="'+url.origin+'/app-icon.png">');
       return new Response(page,{
         headers:{
           "Content-Type":"text/html; charset=utf-8",
