@@ -205,7 +205,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true" alt="De Golem-logo" role="button" tabindex="0" aria-label="Schakel tussen licht en donker" title="Schakel licht/donker" onclick="toggleTheme()" onkeydown="if(event.keyCode===13||event.keyCode===32){event.preventDefault();toggleTheme()}"><div><div class="brand-name">De Golem</div></div></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true" alt="De Golem-logo" role="button" tabindex="0" aria-label="Schakel tussen licht en donker" title="Schakel licht/donker" onclick="toggleTheme()" onkeydown="if(event.keyCode===13||event.keyCode===32){event.preventDefault();toggleTheme()}"><div><div class="brand-name">De Golem</div></div></div>
  <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
@@ -307,7 +307,7 @@ function applyTheme(theme){
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
  const logo=$('brandLogo');
- if(logo)logo.src=theme==='dark'?'https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true':'/app-icon.png';
+ if(logo)logo.src='https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true';
  if(map){
   const styleUrl=theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark';
   if(map.getStyle()?.sprite!==styleUrl){
@@ -717,7 +717,7 @@ async function handleApi(request, env) {
   }
 
   if (path === "/app-icon.png" && method === "GET") {
-    const icon = await fetch("https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT.png");
+    const icon = await fetch("https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT-Photoroom.png");
     if (!icon.ok) return new Response("App-icoon niet beschikbaar", {status:502});
     return new Response(icon.body, {
       headers: {
