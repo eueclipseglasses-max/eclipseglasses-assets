@@ -202,7 +202,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .map-tools button{font-size:10px}
 }
 .lijn-keuze{display:flex;align-items:center;gap:8px;width:100%;margin-top:6px;padding:7px 8px;text-align:left;font-weight:600;line-height:1.25;background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
+.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.lijn-kiezer-veld{position:relative}.lijn-kiezer-veld #routeSelect{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.lijn-kiezer{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:7px;text-align:left;font-weight:600;font:inherit;box-shadow:none}.lijn-kiezer-tekst{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lijn-kiezer-pijl{flex:none;opacity:.7}.lijn-kiezer-paneel{position:absolute;left:0;right:0;top:100%;z-index:60;margin-top:4px;max-height:min(60vh,420px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:10px}.lijn-zoek{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input);color:var(--text);font:inherit}.keuze-blad .lijn-zoek{font-size:16px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
 </style>
 </head>
 <body>
@@ -263,9 +263,9 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <h3>Platte band melden</h3>
     <p class="notice">Zag je een platte band? Meld de locatie. Een account is niet nodig.</p>
     <form id="newReport">
-     <div class="field"><label>De Lijn-nummer en traject <span id="routeBadge" class="route-badge"></span></label><select id="routeSelect" required><option value="">Lijnen worden geladen…</option></select></div>
+     <div class="field lijn-kiezer-veld"><label for="lijnKiezer">De Lijn-nummer en traject</label><select id="routeSelect" tabindex="-1" aria-hidden="true"><option value="">Lijnen worden geladen…</option></select><button type="button" id="lijnKiezer" class="lijn-kiezer" aria-haspopup="listbox"><span class="muted">Lijnen worden geladen…</span></button></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Selecteer eerst een lijn</option></select></div>
-     <div class="field"><button type="button" class="secondary full" id="gpsButton">Ik sta hier nu</button><div id="gpsMessage" class="notice">GPS-check is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
+     <div class="field"><button type="button" class="secondary full" id="gpsButton">Ik sta hier nu (optioneel)</button><div id="gpsMessage" class="notice">Locatie is niet nodig om te melden. Met GPS wordt je melding wel als "GPS bevestigd" getoond; je coördinaten worden niet bewaard.</div></div>
      <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local"></div>
      <button class="full" id="submitReportButton">Verstuur</button>
      <div id="reportMessage" class="error"></div>
@@ -390,7 +390,10 @@ function cityDistanceKm(lat,lon,c){const rad=x=>x*Math.PI/180,dLat=rad(lat-c.lat
 function cityForCoordinates(lat,lon){let best=null,distance=Infinity;for(const c of CITY_DATA){const d=cityDistanceKm(lat,lon,c);if(d<distance){best=c;distance=d;}}return best&&distance<=best.radius?best.id:null;}
 function isInSelectedCity(lat,lon){if(!selectedCity)return true;const c=cityById(selectedCity);if(!c||lat==null||lon==null)return false;return cityDistanceKm(Number(lat),Number(lon),c)<=c.radius;}
 function renderCityGate(){const detected=cityById(detectedCityId),active=detected&&detected.available;$('cityDetection').innerHTML=detected?'<strong>Klopt het dat je in '+esc(detected.name)+' bent?</strong><p class="muted">'+(active?Number(detected.activeReporters)+' verschillende melders actief in de afgelopen 30 dagen.':'Nog '+Math.max(0,CITY_MIN_REPORTERS-Number(detected.activeReporters||0))+' melders nodig om deze stad te openen.')+'</p>'+(active?'<button type="button" onclick="enterCity(\''+detected.id+'\')">Ja, toon '+esc(detected.name)+'</button>':'<span class="tag orange">Binnenkort beschikbaar</span>'):'<strong>We konden je stad niet automatisch bepalen.</strong><p class="muted">Bekijk hieronder welke regio’s al beschikbaar zijn.</p>';$('cityOptions').innerHTML=cityStats.map(c=>'<button type="button" class="city-option" onclick="'+(c.available?'enterCity(\''+c.id+'\')':'selectInterestCity(\''+c.id+'\')')+'"><span>'+esc(c.name)+'<small>'+(c.available?'Nu beschikbaar':'Binnenkort')+'</small></span><span class="city-count">'+Number(c.activeReporters)+' / '+CITY_MIN_REPORTERS+'</span></button>').join('');if(detectedCityId&&!active)selectedInterestCity=detectedCityId;if(!selectedInterestCity)selectedInterestCity=(cityStats.find(c=>!c.available)||cityStats[0]||{}).id||null;$('cityInterestButton').disabled=!selectedInterestCity;$('cityInterestButton').textContent=selectedInterestCity?'Zet '+(cityById(selectedInterestCity)?.name||'mijn stad')+' vooruit':'Zet mijn stad vooruit';}
-async function initCityGate(){const data=await api('/api/cities');cityStats=data.cities||[];detectedCityId=data.detectedCity||null;let stored=null;try{stored=localStorage.getItem('degolem_city');}catch{}if(stored&&cityById(stored)?.available){await enterCity(stored,false);return;}if(stored){try{localStorage.removeItem('degolem_city');}catch{}}if(navigator.geolocation){const gps=await new Promise(resolve=>navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),()=>resolve(null),{enableHighAccuracy:false,timeout:7000,maximumAge:300000}));if(gps){const id=cityForCoordinates(gps.lat,gps.lon);if(id)detectedCityId=id;}}renderCityGate();}
+// Locatie is nergens verplicht: we vragen er nooit zelf om bij het opstarten.
+// Alleen als de gebruiker eerder al toestemming gaf, gebruiken we ze (zonder pop-up).
+async function locatieToegestaan(){try{return !!(navigator.geolocation&&navigator.permissions&&(await navigator.permissions.query({name:'geolocation'})).state==='granted');}catch(e){return false;}}
+async function initCityGate(){const data=await api('/api/cities');cityStats=data.cities||[];detectedCityId=data.detectedCity||null;let stored=null;try{stored=localStorage.getItem('degolem_city');}catch{}if(stored&&cityById(stored)?.available){await enterCity(stored,false);return;}if(stored){try{localStorage.removeItem('degolem_city');}catch{}}if(await locatieToegestaan()){const gps=await new Promise(resolve=>navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),()=>resolve(null),{enableHighAccuracy:false,timeout:7000,maximumAge:300000}));if(gps){const id=cityForCoordinates(gps.lat,gps.lon);if(id)detectedCityId=id;}}renderCityGate();}
 function selectInterestCity(id){selectedInterestCity=id;const c=cityById(id);$('cityInterestButton').disabled=!c;$('cityInterestButton').textContent='Zet '+(c?.name||'mijn stad')+' vooruit';}
 async function requestCityInterest(){if(!selectedInterestCity)return;$('cityInterestButton').disabled=true;$('cityStatus').textContent='Je interesse wordt geregistreerd…';try{const result=await api('/api/cities/interest',{method:'POST',body:JSON.stringify({city_id:selectedInterestCity})});$('cityStatus').textContent='Bedankt! '+result.interestCount+' mensen willen deze stad erbij.';$('cityInterestButton').textContent='Interesse geregistreerd';}catch(e){$('cityStatus').textContent=e.message;$('cityInterestButton').disabled=false;}}
 async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate').classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
@@ -455,11 +458,11 @@ function initMap(){
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
  $('stopSearch').addEventListener('input',updateStopSearchOptions);
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
- if(navigator.geolocation){
+ locatieToegestaan().then(ok=>{if(!ok)return;
   navigator.geolocation.getCurrentPosition(pos=>{
-   map.flyTo({center:[pos.coords.longitude,pos.coords.latitude],zoom:15});
+   if(isInSelectedCity(pos.coords.latitude,pos.coords.longitude))map.flyTo({center:[pos.coords.longitude,pos.coords.latitude],zoom:15});
   },()=>{}, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
- }
+ });
 }
 function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
 function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
@@ -551,7 +554,29 @@ const opLijnnummer=(a,b)=>String(a.route_short_name).localeCompare(String(b.rout
 function lijnKnop(r){return '<button type="button" class="lijn-keuze" data-route="'+esc(r.route_id)+'">'+lijnBadge(r)+'<span>'+esc(r.route_long_name)+'</span></button>';}
 function richtingVan(lang){const d=String(lang||'').split(/\s+-\s+/);return d.length>1?d[d.length-1]:'';}
 function gekozenLijnId(){const v=($('routeSelect')&&$('routeSelect').value)||'';return v&&v!=='all'?v:'';}
-function toonRouteBadge(){const el=$('routeBadge');if(!el)return;const rid=gekozenLijnId(),r=rid&&allRoutes.find(x=>x.route_id===rid);el.innerHTML=r?lijnBadge(r):'';}
+// Knop van de lijnkeuze in het formulier: toont het badge en de bestemming van de gekozen lijn.
+function toonRouteBadge(){
+ const el=$('lijnKiezer');if(!el)return;
+ const v=($('routeSelect')&&$('routeSelect').value)||'',r=v&&v!=='all'&&allRoutes.find(x=>x.route_id===v);
+ el.innerHTML=(r?lijnBadge(r)+'<span class="lijn-kiezer-tekst">'+esc(r.route_long_name)+'</span>'
+  :v==='all'?'<span class="lijn-badge lijn-badge-alle">?</span><span class="lijn-kiezer-tekst">Geen specifieke lijn / alle lijnen</span>'
+  :'<span class="lijn-kiezer-tekst muted">'+(allRoutes.length?'Kies een lijn':'Lijnen worden geladen…')+'</span>')+'<span class="lijn-kiezer-pijl" aria-hidden="true">▾</span>';
+}
+// Keuzepaneel met alle lijnen (badge + bestemming), zoekbaar. Op een gsm als blad onderaan.
+function openLijnKiezer(){
+ if(!allRoutes.length)return;
+ const node=document.createElement('div');node.className='lijn-kiezer-inhoud';
+ node.innerHTML='<strong>Kies een lijn</strong><input type="search" class="lijn-zoek" placeholder="Zoek op nummer of bestemming" aria-label="Zoek een lijn"><div class="lijn-lijst" role="listbox"></div>';
+ const lijst=node.querySelector('.lijn-lijst'),zoek=node.querySelector('.lijn-zoek'),routes=allRoutes.slice().sort(opLijnnummer);
+ const teken=()=>{const q=zoek.value.trim().toLocaleLowerCase('nl-BE');
+  lijst.innerHTML=(q?'':'<button type="button" class="lijn-keuze lijn-alle" data-route="all"><span class="lijn-badge">?</span><span>Geen specifieke lijn / alle lijnen</span></button>')
+   +routes.filter(r=>!q||String(r.route_short_name).toLocaleLowerCase('nl-BE').startsWith(q)||String(r.route_long_name).toLocaleLowerCase('nl-BE').includes(q)).map(lijnKnop).join('')
+   ||'<p class="muted" style="margin:10px 2px">Geen lijn gevonden.</p>';};
+ teken();zoek.addEventListener('input',teken);
+ const h=toonPaneel(node,$('lijnKiezer'));
+ lijst.addEventListener('click',e=>{const b=e.target.closest('.lijn-keuze');if(!b)return;const s=$('routeSelect');s.value=b.dataset.route;s.dispatchEvent(new Event('change'));h.remove();$('lijnKiezer').focus();});
+ if(!isGsm())zoek.focus();
+}
 function addRouteLinesToMap(){clearTimeout(lijnTimer);lijnTimer=setTimeout(()=>{tekenLijnen().catch(err=>console.warn('Lijntrajecten:',err));},150);}
 // Welke lijnen krijgen kleur? Standaard geen enkele (rustig grijs net). Kleur verschijnt voor:
 // de gekozen lijn en de lijnen van een aangetikte halte of straat. Meldingen kleuren alleen hun stukje lijn.
@@ -735,15 +760,29 @@ async function tekenLijnen(){
 // Op een groot scherm blijft het een popup op de kaart.
 const isGsm=()=>window.matchMedia('(max-width: 760px)').matches;
 function sluitBlad(){if(actiefBlad)actiefBlad.remove();}
-function toonKeuze(node,lngLat,offset){
+function maakBlad(node){
  sluitBlad();
- if(!isGsm())return new maplibregl.Popup({offset,maxWidth:'320px',className:'keuze-popup'}).setDOMContent(node).setLngLat(lngLat).addTo(map);
  const blad=document.createElement('div');blad.className='keuze-blad';blad.setAttribute('role','dialog');
  blad.innerHTML='<div class="keuze-blad-greep"></div><button type="button" class="keuze-blad-sluit" aria-label="Sluiten">×</button>';
  blad.appendChild(node);document.body.appendChild(blad);
- const luisteraars=[],h={remove(){if(!blad.isConnected)return;blad.remove();if(actiefBlad===h)actiefBlad=null;luisteraars.splice(0).forEach(f=>f());},on(ev,f){if(ev==='close')luisteraars.push(f);return h;}};
+ const luisteraars=[],h={el:blad,remove(){if(!blad.isConnected)return;blad.remove();if(actiefBlad===h)actiefBlad=null;luisteraars.splice(0).forEach(f=>f());},on(ev,f){if(ev==='close')luisteraars.push(f);return h;}};
  blad.querySelector('.keuze-blad-sluit').addEventListener('click',()=>h.remove());
- actiefBlad=h;
+ actiefBlad=h;return h;
+}
+// Paneel onder een knop (groot scherm) of blad onderaan (gsm). Sluit bij klikken ernaast of Escape.
+function toonPaneel(node,anker){
+ if(isGsm())return maakBlad(node);
+ sluitBlad();
+ const paneel=document.createElement('div');paneel.className='lijn-kiezer-paneel';paneel.appendChild(node);anker.parentElement.appendChild(paneel);
+ const buiten=e=>{if(!paneel.contains(e.target)&&e.target!==anker&&!anker.contains(e.target))h.remove();};
+ const h={el:paneel,remove(){if(!paneel.isConnected)return;paneel.remove();document.removeEventListener('mousedown',buiten,true);if(actiefBlad===h)actiefBlad=null;},on(){return h;}};
+ setTimeout(()=>document.addEventListener('mousedown',buiten,true));
+ actiefBlad=h;return h;
+}
+function toonKeuze(node,lngLat,offset){
+ sluitBlad();
+ if(!isGsm())return new maplibregl.Popup({offset,maxWidth:'320px',className:'keuze-popup'}).setDOMContent(node).setLngLat(lngLat).addTo(map);
+ const h=maakBlad(node),blad=h.el;
  requestAnimationFrame(()=>{
   const m=$('map').getBoundingClientRect(),top=blad.getBoundingClientRect().top,p=map.project(lngLat),zicht=Math.min(m.bottom,top)-m.top;
   if(zicht>80&&p.y>zicht-50)map.panBy([0,p.y-zicht/2],{duration:300});
@@ -887,6 +926,7 @@ async function loadStops(routeId){
  $('stopSelect').disabled=false;
 }
 $('routeSelect').addEventListener('change',()=>{toonRouteBadge();addRouteLinesToMap();});
+$('lijnKiezer').addEventListener('click',openLijnKiezer);
 $('routeSelect').addEventListener('change',e=>loadStops(e.target.value).catch(err=>{$('stopSelect').innerHTML='<option value="">Haltes konden niet laden</option>';$('reportMessage').textContent=err.message;}));
 $('gpsButton').addEventListener('click',()=>{
  if(!$('stopSelect').value){$('gpsMessage').textContent='Kies eerst een lijn en halte.';return;}
@@ -1399,9 +1439,9 @@ async function handleApi(request, env) {
   if (path === "/api/reports" && method === "POST") {
     const user = await currentUser(request,env);
     const ip=request.headers.get("CF-Connecting-IP")||"unknown";
-    // Beheerders (om te testen) hebben geen limiet; anderen max. 3 meldingen per uur.
-    if(user?.role!=="admin" && !await rateLimitCommunity(env,"report:"+await hashText(ip),3,3600000))
-      return json({error:"Maximum van 3 meldingen per uur bereikt. Probeer later opnieuw."},429);
+    // Testfase: ruime limiet per internetverbinding. Verlaag MELDLIMIET_PER_UUR (bv. naar 3) bij de lancering.
+    if(user?.role!=="admin" && !await rateLimitCommunity(env,"report:"+await hashText(ip),MELDLIMIET_PER_UUR,3600000))
+      return json({error:"Maximum van "+MELDLIMIET_PER_UUR+" meldingen per uur bereikt. Probeer later opnieuw."},429);
     const b = await request.json().catch(()=>null);
 
     if (!b ||
@@ -1588,6 +1628,7 @@ async function handleApi(request, env) {
 }
 
 // Lijntrajecten: gebouwd door .github/workflows/kaartdata.yml en bewaard op de branch "kaartdata".
+const MELDLIMIET_PER_UUR = 20;
 const KAARTDATA_BRON = "https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/kaartdata/";
 async function kaartdata(request,pathname){
   if(request.method!=="GET"&&request.method!=="HEAD") return new Response("Method not allowed",{status:405});
