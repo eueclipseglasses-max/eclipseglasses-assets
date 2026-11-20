@@ -288,7 +288,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
-const REPORT_LIFETIME_HOURS=0.75;
+const REPORT_LIFETIME_HOURS=1;
 let mode='login', map;
 const CITY_MIN_REPORTERS=20;
 const CITY_DATA=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:22},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
@@ -853,7 +853,7 @@ const json = (data, status = 200, extra = {}) =>
     }
   });
 
-const REPORT_LIFETIME_HOURS=0.75;
+const REPORT_LIFETIME_HOURS=1;
 const randomId = () => crypto.randomUUID();
 
 async function hashText(value) {
@@ -1193,6 +1193,7 @@ async function handleApi(request, env) {
         r.status,
         (SELECT COUNT(*) FROM community_votes v WHERE v.report_id=r.id AND v.vote='still') AS still_count,
         (SELECT COUNT(*) FROM community_votes v WHERE v.report_id=r.id AND v.vote='gone') AS gone_count,
+        (SELECT MAX(v.created_at) FROM community_votes v WHERE v.report_id=r.id AND v.vote='still') AS last_still_at,
         CASE WHEN r.route_id='all' THEN '—' ELSE tr.route_short_name END AS route_short_name,
         r.route_id,
         ts.stop_name,
@@ -1336,6 +1337,8 @@ async function handleApi(request, env) {
     if(!await rateLimitCommunity(env,"vote:"+voterKey,60,3600000))return json({error:"Je bevestigt te vaak. Probeer later opnieuw."},429);
     try{await env.DB.prepare("INSERT INTO community_votes(report_id,voter_key,vote,created_at) VALUES(?,?,?,?)").bind(b.id,voterKey,b.vote,new Date().toISOString()).run();}
     catch(e){return json({error:"Je hebt deze melding al beoordeeld."},409);}
+    // Een herbevestiging ("nog daar") houdt de melding minstens nog een uur zichtbaar.
+    if(b.vote==="still"){const tot=new Date(Date.now()+3600000).toISOString();await env.DB.prepare("UPDATE reports SET expires_at=? WHERE id=? AND expires_at<?").bind(tot,b.id,tot).run();}
     const c=await env.DB.prepare("SELECT SUM(CASE WHEN vote='still' THEN 1 ELSE 0 END) AS still_count,SUM(CASE WHEN vote='gone' THEN 1 ELSE 0 END) AS gone_count FROM community_votes WHERE report_id=?").bind(b.id).first();
     const still=Number(c?.still_count||0),gone=Number(c?.gone_count||0);
     if(gone>=3 && gone>=still+2)await env.DB.prepare("UPDATE reports SET status='rejected' WHERE id=? AND status='pending'").bind(b.id).run();
@@ -1403,7 +1406,7 @@ const KAARTDATA_BRON = "https://raw.githubusercontent.com/eueclipseglasses-max/e
 async function kaartdata(request,pathname){
   if(request.method!=="GET"&&request.method!=="HEAD") return new Response("Method not allowed",{status:405});
   const naam=pathname.slice("/kaartdata/".length);
-  if(!/^(index\.json|net\/-?\d{1,5}_-?\d{1,5}\.json)$/.test(naam)) return new Response("Niet gevonden",{status:404});
+  if(!/^(index\.json|net\/-?\d{1,5}_-?\d{1,5}\.json|route\/[A-Za-z0-9_]{1,80}\.json)$/.test(naam)) return new Response("Niet gevonden",{status:404});
   const kort=naam==="index.json";
   const res=await fetch(KAARTDATA_BRON+naam,{cf:{cacheTtl:kort?900:86400,cacheEverything:true}});
   if(!res.ok) return new Response("Niet gevonden",{status:res.status===404?404:502});

@@ -23,6 +23,7 @@ Benodigd: Python 3.10+, `pip install osmium`.
 from __future__ import annotations
 
 import argparse
+import heapq
 import json
 import math
 import os
@@ -44,6 +45,9 @@ VEREENVOUDIG_M = 2.0        # Douglas-Peucker-tolerantie: punten die minder dan 
 DECIMALEN = 5               # ~1 m nauwkeurig
 TEGEL_LON, TEGEL_LAT = 0.1, 0.0625   # tegelgrootte in graden (~7 x 7 km in Vlaanderen)
 VERDACHTE_HALTE_M = 40      # haltes die verder dan dit van hun OSM-positie liggen, komen in het rapport
+MAX_BRUG_M = 1500           # gaten in een traject worden gedicht via andere bus-/tramwegen, tot deze lengte
+RECHTE_BRUG_M = 60          # lukt dat niet, dan wordt een gat tot deze afstand met een recht stukje gedicht
+HALTE_OP_LIJN_M = 60        # app-halte telt mee voor de haltevolgorde als ze zo dicht bij het traject ligt
 ROUTE_SOORTEN = {"bus", "tram"}
 # Lijnnummers die in OSM anders heten (app-nummer -> woorden in de OSM-naam).
 ALIASSEN = {"KT": ["kusttram"]}
@@ -135,6 +139,7 @@ class Relaties(osmium.SimpleHandler):
         self.routes: dict[int, dict] = {}
         self.master_kleur: dict[int, str] = {}
         self.master_tekst: dict[int, str] = {}
+        self.andere_wegen: set[int] = set()  # wegen van andere bus/tramtrajecten (om gaten te dichten)
 
     def relation(self, r):
         tags = {t.k: t.v for t in r.tags}
@@ -147,7 +152,12 @@ class Relaties(osmium.SimpleHandler):
                     if tekst:
                         self.master_tekst[m.ref] = tekst
             return
-        if tags.get("type") != "route" or tags.get("route") not in ROUTE_SOORTEN or not is_de_lijn(tags):
+        if tags.get("type") != "route" or tags.get("route") not in ROUTE_SOORTEN:
+            return
+        if not is_de_lijn(tags):
+            for m in r.members:
+                if m.type == "w" and not (m.role or "").startswith(("platform", "stop")):
+                    self.andere_wegen.add(m.ref)
             return
         wegen, haltes = [], []
         for m in r.members:
@@ -166,6 +176,7 @@ class Geometrie(osmium.SimpleHandler):
         super().__init__()
         self.weg_ids, self.halte_ids = weg_ids, halte_ids
         self.wegen: dict[int, list[tuple[float, float]]] = {}
+        self.knopen: dict[int, list[int]] = {}
         self.haltes: dict[int, dict] = {}
 
     def node(self, n):
@@ -175,27 +186,36 @@ class Geometrie(osmium.SimpleHandler):
     def way(self, w):
         if w.id not in self.weg_ids:
             return
-        punten = []
+        punten, refs = [], []
         for nd in w.nodes:
             if nd.location.valid():
                 punten.append((nd.location.lon, nd.location.lat))
+                refs.append(nd.ref)
         if len(punten) >= 2:
             self.wegen[w.id] = punten
+            self.knopen[w.id] = refs
 
 
-def lees_osm(pad: str) -> tuple[dict, dict, dict]:
+def lees_osm(pad: str) -> tuple[dict, dict, "Geometrie"]:
     print(f"OpenStreetMap lezen: {pad}")
     rel = Relaties()
     rel.apply_file(pad)
-    weg_ids = {w for r in rel.routes.values() for w in r["wegen"]}
+    weg_ids = {w for r in rel.routes.values() for w in r["wegen"]} | rel.andere_wegen
     halte_ids = {h for r in rel.routes.values() for h in r["haltes"]}
     geo = Geometrie(weg_ids, halte_ids)
     geo.apply_file(pad, locations=True)
     print(f"  {len(rel.routes)} De Lijn-trajecten, {len(geo.wegen)} wegen, {len(geo.haltes)} OSM-haltes")
+    net = Netwerk(geo)
+    geo.synth = {}
 
     trajecten = {}
+    gedicht = open_ = 0
     for rid, r in rel.routes.items():
-        lijnen = ketting([geo.wegen[w] for w in r["wegen"] if w in geo.wegen])
+        ws, n_gedicht, gaten = overbrug(r["wegen"], geo, net)
+        r["gedicht"] = n_gedicht
+        gedicht += n_gedicht
+        open_ += len(gaten)
+        lijnen = ketting([geo.wegen[w] for w in ws])
         if not lijnen:
             continue
         refs, halte_pos = set(), []
@@ -205,14 +225,141 @@ def lees_osm(pad: str) -> tuple[dict, dict, dict]:
                 halte_pos.append(geo.haltes[h])
         t = r["tags"]
         kleur = normaliseer_kleur(t.get("colour") or t.get("color") or rel.master_kleur.get(rid))
-        trajecten[rid] = Traject(rid, t, lijnen, refs, kleur, rijrichtingen(r["wegen"], geo.wegen))
+        trajecten[rid] = Traject(rid, t, lijnen, refs, kleur, rijrichtingen(ws, geo.wegen))
         trajecten[rid].tekstkleur = normaliseer_kleur(tekstkleur_tag(t) or rel.master_tekst.get(rid))
+        trajecten[rid].gedicht = n_gedicht
     # Alle OSM-haltes met een haltenummer, om de app-haltes te controleren.
     osm_haltes = defaultdict(list)
     for h in geo.haltes.values():
         for ref in h["refs"]:
             osm_haltes[ref].append((h["lon"], h["lat"], h["id"]))
-    return trajecten, osm_haltes, geo.wegen
+    print(f"  gaten in trajecten: {gedicht} gedicht, {open_} nog open")
+    geo.net = net
+    return trajecten, osm_haltes, geo
+
+
+def meter(p, q) -> float:
+    return math.hypot((p[0] - q[0]) * M_PER_GRAAD_LON, (p[1] - q[1]) * M_PER_GRAAD_LAT)
+
+
+class Netwerk:
+    """Graaf van alle wegen in bus- en tramtrajecten (alle vervoerders), om gaten te dichten."""
+
+    def __init__(self, geo):
+        self.pos: dict[int, tuple[float, float]] = {}
+        self.buren = defaultdict(list)
+        for w, refs in geo.knopen.items():
+            pts = geo.wegen[w]
+            for i in range(len(refs) - 1):
+                d = meter(pts[i], pts[i + 1])
+                self.buren[refs[i]].append((refs[i + 1], d))
+                self.buren[refs[i + 1]].append((refs[i], d))
+            for n, p in zip(refs, pts):
+                self.pos[n] = p
+
+    def pad(self, bronnen, doelen, max_m: float):
+        """Kortste pad (Dijkstra) van een van de bronnen naar een van de doelen, of None."""
+        doelen = set(doelen)
+        afst = {n: 0.0 for n in bronnen}
+        vorige: dict[int, int] = {}
+        heap = [(0.0, n) for n in bronnen]
+        heapq.heapify(heap)
+        while heap:
+            d, n = heapq.heappop(heap)
+            if d > afst.get(n, math.inf):
+                continue
+            if n in doelen:
+                pad = [n]
+                while pad[-1] in vorige:
+                    pad.append(vorige[pad[-1]])
+                return pad[::-1], d
+            if d > max_m:
+                return None
+            for m, l in self.buren.get(n, ()):
+                nd = d + l
+                if nd < afst.get(m, math.inf):
+                    afst[m] = nd
+                    vorige[m] = n
+                    heapq.heappush(heap, (nd, m))
+        return None
+
+
+def overbrug(lijst: list[int], geo, net: "Netwerk") -> tuple[list[int], int, list[tuple[float, float]]]:
+    """Dicht gaten tussen opeenvolgende wegen van een traject.
+
+    Een gat = twee opeenvolgende wegen die (ook via de rest van het traject) niet verbonden zijn.
+    Eerst via andere bus-/tramwegen (kortste pad), anders met een recht stukje als het gat klein is.
+    Geeft (wegen met brugstukken, aantal gedicht, plaatsen van gaten die open blijven).
+    """
+    ws = [w for w in lijst if w in geo.knopen]
+    if len(ws) < 2:
+        return ws, 0, []
+    ouder = {w: w for w in ws}
+
+    def zoek(w):
+        while ouder[w] != w:
+            ouder[w] = ouder[ouder[w]]
+            w = ouder[w]
+        return w
+
+    knoop_wegen = defaultdict(set)
+    for w in ws:
+        for n in geo.knopen[w]:
+            knoop_wegen[n].add(w)
+    for wegen in knoop_wegen.values():
+        eerste = next(iter(wegen))
+        for w in wegen:
+            ouder[zoek(w)] = zoek(eerste)
+    if len({zoek(w) for w in ws}) == 1:
+        return ws, 0, []
+
+    def losse_einden(w):
+        """Uiteinden van w (of van zijn component) die aan geen andere weg van het traject raken."""
+        eigen = [n for n in (geo.knopen[w][0], geo.knopen[w][-1]) if len(knoop_wegen[n]) == 1]
+        if eigen:
+            return eigen
+        c = zoek(w)
+        comp = [n for x in ws if zoek(x) == c for n in (geo.knopen[x][0], geo.knopen[x][-1]) if len(knoop_wegen[n]) == 1]
+        return comp or [geo.knopen[w][0], geo.knopen[w][-1]]
+
+    uit, gedicht, gaten = [ws[0]], 0, []
+    for a, b in zip(ws, ws[1:]):
+        if not set(geo.knopen[a]) & set(geo.knopen[b]):
+            # Geen gemeenschappelijk punt. Een echt gat als de twee stukken los van elkaar liggen,
+            # of als beide een los uiteinde hebben (het traject kruist zichzelf elders).
+            ander = zoek(a) != zoek(b)
+            la = [n for n in (geo.knopen[a][0], geo.knopen[a][-1]) if len(knoop_wegen[n]) == 1]
+            lb = [n for n in (geo.knopen[b][0], geo.knopen[b][-1]) if len(knoop_wegen[n]) == 1]
+            if ander or (la and lb):
+                bron, doel = (la or losse_einden(a)), (lb or losse_einden(b))
+                kort = min(((meter(net.pos[s], net.pos[d]), s, d) for s in bron for d in doel), key=lambda x: x[0])
+                pad = None
+                if kort[0] <= MAX_BRUG_M:
+                    gevonden = net.pad(bron, doel, MAX_BRUG_M)
+                    if gevonden and gevonden[1] <= max(300.0, 4 * meter(net.pos[gevonden[0][0]], net.pos[gevonden[0][-1]])):
+                        pad = gevonden[0]
+                if pad is None and kort[0] <= RECHTE_BRUG_M:
+                    pad = [kort[1], kort[2]]
+                if pad is not None and len(pad) >= 2:
+                    sleutel = min(tuple(pad), tuple(reversed(pad)))
+                    if sleutel not in geo.synth:
+                        sid = -(len(geo.synth) + 1)
+                        geo.synth[sleutel] = sid
+                        geo.wegen[sid] = [net.pos[n] for n in sleutel]
+                        geo.knopen[sid] = list(sleutel)
+                    sid = geo.synth[sleutel]
+                    uit.append(sid)
+                    ouder[sid] = sid
+                    for n in (pad[0], pad[-1]):
+                        knoop_wegen[n].add(sid)
+                    ouder[zoek(a)] = zoek(b)
+                    ouder[sid] = zoek(b)
+                    gedicht += 1
+                elif ander:
+                    p, q = net.pos[kort[1]], net.pos[kort[2]]
+                    gaten.append(((p[0] + q[0]) / 2, (p[1] + q[1]) / 2))
+        uit.append(b)
+    return uit, gedicht, gaten
 
 
 def rijrichtingen(ids: list[int], wegen: dict) -> list[tuple[int, int]]:
@@ -443,6 +590,64 @@ def codeer(punten: list[tuple[float, float]]) -> list[int]:
     return uit
 
 
+def projecteer(p, lijn, cum):
+    """Dichtste punt van p op lijn: (afstand tot de lijn, afstand langs de lijn), in meter."""
+    px, py = xy(*p)
+    best = (math.inf, 0.0)
+    for i in range(len(lijn) - 1):
+        a, b = xy(*lijn[i]), xy(*lijn[i + 1])
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        l2 = dx * dx + dy * dy
+        t = 0.0 if l2 == 0 else max(0.0, min(1.0, ((px - a[0]) * dx + (py - a[1]) * dy) / l2))
+        d = math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy))
+        if d < best[0]:
+            best = (d, cum[i] + t * math.sqrt(l2))
+    return best
+
+
+def schrijf_route(g: dict, haltes: list[dict], uit: Path) -> bool:
+    """Per lijn (richting): het traject in rijrichting en waar elke halte erop ligt.
+
+    Daarmee kleurt de app bij een melding het stuk tot de volgende halte (rood) en het stuk
+    daarna (geel). Klein bestand, wordt alleen geladen als er een melding op die lijn is.
+    """
+    lijnen = [list(l) for t in g["trajecten"] for l in t.lijnen]
+    # Stukken die op elkaar aansluiten (binnen 150 m) achter elkaar plakken.
+    samen = [lijnen.pop(0)] if lijnen else []
+    while lijnen:
+        k = samen[-1]
+        i = next((i for i, l in enumerate(lijnen) if meter(k[-1], l[0]) <= 150), None)
+        if i is None:
+            samen.append(lijnen.pop(0))
+        else:
+            k.extend(lijnen.pop(i))
+    samen = [vereenvoudig(l, VEREENVOUDIG_M) for l in samen if len(l) >= 2]
+    if not samen:
+        return False
+    cums = []
+    for l in samen:
+        c = [0.0]
+        for a, b in zip(l, l[1:]):
+            c.append(c[-1] + meter(a, b))
+        cums.append(c)
+    plaats = []
+    for h in haltes:
+        best = min(((projecteer((h["lon"], h["lat"]), l, c), i) for i, (l, c) in enumerate(zip(samen, cums))),
+                   key=lambda x: (round(x[0][0]), x[1]))
+        (d, langs), li = best
+        if d <= HALTE_OP_LIJN_M:
+            plaats.append([h["id"], li, round(langs)])
+    plaats.sort(key=lambda x: (x[1], x[2]))
+    if len(plaats) < 2:
+        return False
+    map_route = uit / "route"
+    map_route.mkdir(parents=True, exist_ok=True)
+    naam = re.sub(r"[^A-Za-z0-9]", "_", g["rid"])
+    (map_route / f"{naam}.json").write_text(
+        json.dumps({"l": [codeer(l) for l in samen], "h": plaats}, separators=(",", ":")), encoding="utf-8")
+    return True
+
+
 def bouw_netwerk(gekoppeld: list[dict], wegen: dict, uit: Path) -> tuple[dict, list, list, dict]:
     """Eén wegennet met per weg de lijnen die erover rijden, in tegels.
 
@@ -465,6 +670,8 @@ def bouw_netwerk(gekoppeld: list[dict], wegen: dict, uit: Path) -> tuple[dict, l
         for t in g["trajecten"]:
             for w, _ in t.wegen:
                 weg_routes[w].add(i)
+        for w, _ in g.get("extra", ()):
+            weg_routes[w].add(i)
 
     # Rijrichting op elkaar afstemmen: elke weg krijgt één tekenrichting. Lijnen die een stuk
     # straat delen, volgen dezelfde richting, zodat hun strook links/rechts niet omwisselt.
@@ -483,6 +690,10 @@ def bouw_netwerk(gekoppeld: list[dict], wegen: dict, uit: Path) -> tuple[dict, l
             for w, d in t.wegen:
                 richting.setdefault(w, d * teken)
             open_.remove(t)
+
+    for g in gekoppeld:
+        for w, d in g.get("extra", ()):
+            richting.setdefault(w, d)
 
     # Per weg: groepen (stroken) en routes, in een vaste volgorde; tegel volgens het midden van de weg.
     groep_van_route = [groep_nr[sleutel(g)] for g in gekoppeld]
@@ -558,7 +769,7 @@ def main() -> int:
     args = ap.parse_args()
 
     routes, per_lijn, alle_haltes = lees_app_data(args)
-    trajecten, osm_haltes, osm_wegen = lees_osm(args.osm)
+    trajecten, osm_haltes, geo = lees_osm(args.osm)
     per_ref = defaultdict(list)
     for t in trajecten.values():
         per_ref[norm(t.ref)].append(t)
@@ -582,8 +793,13 @@ def main() -> int:
         ts = res["trajecten"]
         kleur = next((t.kleur for t in ts if t.kleur), None)
         tekst = next((t.tekstkleur for t in ts if t.tekstkleur), None)
+        # Gaten tussen de OSM-stukken van één lijn (bv. Kusttram in stukken) ook dichten.
+        eigen = {w for x in ts for w, _ in x.wegen}
+        alle_wegen, n_route, gaten = overbrug([w for x in ts for w, _ in x.wegen], geo, geo.net)
+        extra = [(w, 1) for w in dict.fromkeys(alle_wegen) if w not in eigen]
         gekoppeld.append({"rid": rid, "naam": str(r.get("route_short_name", "")), "kleur": kleur, "tekst": tekst,
-                          "soort": ts[0].soort, "trajecten": ts})
+                          "soort": ts[0].soort, "trajecten": ts, "extra": extra, "gaten": gaten, "route": r,
+                          "gedicht": n_route + sum(getattr(x, "gedicht", 0) for x in ts)})
         kleurbron["OpenStreetMap" if kleur else "standaard bus/tram"] += 1
         w = min(t.bbox[0] for t in ts); s = min(t.bbox[1] for t in ts)
         e = max(t.bbox[2] for t in ts); n = max(t.bbox[3] for t in ts)
@@ -592,7 +808,10 @@ def main() -> int:
         if res["dekking"] < 0.9:
             problemen.append((r, "gekoppeld, maar niet alle haltes liggen op het traject", res["dekking"], ts))
 
-    net, groepen, net_routes, extra = bouw_netwerk(gekoppeld, osm_wegen, uit)
+    net, groepen, net_routes, extra = bouw_netwerk(gekoppeld, geo.wegen, uit)
+    for g in gekoppeld:
+        if schrijf_route(g, per_lijn.get(g["rid"], []), uit):
+            index[g["rid"]]["s"] = 1
     for rid, x in extra.items():
         index[rid].update(x)
     nu = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -637,6 +856,17 @@ def main() -> int:
             regels.append(f"| {r.get('route_short_name', '')} | {r.get('route_long_name', '')} (`{r['route_id']}`) | {reden} | {dek:.0%} | {links} |")
     else:
         regels.append("Geen: alle lijnen zijn volledig gekoppeld.")
+    open_gaten = [(g, p) for g in gekoppeld for p in g["gaten"]]
+    regels += ["", "## Onderbrekingen", "",
+               f"Gaten in OSM-trajecten worden automatisch gedicht via andere bus- en tramwegen "
+               f"(of met een recht stukje tot {RECHTE_BRUG_M} m). Brugstukken: {len(geo.synth)}. Nog open: {len(open_gaten)}.", ""]
+    met_brug = [g for g in gekoppeld if g["gedicht"]]
+    if met_brug:
+        regels += ["Gedichte gaten per lijn: " + ", ".join(f"{g['naam']} (`{g['rid']}`): {g['gedicht']}" for g in met_brug), ""]
+    if open_gaten:
+        regels += ["| Lijn | Traject | Plaats |", "|---|---|---|"]
+        regels += [f"| {g['naam']} | {g['route'].get('route_long_name', '')} (`{g['rid']}`) | "
+                   f"[kaart](https://www.openstreetmap.org/#map=18/{p[1]:.5f}/{p[0]:.5f}) |" for g, p in open_gaten]
     regels += ["", f"## Haltes die meer dan {VERDACHTE_HALTE_M} m van hun OSM-positie liggen", ""]
     if verdacht:
         regels += ["Vergelijk beide plaatsen: de halte die op de verkeerde plek staat moet verbeterd worden "
