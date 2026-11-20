@@ -204,7 +204,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" id="brandLogo" src="/app-icon.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small id="cityBrandLabel">DE LIJN · VLAANDEREN</small></div></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true" alt="De Golem-logo"><div><div class="brand-name">De Golem</div></div></div>
  <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
@@ -305,10 +305,12 @@ function applyTheme(theme){
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
+ const logo=$('brandLogo');
+ if(logo)logo.src=theme==='dark'?'https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT.png?raw=true':'/app-icon.png';
  const button=$('themeButton');
  if(button){
-  button.textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
-  button.setAttribute('aria-label',theme==='light'?'Schakel naar donkere modus':'Schakel naar lichte modus');
+  button.textContent=theme==='light'?'☾ DONKER':'☼ LICHT';
+  button.setAttribute('aria-label',theme==='light'?'Schakel naar DONKER':'Schakel naar LICHT');
   button.setAttribute('aria-pressed',String(theme==='light'));
  }
  if(map){
@@ -602,7 +604,7 @@ async function startApp(){
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
- $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('rankingButton').classList.remove('hidden');$('cityBrandLabel').textContent=CITY_DATA.find(c=>c.id===selectedCity)?.name.toUpperCase()+' · DE LIJN';
+ $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('rankingButton').classList.remove('hidden');
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.add('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
