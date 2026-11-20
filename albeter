@@ -105,6 +105,15 @@ textarea{min-height:75px;resize:vertical}
 .maplibregl-ctrl-attrib a{color:var(--muted)!important}
 .error{color:#ff927c;font-size:12px;margin-top:10px}.skeleton-line{display:block;height:13px;width:78%;margin:10px 0;border-radius:6px;background:linear-gradient(90deg,var(--panel2),var(--border),var(--panel2));background-size:200% 100%;animation:shimmer 1.25s infinite}.skeleton-line.short{width:44%}@keyframes shimmer{to{background-position:-200% 0}}.empty-state{padding:18px 8px;color:var(--muted);line-height:1.5}.empty-state strong{color:var(--text)}.empty-state p{margin:5px 0 0}.site-footer{display:flex;gap:16px;flex-wrap:wrap;align-items:center}.site-footer a{color:var(--muted);text-decoration:none}.site-footer a:hover{text-decoration:underline}.mobile-report-cta{display:none}.report-marker{animation:marker-in .35s ease-out}@keyframes marker-in{0%{transform:scale(.5);box-shadow:0 0 0 0 #ef444488}70%{transform:scale(1.15);box-shadow:0 0 0 10px #ef444400}100%{transform:scale(1)}}
 .success{color:var(--green);font-size:12px;margin-top:10px}
+.city-gate{max-width:620px;margin:7vh auto;padding:28px 22px;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.city-gate h1{font-size:30px}.city-confirm{padding:16px;border:1px solid var(--border);background:var(--panel2);border-radius:10px;margin:18px 0}
+.city-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.city-option{display:flex;justify-content:space-between;align-items:center;text-align:left;gap:10px;padding:14px;background:var(--panel2);color:var(--text);border:1px solid var(--border);min-height:54px}
+.city-option:disabled{opacity:.48;cursor:not-allowed}.city-option small{display:block;color:var(--muted);font-weight:400;margin-top:4px}
+.city-option .city-count{font-size:11px;color:var(--muted);white-space:nowrap}
+.city-top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.city-request{margin-top:16px;width:100%}.city-status{font-size:12px;color:var(--muted);min-height:18px;margin-top:10px}
+@media(max-width:600px){.city-gate{margin:5vh 12px;padding:22px 16px}.city-grid{grid-template-columns:1fr}.city-option{min-height:58px}}
 .latest-status{margin:-8px 0 18px;padding:0 2px;color:var(--muted);font-size:12px}.latest-status strong{color:var(--text)}
 .how-it-works{margin-top:18px}.how-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.how-steps strong{font-size:13px}.how-steps p{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0 0}
 #routeSelect.is-loading{background-image:linear-gradient(90deg,transparent,rgba(180,150,110,.12),transparent);background-size:200% 100%;animation:shimmer 1.2s infinite}
@@ -195,10 +204,11 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" id="brandLogo" src="/app-icon.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
- <div class="header-right"><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="/app-icon.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small id="cityBrandLabel">DE LIJN · VLAANDEREN</small></div></div>
+ <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
+<section id="cityGate" class="city-gate"><div class="eyebrow">DE GOLEM / JOUW REGIO</div><h1>Waar ben je?</h1><p class="muted">We zoeken automatisch je stad. Je bevestigt zelf voordat we de lokale kaart openen.</p><div id="cityDetection" class="city-confirm"><strong>Je locatie wordt bepaald…</strong><p class="muted">Even geduld.</p></div><div class="city-top"><h3 style="margin:0">Andere steden</h3><span class="muted" style="font-size:11px">Binnenkort beschikbaar</span></div><div id="cityOptions" class="city-grid"></div><button id="cityInterestButton" class="secondary city-request" type="button" onclick="requestCityInterest()" disabled>Zet mijn stad vooruit</button><div id="cityStatus" class="city-status" aria-live="polite"></div><p class="notice">Een stad wordt pas geopend zodra minstens 20 verschillende melders er in de afgelopen 30 dagen actief waren. Locatiegegevens worden alleen gebruikt om een stad voor te stellen.</p></section>
 <section id="authScreen" class="auth-wrap hidden">
  <div class="eyebrow">DE GOLEM / ACCOUNT</div>
  <h1 id="authTitle">Welkom terug</h1>
@@ -277,6 +287,9 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <script>
 const REPORT_LIFETIME_HOURS=0.75;
 let mode='login', map;
+const CITY_MIN_REPORTERS=20;
+const CITY_DATA=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:22},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
+let cityStats=[],selectedCity=null,detectedCityId=null;
 const reportMarkers=[];
 const activeReportCreatedAt=new Map();
 let allRoutes=[],mapStops=[],activeReportStopIds=new Set(),stopDotCanvas=null,screenStopDots=[],hideStops=false,onlyReportedStops=false,showBusStops=true,showTramStops=true,clusterZoomLevel=8;
@@ -344,7 +357,7 @@ function showPublicDashboard(){startPublicApp();}
 function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-error'))return;el.insertAdjacentHTML('beforeend','<div class="map-error" style="position:absolute;inset:0;z-index:20;display:grid;place-content:center;text-align:center;padding:24px;background:var(--panel);color:var(--text)"><strong>Kon de kaart niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="location.reload()">Opnieuw proberen</button></div>');console.error('Kaart:',error);}
 function initMap(){
  if(map)return;
- map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:[4.45,51.05],zoom:8,attributionControl:true});
+ const city=CITY_DATA.find(c=>c.id===selectedCity);map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:city?[city.lon,city.lat]:[4.45,51.05],zoom:city?11:8,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
  map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err));});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
@@ -568,12 +581,14 @@ $('pendingList').addEventListener('click',async e=>{
  }
 });
 async function startApp(){
+ if(!selectedCity){changeCity();return;}
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
  $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
+ $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('cityBrandLabel').textContent=CITY_DATA.find(c=>c.id===selectedCity)?.name.toUpperCase()+' · DE LIJN';
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.add('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);
@@ -583,7 +598,7 @@ async function startPublicApp(){
 }
 $('authButton').classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
-startPublicApp().catch(err=>{console.error('Dashboard:',err);const m=$('reportsList');if(m)m.innerHTML='<div class="empty-state"><strong>De meldingen konden niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="loadReports()">Opnieuw proberen</button></div>';});api('/api/me').then(startApp).catch(()=>{});
+initCityGate().catch(err=>{console.error('Stadselectie:',err);$('cityDetection').innerHTML='<strong>Je stad kon niet automatisch worden bepaald.</strong><p class="muted">Kies een beschikbare stad zodra die actief is.</p>';});
 setInterval(()=>{if(!$('appScreen').classList.contains('hidden'))loadReports().catch(err=>console.error('Meldingen vernieuwen:',err));},60000);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -662,6 +677,7 @@ function validEmail(email) {
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+async function ensureCityTables(env){await env.DB.prepare('CREATE TABLE IF NOT EXISTS city_interest(city_id TEXT NOT NULL,voter_key TEXT NOT NULL,created_at TEXT NOT NULL,PRIMARY KEY(city_id,voter_key))').run();}
 async function ensureCommunityTables(env) {
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_votes (report_id TEXT NOT NULL,voter_key TEXT NOT NULL,vote TEXT NOT NULL CHECK(vote IN ('still','gone')),created_at TEXT NOT NULL,PRIMARY KEY(report_id,voter_key))`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_rate_limits (rate_key TEXT NOT NULL,created_at TEXT NOT NULL)`).run();
@@ -680,6 +696,7 @@ async function handleApi(request, env) {
   const path = url.pathname;
   const method = request.method;
   if(path.startsWith("/api/reports")) await ensureCommunityTables(env);
+  if(path.startsWith("/api/cities")) await ensureCityTables(env);
 
   if (method !== "GET") {
     const origin = request.headers.get("Origin");
@@ -852,6 +869,18 @@ async function handleApi(request, env) {
     const user = await currentUser(request,env);
     if (!user) return json({error:"Niet ingelogd"},401);
     return json({user});
+  }
+
+  if(path==="/api/cities"&&method==="GET"){
+    const now=new Date().toISOString(),since=new Date(Date.now()-30*86400000).toISOString();
+    const definitions=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:22},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
+    const cities=[];for(const c of definitions){const dLat=c.radius/111,dLon=c.radius/(111*Math.cos(c.lat*Math.PI/180));const active=await env.DB.prepare(`SELECT COUNT(DISTINCT r.user_id) AS n FROM reports r JOIN transit_stops s ON s.stop_id=r.stop_id WHERE r.created_at>=? AND s.stop_lat BETWEEN ? AND ? AND s.stop_lon BETWEEN ? AND ?`).bind(since,c.lat-dLat,c.lat+dLat,c.lon-dLon,c.lon+dLon).first();const interest=await env.DB.prepare("SELECT COUNT(*) AS n FROM city_interest WHERE city_id=?").bind(c.id).first();cities.push({...c,activeReporters:Number(active?.n||0),interestCount:Number(interest?.n||0),available:Number(active?.n||0)>=20});}
+    const ipCity=String(request.cf?.city||"").toLocaleLowerCase("nl-BE");const aliases={"oostende":"oostende","ostend":"oostende","brugge":"brugge","bruges":"brugge","gent":"gent","ghent":"gent","antwerpen":"antwerpen","antwerp":"antwerpen"};
+    return json({cities,detectedCity:aliases[ipCity]||null,minimum:20});
+  }
+  if(path==="/api/cities/interest"&&method==="POST"){
+    const body=await request.json().catch(()=>null);const allowed=["oostende","brugge","gent","antwerpen"];if(!body||!allowed.includes(body.city_id))return json({error:"Onbekende stad"},400);
+    const ip=request.headers.get("CF-Connecting-IP")||"unknown";const voter=await hashText(ip);await env.DB.prepare("INSERT OR IGNORE INTO city_interest(city_id,voter_key,created_at) VALUES(?,?,?)").bind(body.city_id,voter,new Date().toISOString()).run();const row=await env.DB.prepare("SELECT COUNT(*) AS n FROM city_interest WHERE city_id=?").bind(body.city_id).first();return json({ok:true,interestCount:Number(row?.n||0)});
   }
 
   if (path === "/api/routes" && method === "GET") {
