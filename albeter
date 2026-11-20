@@ -230,7 +230,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button>
     <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
    </div>
-   <div id="map"></div>
+   <div id="map"><div id="mapLoading" style="position:absolute;inset:0;display:grid;place-content:center;gap:10px;text-align:center;color:var(--muted);background:var(--map-bg);z-index:2"><span class="skeleton-line" style="width:180px"></span><span>Kaart wordt geladen…</span></div></div>
    <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Actieve melding</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
@@ -277,10 +277,10 @@ function applyMapTone(){
   :'none';
 }
 function applyTheme(theme){
-  $('brandLogo').src=theme==='dark'?'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMDONKER.png':'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png';
+  $('brandLogo').src='/app-icon.png';
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
- if(themeColor)themeColor.content=theme==='light'?'#f3f5f8':'#0b0d11';
+ if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
  $('themeButton').textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
  if(map){
   map.setStyle(theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark');
@@ -324,7 +324,7 @@ function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-er
  map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:[4.45,51.05],zoom:8,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
- map.on('load',()=>{clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err));});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
+ map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err));});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
  map.on('move',drawStopDots);map.on('resize',drawStopDots);
  map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
  map.on('click',handleStopDotClick);
@@ -698,8 +698,8 @@ async function handleApi(request, env) {
 
   if (path === "/icon.svg" && method === "GET") {
     return new Response(
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><image href="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT.png" width="512" height="512" preserveAspectRatio="xMidYMid meet"/></svg>',
-      {headers:{"Content-Type":"image/svg+xml"}}
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#FBEED8"/><path d="M350 156c-26-29-59-44-101-44-91 0-153 65-153 160s62 160 153 160c43 0 79-14 105-42V264H245v59h43v38c-11 7-24 10-39 10-52 0-86-39-86-99s34-99 86-99c25 0 45 8 61 25z" fill="#493526"/></svg>',
+      {headers:{"Content-Type":"image/svg+xml","Cache-Control":"public, max-age=31536000"}}
     );
   }
 
