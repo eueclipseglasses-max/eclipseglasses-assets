@@ -27,11 +27,15 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
 - **Kleur verschijnt alleen waar het iets betekent:**
   - de lijn die je kiest in het formulier;
   - de lijnen van een halte of straat waarop je tikt, zolang de popup open is (bij meer dan 5 lijnnummers niet, dan wordt het te druk);
-  - lijnen met een controle: rood. Is de melding jonger dan 20 minuten, dan pulseert er een rode gloed rond de lijn.
+  - een melding op een lijn kleurt alleen het stuk van die halte tot de volgende halte rood (met een pulserende gloed) en het stuk daarna geel, in de rijrichting van de lijn.
 - **Zelfde kleur = één strook:** gekleurde lijnen die dezelfde straat delen, liggen naast elkaar. Lijnen met dezelfde kleur, zoals de witte streeklijnen, delen één strook.
 - **Vloeiende lijnen:**
   - Hoeken worden afgerond, met een straal van hoogstens 15 m.
   - Waar een lijn invoegt of afbuigt, schuift ze geleidelijk op over ongeveer 60 m in plaats van met een sprong.
+- **Meldingen in de tijd:** een melding of een herbevestiging ("nog daar") is 25 minuten "vers": het haltebolletje pulseert rood. Daarna wordt het grijs (ook het stuk lijn) en na 1 uur verdwijnt de melding.
+- **Haltes:** geel voor bus, paars voor tram. Ze zijn klein en worden groter naarmate je inzoomt.
+- **Eigen locatie:** een blauw bolletje. Tik op de knop onder + en − om ernaartoe te gaan. Heb je eerder al toestemming gegeven, dan staat het bolletje er meteen.
+- **Gsm:** tik je op een halte of lijn, dan verschijnen de keuzes onderaan in een blad met grote knoppen. Dat blad kun je scrollen en sluiten met ×.
 - **Badges overal:** het lijnbadge (kleur en cijferkleur zoals het lijnbord) staat in de popups van lijnen en haltes, naast de lijnkeuze in het formulier, bij elke melding en bij de controles in de haltepopup.
 
 De kleur komt uit OpenStreetMap (tag `colour` van het traject of de lijn). Ontbreekt die, dan krijgt een buslijn blauw en een tramlijn oranje, zoals de haltes.
@@ -42,6 +46,14 @@ Niets. Komen er nieuwe lijnen of steden bij in de databank, dan neemt de volgend
 
 - **Meteen bijwerken:** tabblad *Actions* → *Kaartdata lijntrajecten* → *Run workflow*.
 - **Rapport bekijken:** open de laatste run in *Actions* (het rapport staat onderaan de samenvatting), of `RAPPORT.md` op de branch `kaartdata`. Daar staan lijnen die niet gekoppeld konden worden en haltes die meer dan 40 m van hun plaats in OpenStreetMap liggen.
+
+## Gaten in een lijn
+
+Soms ontbreekt in OpenStreetMap een stukje weg in een traject. Het script dicht zo'n gat automatisch:
+- eerst via het kortste pad over andere bus- en tramwegen (ook van andere vervoerders, tot 1,5 km);
+- lukt dat niet, dan met een recht stukje als het gat kleiner is dan 60 m.
+
+Gaten die open blijven, staan in het rapport onder "Onderbrekingen", met een link naar de plek.
 
 ## Een lijn ontbreekt of loopt verkeerd
 

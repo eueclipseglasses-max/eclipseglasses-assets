@@ -501,6 +501,7 @@ function lijnBadge(r){
  const bg=geldigeKleur(info&&info.k)?info.k:lijnKleur(info),fg=geldigeKleur(info&&info.t)?info.t:tekstKleurOp(bg);
  return '<span class="lijn-badge" style="background:'+bg+';color:'+fg+(helderheid(bg)>215?';box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)':'')+'">'+esc(r.route_short_name)+'</span>';
 }
+const opLijnnummer=(a,b)=>String(a.route_short_name).localeCompare(String(b.route_short_name),'nl',{numeric:true})||String(a.route_long_name).localeCompare(String(b.route_long_name),'nl');
 function lijnKnop(r){return '<button type="button" class="lijn-keuze" data-route="'+esc(r.route_id)+'">'+lijnBadge(r)+'<span>'+esc(r.route_long_name)+'</span></button>';}
 function richtingVan(lang){const d=String(lang||'').split(/\s+-\s+/);return d.length>1?d[d.length-1]:'';}
 function gekozenLijnId(){const v=($('routeSelect')&&$('routeSelect').value)||'';return v&&v!=='all'?v:'';}
@@ -566,7 +567,7 @@ function zorgVoorLijnLagen(){
  if(!map.getLayer('golem-lijnen-rand'))map.addLayer({id:'golem-lijnen-rand',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':'#ffffff','line-width':2}},before);
  if(!map.getLayer('golem-lijnen'))map.addLayer({id:'golem-lijnen',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':['get','kleur'],'line-width':1}},before);
  const breed=(f)=>['interpolate',['linear'],['zoom'],11,f(2.5),14,f(5),17,f(8)];
- if(!map.getLayer('golem-melding-gloed'))map.addLayer({id:'golem-melding-gloed',type:'line',source:'golem-meldingen',filter:['all',['==',['get','vers'],1],['==',['get','soort'],'rood']],layout:rond,paint:{'line-color':MELDING_ROOD,'line-blur':6,'line-width':breed(w=>w*3+6),'line-opacity':0.3}},before);
+ if(!map.getLayer('golem-melding-gloed'))map.addLayer({id:'golem-melding-gloed',type:'line',source:'golem-meldingen',filter:['all',['==',['get','vers'],1],['==',['get','soort'],'rood']],layout:rond,paint:{'line-color':MELDING_ROOD,'line-blur':2,'line-width':breed(w=>w*2.4+5),'line-opacity':0.3}},before);
  if(!map.getLayer('golem-melding-rand'))map.addLayer({id:'golem-melding-rand',type:'line',source:'golem-meldingen',layout:rond,paint:{'line-color':'#ffffff','line-width':breed(w=>w+3)}},before);
  if(!map.getLayer('golem-melding'))map.addLayer({id:'golem-melding',type:'line',source:'golem-meldingen',layout:rond,paint:{'line-color':['match',['get','soort'],'rood',MELDING_ROOD,'geel','#f5c400','#9097a0'],'line-width':breed(w=>w)}},before);
  pasLijnStijlToe();
@@ -715,7 +716,7 @@ function toonLijnenBijKlik(e){
  if(!map.getLayer('golem-net')){sluitBlad();return;}
  const p=e.point,f=map.queryRenderedFeatures([[p.x-8,p.y-8],[p.x+8,p.y+8]],{layers:['golem-lijnen','golem-net']});
  const ids=new Set();for(const x of f)for(const id of String(x.properties.ids||'').split('|'))if(id)ids.add(id);
- const routes=allRoutes.filter(r=>ids.has(r.route_id));if(!routes.length){sluitBlad();return;}
+ const routes=allRoutes.filter(r=>ids.has(r.route_id)).sort(opLijnnummer);if(!routes.length){sluitBlad();return;}
  const node=document.createElement('div');
  node.innerHTML='<strong>'+(routes.length===1?'Deze lijn':'Lijnen hier')+'</strong>'+routes.map(lijnKnop).join('');
  const popup=toonKeuze(node,e.lngLat,8);
@@ -815,7 +816,7 @@ async function handleStopDotClick(e){
  let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if(!hit){toonLijnenBijKlik(e);return;}
  if(hit.cluster){const coords=hit.cluster.map(d=>[Number(d.stop.stop_lon),Number(d.stop.stop_lat)]);const b=coords.reduce((acc,coord)=>acc.extend(coord),new maplibregl.LngLatBounds(coords[0],coords[0]));map.fitBounds(b,{padding:65,maxZoom:13});return;}
  const stop=hit.stop;
- const routeIds=String(stop.route_ids||'').split(',').filter(Boolean),routes=allRoutes.filter(r=>routeIds.includes(r.route_id));if(!routes.length)return;
+ const routeIds=String(stop.route_ids||'').split(',').filter(Boolean),routes=allRoutes.filter(r=>routeIds.includes(r.route_id)).sort(opLijnnummer);if(!routes.length)return;
  if(!lijnIndex)await laadLijnIndex();
  const meldingen=actieveMeldingen.filter(m=>String(m.stop_id)===String(stop.stop_id)&&meldingStatus(meldingTijd(m))!=='weg');
  const node=document.createElement('div');
