@@ -557,7 +557,7 @@ async function startApp(){
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
-async async function startPublicApp(){
+async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();
@@ -1162,6 +1162,7 @@ export default {
       if(!viewer||viewer.role!=="admin"){
         page=page.replace(/\s*<section class="panel hidden" id="adminPanel">[\s\S]*?<\/section>/,"");
         page=page.replace(/function loadPending\(\)\{[\s\S]*?(?=async function startApp\(\)\{)/,"");
+        page=page.replace(/\$\('pendingList'\)\.addEventListener\('click',[\s\S]*?\n\}\);\nasync function startApp/,"async function startApp");
       }
       page=page.replace('<meta property="og:image" content="/app-icon.png">','<meta property="og:image" content="'+url.origin+'/app-icon.png">');
       return new Response(page,{
