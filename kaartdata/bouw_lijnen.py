@@ -313,10 +313,10 @@ def overbrug(lijst: list[int], geo, net: "Netwerk") -> tuple[list[int], int, lis
     if len({zoek(w) for w in ws}) == 1:
         return ws, 0, []
 
-    def losse_einden(w):
+    def losse_einden(w, hele_stuk=False):
         """Uiteinden van w (of van zijn component) die aan geen andere weg van het traject raken."""
         eigen = [n for n in (geo.knopen[w][0], geo.knopen[w][-1]) if len(knoop_wegen[n]) == 1]
-        if eigen:
+        if eigen and not hele_stuk:
             return eigen
         c = zoek(w)
         comp = [n for x in ws if zoek(x) == c for n in (geo.knopen[x][0], geo.knopen[x][-1]) if len(knoop_wegen[n]) == 1]
@@ -331,7 +331,10 @@ def overbrug(lijst: list[int], geo, net: "Netwerk") -> tuple[list[int], int, lis
             la = [n for n in (geo.knopen[a][0], geo.knopen[a][-1]) if len(knoop_wegen[n]) == 1]
             lb = [n for n in (geo.knopen[b][0], geo.knopen[b][-1]) if len(knoop_wegen[n]) == 1]
             if ander or (la and lb):
-                bron, doel = (la or losse_einden(a)), (lb or losse_einden(b))
+                if ander:  # alle losse uiteinden van beide stukken, zodat het dichtste paar gevonden wordt
+                    bron, doel = list(dict.fromkeys(la + losse_einden(a, True))), list(dict.fromkeys(lb + losse_einden(b, True)))
+                else:
+                    bron, doel = la, lb
                 kort = min(((meter(net.pos[s], net.pos[d]), s, d) for s in bron for d in doel), key=lambda x: x[0])
                 pad = None
                 if kort[0] <= MAX_BRUG_M:

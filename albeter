@@ -67,10 +67,10 @@ h2,h3{margin-top:0}
 #map .maplibregl-popup{z-index:1000!important}
 .map-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
 .map-tools input{flex:1;min-width:190px;padding:9px 11px}
-.map-tools button{padding:9px 12px;font-size:12px}.map-tools button.filter-active{border-color:#2583eb;background:rgba(37,131,235,.16);color:var(--text)}.map-tools button.filter-tram.filter-active{border-color:#f28c28;background:rgba(242,140,40,.16)}
+.map-tools button{padding:9px 12px;font-size:12px}.map-tools button.filter-active{border-color:#f5c400;background:rgba(245,196,0,.18);color:var(--text)}.map-tools button.filter-tram.filter-active{border-color:#8b5cf6;background:rgba(139,92,246,.18)}
 .map-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:9px 4px 2px;color:var(--muted);font-size:11px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
-.legend-blue{background:#2583eb}.legend-orange{background:#f28c28}.legend-red{background:#e53935}
+.legend-blue{background:#f5c400}.legend-orange{background:#8b5cf6}.legend-red{background:#e53935}.legend-grey{background:#929292}
 .map-cluster-label{font:700 11px Arial,sans-serif;text-align:center;pointer-events:none}
 :root[data-theme="dark"] #map .maplibregl-canvas{filter:brightness(.98) contrast(1.03)!important}
 :root[data-theme="light"] #map .maplibregl-canvas{filter:none!important}
@@ -202,7 +202,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .map-tools button{font-size:10px}
 }
 .lijn-keuze{display:flex;align-items:center;gap:8px;width:100%;margin-top:6px;padding:7px 8px;text-align:left;font-weight:600;line-height:1.25;background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
+.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
 </style>
 </head>
 <body>
@@ -254,7 +254,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
    </div>
    <div id="map"><div id="mapLoading" style="position:absolute;inset:0;display:grid;place-content:center;gap:10px;text-align:center;color:var(--muted);background:var(--map-bg);z-index:2"><span class="skeleton-line" style="width:180px"></span><span>Kaart wordt geladen…</span></div></div>
-   <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Actieve melding</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
+   <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Melding (&lt; 25 min)</span><span><i class="legend-dot legend-grey"></i>25 min – 1 uur</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
   <aside class="side">
@@ -313,7 +313,7 @@ function applyTheme(theme){
  if(map){
   const styleUrl=theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark';
   if(map.getStyle()?.sprite!==styleUrl){
-   map.setStyle(styleUrl);
+   stijlKlaar=false;map.setStyle(styleUrl);
    map.once('style.load',()=>{applyMapTone();drawStopDots();});
   }else applyMapTone();
  }
@@ -366,15 +366,36 @@ async function requestCityInterest(){if(!selectedInterestCity)return;$('cityInte
 async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate').classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
 function changeCity(){$('appScreen').classList.add('hidden');$('authScreen').classList.add('hidden');$('cityGate').classList.remove('hidden');$('cityChangeButton').classList.add('hidden');renderCityGate();}
 
+// Eigen locatie als blauw bolletje. Zonder toestemming gebeurt er niets tot je op de knop tikt;
+// was toestemming al gegeven, dan verschijnt het bolletje meteen (zonder de kaart te verschuiven).
+let mijnLocatieMarker=null,mijnLocatieWatch=null,mijnLocatieLaatste=null;
+function volgMijnLocatie(centreer){
+ if(!navigator.geolocation)return;
+ if(centreer&&mijnLocatieLaatste)map.flyTo({center:mijnLocatieLaatste,zoom:Math.max(map.getZoom(),15)});
+ if(mijnLocatieWatch!==null)return;
+ let eerste=centreer;
+ mijnLocatieWatch=navigator.geolocation.watchPosition(pos=>{
+  const ll=[pos.coords.longitude,pos.coords.latitude];mijnLocatieLaatste=ll;
+  if(!mijnLocatieMarker){const el=document.createElement('div');el.className='mijn-locatie';el.title='Jouw locatie';mijnLocatieMarker=new maplibregl.Marker({element:el}).setLngLat(ll).addTo(map);}
+  else mijnLocatieMarker.setLngLat(ll);
+  if(eerste){eerste=false;map.flyTo({center:ll,zoom:Math.max(map.getZoom(),15)});}
+ },()=>{if(mijnLocatieWatch!==null)navigator.geolocation.clearWatch(mijnLocatieWatch);mijnLocatieWatch=null;},{enableHighAccuracy:true,maximumAge:15000,timeout:20000});
+}
+class MijnLocatieKnop{
+ onAdd(){const c=document.createElement('div');c.className='maplibregl-ctrl maplibregl-ctrl-group';c.innerHTML='<button type="button" class="mijn-locatie-knop" title="Mijn locatie" aria-label="Mijn locatie"><span></span></button>';c.querySelector('button').addEventListener('click',()=>volgMijnLocatie(true));return c;}
+ onRemove(){}
+}
 function initMap(){
  if(map)return;
  const city=CITY_DATA.find(c=>c.id===selectedCity);const isOostende=selectedCity==='oostende';map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:city?[city.lon,city.lat]:[4.45,51.05],zoom:city?11:8,minZoom:isOostende?10.5:undefined,maxBounds:isOostende?[[2.80,51.13],[3.10,51.29]]:undefined,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
- map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
+ map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
  map.on('move',drawStopDots);map.on('resize',drawStopDots);
  map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
  map.on('click',handleStopDotClick);map.on('moveend',addRouteLinesToMap);
+ map.addControl(new MijnLocatieKnop(),'top-right');
+ if(navigator.permissions&&navigator.geolocation)navigator.permissions.query({name:'geolocation'}).then(p=>{if(p.state==='granted')volgMijnLocatie(false);}).catch(()=>{});
  $('toggleStopsButton').addEventListener('click',()=>{
   hideStops=!hideStops;$('toggleStopsButton').setAttribute('aria-pressed',String(hideStops));
   $('toggleStopsButton').textContent=hideStops?'Haltes tonen':'Haltes verbergen';drawStopDots();
@@ -397,8 +418,13 @@ function initMap(){
 }
 function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
 function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
-function reportAgeOpacity(s){const age=Math.max(0,Date.now()-new Date(s).getTime());return age>=20*60000?.55:1;}
-function reportMarkerColor(stopId,stop){const created=activeReportCreatedAt.get(String(stopId));return created&&Date.now()-new Date(created).getTime()>=20*60000?'#929292':stopDotColor(stop,true);}
+const MELDING_VERS_MS=25*60000,MELDING_WEG_MS=60*60000;
+// Tijdstip dat telt: de melding zelf of de laatste herbevestiging ("nog daar").
+function meldingTijd(r){const a=new Date(r.created_at).getTime()||0,b=r.last_still_at?new Date(r.last_still_at).getTime()||0:0;return Math.max(a,b);}
+function meldingStatus(tijd){const age=Date.now()-(typeof tijd==='number'?tijd:new Date(tijd).getTime());return age<MELDING_VERS_MS?'vers':age<MELDING_WEG_MS?'oud':'weg';}
+function reportAgeOpacity(s){return meldingStatus(s)==='vers'?1:.55;}
+function reportMarkerColor(stopId,stop){const t=activeReportCreatedAt.get(String(stopId));return t&&meldingStatus(t)!=='vers'?'#929292':stopDotColor(stop,true);}
+function halteIsVers(stopId){const t=activeReportCreatedAt.get(String(stopId));return !!t&&meldingStatus(t)==='vers';}
 function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton').classList.remove('hidden');$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
 function reportCard(r,admin=false){
  const lang=(allRoutes.find(x=>x.route_id===r.route_id)||{}).route_long_name,richting=richtingVan(lang);
@@ -410,8 +436,9 @@ function reportCard(r,admin=false){
  const status=r.status==='approved'?'<span class="tag">✓ Bevestigd</span>':'<span class="tag orange">Niet bevestigd</span>';
  const actions='<div class="report-actions community-votes"><button class="secondary" data-vote="still" data-id="'+esc(r.id)+'">Nog daar · '+Number(r.still_count||0)+'</button><button class="secondary" data-vote="gone" data-id="'+esc(r.id)+'">Weg · '+Number(r.gone_count||0)+'</button></div>';
  const adminActions=admin?'<div class="report-actions"><button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button><button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button></div>':'';
- return '<article class="report" style="opacity:'+reportAgeOpacity(r.created_at)+'">'+
-  '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time" title="'+esc(formatDate(r.created_at))+'">'+esc(timeAgo(r.created_at))+'</time></div>'+
+ const tijd=meldingTijd(r),bevestigd=r.last_still_at&&new Date(r.last_still_at).getTime()>new Date(r.created_at).getTime();
+ return '<article class="report" style="opacity:'+reportAgeOpacity(tijd)+'">'+
+  '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time" title="'+esc(formatDate(r.created_at))+'">'+esc(bevestigd?'bevestigd '+timeAgo(r.last_still_at):timeAgo(r.created_at))+'</time></div>'+
   '<div class="report-meta">'+route+status+gps+'</div>'+
   actions+adminActions+'</article>';
 }
@@ -428,9 +455,10 @@ async function loadMapStops(){
 }
 function hslHex(h,s,l){h=((h%360)+360)%360/360;s/=100;l/=100;const hue=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;return '#'+[hue(p,q,h+1/3),hue(p,q,h),hue(p,q,h-1/3)].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');}
 /* Lijntrajecten uit OpenStreetMap. Gebouwd door kaartdata/bouw_lijnen.py (GitHub Action), geserveerd via /kaartdata/. */
-const LIJN_BUS='#2583eb',LIJN_TRAM='#f28c28',LIJN_GRIJS='#8a94a6',MELDING_ROOD='#e53935',LIJN_MIN_ZOOM=10.5;
-let lijnIndex=null,lijnIndexBelofte=null,lijnTimer=0,lijnVersie=0,pulsTimer=0;
-let tijdelijkeFocus=[],controleRoutes=new Map(),actieveMeldingen=[];
+const LIJN_BUS='#f5c400',LIJN_TRAM='#8b5cf6',LIJN_GRIJS='#8a94a6',MELDING_ROOD='#e53935',LIJN_MIN_ZOOM=10.5;
+let stijlKlaar=false,lijnIndex=null,lijnIndexBelofte=null,lijnTimer=0,lijnVersie=0,pulsTimer=0,actiefBlad=null;
+let tijdelijkeFocus=[],actieveMeldingen=[],meldingVersie=0;
+const routeVolgorde=new Map(),routeVolgordeBezig=new Map();
 const lijnTegels=new Map(),lijnBezig=new Map();
 function laadLijnIndex(){
  if(!lijnIndexBelofte)lijnIndexBelofte=fetch('/kaartdata/index.json').then(r=>r.ok?r.json():null).then(d=>{lijnIndex=d&&d.versie>=2&&d.lijnen?d:null;toonRouteBadge();return lijnIndex;}).catch(()=>null);
@@ -479,13 +507,48 @@ function gekozenLijnId(){const v=($('routeSelect')&&$('routeSelect').value)||'';
 function toonRouteBadge(){const el=$('routeBadge');if(!el)return;const rid=gekozenLijnId(),r=rid&&allRoutes.find(x=>x.route_id===rid);el.innerHTML=r?lijnBadge(r):'';}
 function addRouteLinesToMap(){clearTimeout(lijnTimer);lijnTimer=setTimeout(()=>{tekenLijnen().catch(err=>console.warn('Lijntrajecten:',err));},150);}
 // Welke lijnen krijgen kleur? Standaard geen enkele (rustig grijs net). Kleur verschijnt voor:
-// de gekozen lijn, de lijnen van een aangetikte halte of straat, en lijnen met een controle (rood).
+// de gekozen lijn en de lijnen van een aangetikte halte of straat. Meldingen kleuren alleen hun stukje lijn.
 function focusRoutes(){
- const f=new Map(),nu=Date.now();
+ const f=new Map();
  for(const rid of tijdelijkeFocus)f.set(rid,'tijdelijk');
  const sel=gekozenLijnId();if(sel)f.set(sel,'kies');
- for(const [rid,t] of controleRoutes)f.set(rid,nu-new Date(t).getTime()<20*60000?'controle':'controle-oud');
  return f;
+}
+// Traject van één lijn (richting) met de plaats van elke halte erop; alleen geladen als er een melding op die lijn is.
+function laadRouteVolgorde(rid){
+ if(routeVolgorde.has(rid))return Promise.resolve(routeVolgorde.get(rid));
+ if(!routeVolgordeBezig.has(rid))routeVolgordeBezig.set(rid,fetch('/kaartdata/route/'+String(rid).replace(/[^A-Za-z0-9]/g,'_')+'.json').then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{
+  let v=null;
+  if(d&&Array.isArray(d.l)&&Array.isArray(d.h)){
+   const lijnen=d.l.map(a=>{const c=[];let x=0,y=0;for(let i=0;i+1<a.length;i+=2){x+=a[i];y+=a[i+1];c.push([x/1e5,y/1e5]);}const kx=111320*Math.cos((c[0]?c[0][1]:51)*Math.PI/180),cum=[0];for(let i=1;i<c.length;i++)cum.push(cum[i-1]+Math.hypot((c[i][0]-c[i-1][0])*kx,(c[i][1]-c[i-1][1])*110574));return {c,cum};});
+   v={lijnen,h:d.h};
+  }
+  routeVolgorde.set(rid,v);routeVolgordeBezig.delete(rid);return v;
+ }));
+ return routeVolgordeBezig.get(rid);
+}
+// Melding op een lijn: het stuk van de halte tot de volgende halte rood, het stuk daarna geel
+// (in de rijrichting van die lijn). Na 25 minuten wordt het rode stuk grijs, na 1 uur verdwijnt het.
+async function tekenMeldingStukken(){
+ if(!map||!stijlKlaar)return;
+ const idx=await laadLijnIndex();if(!idx||!map||!stijlKlaar)return;
+ zorgVoorLijnLagen();
+ const versie=++meldingVersie,features=[];
+ for(const r of actieveMeldingen){
+  if(!r.route_id||r.route_id==='all'||!r.stop_id)continue;
+  const info=idx.lijnen[r.route_id];if(!info||!info.s)continue;
+  const status=meldingStatus(meldingTijd(r));if(status==='weg')continue;
+  const rv=await laadRouteVolgorde(r.route_id);if(!rv)continue;
+  const i=rv.h.findIndex(h=>h[0]===String(r.stop_id));if(i<0)continue;
+  const [,li,d0]=rv.h[i],verder=rv.h.slice(i+1).filter(h=>h[1]===li&&h[2]>d0+5);
+  const lijn=rv.lijnen[li];if(!lijn)continue;
+  const stuk=(a,b,soort)=>{if(b<=a)return;features.push({type:'Feature',properties:{soort,vers:status==='vers'?1:0},geometry:{type:'LineString',coordinates:rondHoeken(lijnDeel(lijn.c,lijn.cum,a,b))}});};
+  if(verder[0])stuk(d0,verder[0][2],status==='vers'?'rood':'grijs');
+  if(status==='vers'&&verder[1])stuk(verder[0][2],verder[1][2],'geel');
+ }
+ if(versie!==meldingVersie||!map.getSource('golem-meldingen'))return;
+ map.getSource('golem-meldingen').setData({type:'FeatureCollection',features});
+ zetPuls(features.some(f=>f.properties.vers===1&&f.properties.soort==='rood'));
 }
 // Bij een drukke straat of halte (meer dan 5 lijnnummers) kleuren we niets bij: dan wordt het te druk.
 // De lijnen staan wel in de popup; kies er één en die kleurt.
@@ -497,12 +560,15 @@ function zetTijdelijkeFocus(ids,popup){
 }
 function zorgVoorLijnLagen(){
  const bron=id=>{if(!map.getSource(id))map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'Lijntrajecten © OpenStreetMap-bijdragers'});};
- bron('golem-net');bron('golem-lijnen');
+ bron('golem-net');bron('golem-lijnen');bron('golem-meldingen');
  const before=map.getStyle().layers?.find(l=>l.type==='symbol')?.id,rond={'line-join':'round','line-cap':'round'};
  if(!map.getLayer('golem-net'))map.addLayer({id:'golem-net',type:'line',source:'golem-net',layout:rond,paint:{'line-color':'#8f98a6','line-width':1}},before);
- if(!map.getLayer('golem-controle-gloed'))map.addLayer({id:'golem-controle-gloed',type:'line',source:'golem-lijnen',filter:['==',['get','ctrl'],1],layout:rond,paint:{'line-color':MELDING_ROOD,'line-blur':5,'line-width':10,'line-opacity':0.3}},before);
  if(!map.getLayer('golem-lijnen-rand'))map.addLayer({id:'golem-lijnen-rand',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':'#ffffff','line-width':2}},before);
  if(!map.getLayer('golem-lijnen'))map.addLayer({id:'golem-lijnen',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':['get','kleur'],'line-width':1}},before);
+ const breed=(f)=>['interpolate',['linear'],['zoom'],11,f(2.5),14,f(5),17,f(8)];
+ if(!map.getLayer('golem-melding-gloed'))map.addLayer({id:'golem-melding-gloed',type:'line',source:'golem-meldingen',filter:['all',['==',['get','vers'],1],['==',['get','soort'],'rood']],layout:rond,paint:{'line-color':MELDING_ROOD,'line-blur':6,'line-width':breed(w=>w*3+6),'line-opacity':0.3}},before);
+ if(!map.getLayer('golem-melding-rand'))map.addLayer({id:'golem-melding-rand',type:'line',source:'golem-meldingen',layout:rond,paint:{'line-color':'#ffffff','line-width':breed(w=>w+3)}},before);
+ if(!map.getLayer('golem-melding'))map.addLayer({id:'golem-melding',type:'line',source:'golem-meldingen',layout:rond,paint:{'line-color':['match',['get','soort'],'rood',MELDING_ROOD,'geel','#f5c400','#9097a0'],'line-width':breed(w=>w)}},before);
  pasLijnStijlToe();
 }
 // Lijnen met kleur liggen naast elkaar, één strook per kleur (zelfde kleur = één strook).
@@ -517,23 +583,23 @@ function pasLijnStijlToe(){
  map.setPaintProperty('golem-net','line-color',donker?'#5d6573':'#949cab');
  map.setPaintProperty('golem-net','line-opacity',donker?0.8:0.7);
  map.setPaintProperty('golem-net','line-width',['interpolate',['linear'],['zoom'],10,0.7,13,1.2,15,1.8,17,2.8]);
- for(const id of ['golem-lijnen','golem-lijnen-rand','golem-controle-gloed'])map.setPaintProperty(id,'line-offset',offset);
+ for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setPaintProperty(id,'line-offset',offset);
  map.setPaintProperty('golem-lijnen','line-width',perZoom((s,w)=>['max',1,['-',s,w>3?1:0.6]]));
  map.setPaintProperty('golem-lijnen-rand','line-width',perZoom((s,w)=>['+',s,w>3?2:1.4]));
- map.setPaintProperty('golem-controle-gloed','line-width',perZoom(s=>['+',['*',s,2.5],6]));
  map.setPaintProperty('golem-lijnen','line-opacity',1);
+ if(map.getLayer('golem-melding-rand'))map.setPaintProperty('golem-melding-rand','line-color',donker?'#0b0d10':'#ffffff');
  map.setPaintProperty('golem-lijnen-rand','line-opacity',0.9);
  map.setPaintProperty('golem-lijnen-rand','line-color',donker?'#0b0d10':'#ffffff');
  for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setLayoutProperty(id,'line-sort-key',['get','sk']);
 }
-// Rode gloed rond lijnen met een recente controle laten pulseren.
+// Rode gloed rond het stuk lijn met een verse melding laten pulseren.
 function zetPuls(aan){
  if(!aan){if(pulsTimer){clearInterval(pulsTimer);pulsTimer=0;}return;}
  if(pulsTimer)return;
  pulsTimer=setInterval(()=>{
-  if(document.hidden||!map||!map.getLayer('golem-controle-gloed'))return;
+  if(document.hidden||!map||!map.getLayer('golem-melding-gloed'))return;
   const f=(performance.now()%1800)/1800;
-  map.setPaintProperty('golem-controle-gloed','line-opacity',0.12+0.5*(0.5-0.5*Math.cos(f*2*Math.PI)));
+  map.setPaintProperty('golem-melding-gloed','line-opacity',0.12+0.5*(0.5-0.5*Math.cos(f*2*Math.PI)));
  },70);
 }
 // Stuk lijn tussen twee afstanden (meter) langs de lijn.
@@ -549,7 +615,7 @@ function bouwStroken(stukken){
  const buur=(s,x,aanEind)=>{
   let best=null,score=-1;
   for(const b of knopen.get(sleutel(aanEind?s.c[s.c.length-1]:s.c[0]))||[]){
-   if(b.s===s)continue;const y=b.s.strips.find(y=>y.kleur===x.kleur&&y.ctrl===x.ctrl);if(!y)continue;
+   if(b.s===s)continue;const y=b.s.strips.find(y=>y.kleur===x.kleur);if(!y)continue;
    const gedeeld=y.ids.filter(id=>x.ids.includes(id)).length;
    if(gedeeld>score){score=gedeeld;best={c:aanEind!==b.eind?y.c:-y.c,n:y.n};}
   }
@@ -563,7 +629,7 @@ function bouwStroken(stukken){
   for(let i=1;i<s.c.length;i++)cum.push(cum[i-1]+Math.hypot((s.c[i][0]-s.c[i-1][0])*kx,(s.c[i][1]-s.c[i-1][1])*110574));
   const lengte=cum[cum.length-1];
   for(const x of s.strips){
-   const props=(c,n)=>({ids:'|'+x.ids.join('|')+'|',kleur:x.kleur,ctrl:x.ctrl,sk:x.sk,c,n});
+   const props=(c,n)=>({ids:'|'+x.ids.join('|')+'|',kleur:x.kleur,sk:x.sk,c,n});
    const voeg=(co,c,n)=>{if(co.length>1)features.push({type:'Feature',properties:props(c,n),geometry:{type:'LineString',coordinates:co}});};
    const b=buur(s,x,false),e=buur(s,x,true),Lb=b?Math.min(60,lengte*0.45):0,Le=e?Math.min(60,lengte*0.45):0;
    if(!Lb&&!Le){voeg(s.c,x.c,x.n);continue;}
@@ -575,9 +641,9 @@ function bouwStroken(stukken){
  return features;
 }
 async function tekenLijnen(){
- if(!map||!map.isStyleLoaded()||!allRoutes.length)return;
+ if(!map||!stijlKlaar||!allRoutes.length)return;
  const idx=await laadLijnIndex();
- if(!idx||!map||!map.isStyleLoaded())return;
+ if(!idx||!map||!stijlKlaar)return;
  zorgVoorLijnLagen();
  const versie=++lijnVersie;
  const b=map.getBounds(),w=b.getWest(),s=b.getSouth(),e=b.getEast(),n=b.getNorth(),z=map.getZoom(),focus=focusRoutes();
@@ -596,9 +662,8 @@ async function tekenLijnen(){
    const strips=new Map();
    for(const rid of rids){
     const soort=focus.get(rid);if(!soort)continue;
-    const info=idx.lijnen[rid],ctrl=soort==='controle'?1:soort==='controle-oud'?2:0;
-    const kleur=ctrl?MELDING_ROOD:lijnKleur(idx.groepen[info.g]||info),sleutel=kleur+'|'+ctrl;
-    if(!strips.has(sleutel))strips.set(sleutel,{kleur,ctrl,ids:[],orde:info.g,sk:ctrl?20:soort==='kies'?10:0});
+    const info=idx.lijnen[rid],kleur=lijnKleur(idx.groepen[info.g]||info),sleutel=kleur;
+    if(!strips.has(sleutel))strips.set(sleutel,{kleur,ids:[],orde:info.g,sk:soort==='kies'?10:0});
     const x=strips.get(sleutel);x.ids.push(rid);x.orde=Math.min(x.orde,info.g);
    }
    if(!strips.size)continue;
@@ -611,8 +676,28 @@ async function tekenLijnen(){
  map.getSource('golem-net').setData({type:'FeatureCollection',features:net});
  map.getSource('golem-lijnen').setData({type:'FeatureCollection',features:lijnen});
  pasLijnStijlToe();
- zetPuls(lijnen.some(f=>f.properties.ctrl===1));
+ tekenMeldingStukken();
 }
+// Op een gsm verschijnen de keuzes onderaan in een blad dat je kunt scrollen, met grote knoppen.
+// Op een groot scherm blijft het een popup op de kaart.
+const isGsm=()=>window.matchMedia('(max-width: 760px)').matches;
+function sluitBlad(){if(actiefBlad)actiefBlad.remove();}
+function toonKeuze(node,lngLat,offset){
+ sluitBlad();
+ if(!isGsm())return new maplibregl.Popup({offset,maxWidth:'320px',className:'keuze-popup'}).setDOMContent(node).setLngLat(lngLat).addTo(map);
+ const blad=document.createElement('div');blad.className='keuze-blad';blad.setAttribute('role','dialog');
+ blad.innerHTML='<div class="keuze-blad-greep"></div><button type="button" class="keuze-blad-sluit" aria-label="Sluiten">×</button>';
+ blad.appendChild(node);document.body.appendChild(blad);
+ const luisteraars=[],h={remove(){if(!blad.isConnected)return;blad.remove();if(actiefBlad===h)actiefBlad=null;luisteraars.splice(0).forEach(f=>f());},on(ev,f){if(ev==='close')luisteraars.push(f);return h;}};
+ blad.querySelector('.keuze-blad-sluit').addEventListener('click',()=>h.remove());
+ actiefBlad=h;
+ requestAnimationFrame(()=>{
+  const m=$('map').getBoundingClientRect(),top=blad.getBoundingClientRect().top,p=map.project(lngLat),zicht=Math.min(m.bottom,top)-m.top;
+  if(zicht>80&&p.y>zicht-50)map.panBy([0,p.y-zicht/2],{duration:300});
+ });
+ return h;
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')sluitBlad();});
 function kiesLijnKnoppen(node,popup,stop){
  node.querySelectorAll('.lijn-keuze').forEach(btn=>btn.addEventListener('click',async()=>{
   if($('reportForm').classList.contains('hidden')){popup.remove();openAuth();return;}
@@ -627,13 +712,13 @@ function kiesLijnKnoppen(node,popup,stop){
  }));
 }
 function toonLijnenBijKlik(e){
- if(!map.getLayer('golem-net'))return;
+ if(!map.getLayer('golem-net')){sluitBlad();return;}
  const p=e.point,f=map.queryRenderedFeatures([[p.x-8,p.y-8],[p.x+8,p.y+8]],{layers:['golem-lijnen','golem-net']});
  const ids=new Set();for(const x of f)for(const id of String(x.properties.ids||'').split('|'))if(id)ids.add(id);
- const routes=allRoutes.filter(r=>ids.has(r.route_id));if(!routes.length)return;
+ const routes=allRoutes.filter(r=>ids.has(r.route_id));if(!routes.length){sluitBlad();return;}
  const node=document.createElement('div');
- node.innerHTML='<strong>'+(routes.length===1?'Deze lijn':'Lijnen hier')+'</strong>'+routes.slice(0,10).map(lijnKnop).join('');
- const popup=new maplibregl.Popup({offset:8,maxWidth:'300px'}).setDOMContent(node).setLngLat(e.lngLat).addTo(map);
+ node.innerHTML='<strong>'+(routes.length===1?'Deze lijn':'Lijnen hier')+'</strong>'+routes.map(lijnKnop).join('');
+ const popup=toonKeuze(node,e.lngLat,8);
  kiesLijnKnoppen(node,popup,null);
  zetTijdelijkeFocus(routes.map(r=>r.route_id),popup);
 }
@@ -670,9 +755,19 @@ function updateTransportFilterButtons(){
  $('filterBusButton').setAttribute('aria-pressed',String(showBusStops));$('filterBusButton').classList.toggle('filter-active',showBusStops);
  $('filterTramButton').setAttribute('aria-pressed',String(showTramStops));$('filterTramButton').classList.toggle('filter-active',showTramStops);
 }
-function stopDotColor(stop,red){return red?'#e53935':(isTramStop(stop)?'#f28c28':'#2583eb');}
+const HALTE_BUS='#f5c400',HALTE_TRAM='#8b5cf6';
+function stopDotColor(stop,red){return red?'#e53935':(isTramStop(stop)?HALTE_TRAM:HALTE_BUS);}
 function stopReportOpacity(stopId){const created=activeReportCreatedAt.get(String(stopId));return created?reportAgeOpacity(created):1;}
+// Haltebolletjes: klein, en iets groter naarmate je inzoomt.
+function halteStraal(){const z=map?map.getZoom():13;return z<12?2:Math.min(5.5,2.2+(z-12)*0.55);}
+let pulsZichtbaar=false,haltePulsTimer=0;
+function zetHaltePuls(){
+ const nodig=[...activeReportCreatedAt.values()].some(t=>meldingStatus(t)==='vers');
+ if(nodig&&!haltePulsTimer)haltePulsTimer=setInterval(()=>{if(!document.hidden&&pulsZichtbaar)drawStopDots();},60);
+ else if(!nodig&&haltePulsTimer){clearInterval(haltePulsTimer);haltePulsTimer=0;}
+}
 function drawStopDots(){
+ pulsZichtbaar=false;
  if(!map||!stopDotCanvas||!mapStops.length)return;
  const box=$('map').getBoundingClientRect(),dpr=window.devicePixelRatio||1;
  stopDotCanvas.width=Math.round(box.width*dpr);stopDotCanvas.height=Math.round(box.height*dpr);
@@ -695,9 +790,9 @@ function drawStopDots(){
    const p=map.project([lng,lat]);if(p.x< -24||p.y< -24||p.x>box.width+24||p.y>box.height+24)continue;
    const red=group.some(d=>d.red),tramCount=group.filter(d=>isTramStop(d.stop)).length;
    const opacity=red?Math.max(...group.filter(d=>d.red).map(d=>stopReportOpacity(d.stop.stop_id))):1;
-   if(group.length===1){drawStopDot(ctx,p.x,p.y,red?6:4.2,red?reportMarkerColor(group[0].stop.stop_id,group[0].stop):stopDotColor(group[0].stop,false),red?stopReportOpacity(group[0].stop.stop_id):1);screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
-   ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);const aged=group.filter(d=>d.red).every(d=>{const t=activeReportCreatedAt.get(String(d.stop.stop_id));return t&&Date.now()-new Date(t).getTime()>=20*60000;});ctx.fillStyle=red?(aged?'#929292':'#c93232'):(tramCount>group.length/2?'#d9781d':'#1769bd');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();ctx.restore();
-   ctx.fillStyle='#fff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(group.length),p.x,p.y);
+   if(group.length===1){const vers=red&&halteIsVers(group[0].stop.stop_id);if(vers)pulsZichtbaar=true;drawStopDot(ctx,p.x,p.y,red?halteStraal()+1.8:halteStraal(),red?reportMarkerColor(group[0].stop.stop_id,group[0].stop):stopDotColor(group[0].stop,false),red?stopReportOpacity(group[0].stop.stop_id):1,vers);screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
+   ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);const aged=group.filter(d=>d.red).every(d=>!halteIsVers(d.stop.stop_id));const tram=tramCount>group.length/2;ctx.fillStyle=red?(aged?'#929292':'#c93232'):(tram?'#6d3fd6':'#d9a900');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();ctx.restore();
+   ctx.fillStyle=(!red&&tramCount<=group.length/2)?'#1d1a10':'#fff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(group.length),p.x,p.y);
    screenStopDots.push({x:p.x,y:p.y,cluster:group});
   }
  }else{
@@ -706,12 +801,15 @@ function drawStopDots(){
    const red=activeReportStopIds.has(String(s.stop_id));if(onlyReportedStops&&!red)continue;
    const lng=Number(s.stop_lon),lat=Number(s.stop_lat);if(!bounds.contains([lng,lat]))continue;
    const p=map.project([lng,lat]);if(p.x< -8||p.y< -8||p.x>box.width+8||p.y>box.height+8)continue;
-   drawStopDot(ctx,p.x,p.y,red?6:4.2,red?reportMarkerColor(s.stop_id,s):stopDotColor(s,false),red?stopReportOpacity(s.stop_id):1);screenStopDots.push({x:p.x,y:p.y,stop:s});
+   const r0=halteStraal(),vers=red&&halteIsVers(s.stop_id);if(vers)pulsZichtbaar=true;
+   drawStopDot(ctx,p.x,p.y,red?r0+1.8:r0,red?reportMarkerColor(s.stop_id,s):stopDotColor(s,false),red?stopReportOpacity(s.stop_id):1,vers);screenStopDots.push({x:p.x,y:p.y,stop:s});
   }
  }
 }
-function drawStopDot(ctx,x,y,r,color,opacity=1){
- ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=1.4;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();ctx.restore();
+function drawStopDot(ctx,x,y,r,color,opacity=1,puls=false){
+ const donker=document.documentElement.dataset.theme==='dark';
+ if(puls){const f=(performance.now()%1600)/1600;ctx.save();ctx.globalAlpha=0.55*(1-f);ctx.beginPath();ctx.arc(x,y,r+2+f*10,0,Math.PI*2);ctx.fillStyle='#e53935';ctx.fill();ctx.restore();}
+ ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=r<3?1:1.3;ctx.strokeStyle=donker?'#080a0d':'rgba(30,30,30,.7)';ctx.stroke();ctx.restore();
 }
 async function handleStopDotClick(e){
  let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if(!hit){toonLijnenBijKlik(e);return;}
@@ -719,10 +817,10 @@ async function handleStopDotClick(e){
  const stop=hit.stop;
  const routeIds=String(stop.route_ids||'').split(',').filter(Boolean),routes=allRoutes.filter(r=>routeIds.includes(r.route_id));if(!routes.length)return;
  if(!lijnIndex)await laadLijnIndex();
- const meldingen=actieveMeldingen.filter(m=>String(m.stop_id)===String(stop.stop_id));
+ const meldingen=actieveMeldingen.filter(m=>String(m.stop_id)===String(stop.stop_id)&&meldingStatus(meldingTijd(m))!=='weg');
  const node=document.createElement('div');
- node.innerHTML='<strong>'+esc(stop.stop_name)+'</strong>'+meldingen.map(m=>'<div class="halte-melding">'+(m.route_id&&m.route_id!=='all'?lijnBadge(m):'<span class="lijn-badge lijn-badge-alle">alle</span>')+'<span>Controle gemeld · '+esc(timeAgo(m.created_at))+'</span></div>').join('')+'<p style="margin:7px 0 2px">Kies de lijn:</p>'+routes.map(lijnKnop).join('')+'<button type="button" class="lijn-keuze lijn-alle" data-route="all"><span class="lijn-badge">?</span><span>Andere lijn / weet ik niet</span></button>';
- const popup=new maplibregl.Popup({offset:12,maxWidth:'300px'}).setDOMContent(node).setLngLat([Number(stop.stop_lon),Number(stop.stop_lat)]).addTo(map);
+ node.innerHTML='<strong>'+esc(stop.stop_name)+'</strong>'+meldingen.map(m=>{const vers=meldingStatus(meldingTijd(m))==='vers';return '<div class="halte-melding'+(vers?'':' halte-melding-oud')+'">'+(m.route_id&&m.route_id!=='all'?lijnBadge(m):'<span class="lijn-badge lijn-badge-alle">alle</span>')+'<span>Controle gemeld · '+esc(timeAgo(new Date(meldingTijd(m)).toISOString()))+'</span></div>';}).join('')+'<p style="margin:7px 0 2px">Kies de lijn:</p>'+routes.map(lijnKnop).join('')+'<button type="button" class="lijn-keuze lijn-alle" data-route="all"><span class="lijn-badge">?</span><span>Andere lijn / weet ik niet</span></button>';
+ const popup=toonKeuze(node,[Number(stop.stop_lon),Number(stop.stop_lat)],12);
  kiesLijnKnoppen(node,popup,stop);
  zetTijdelijkeFocus(routes.map(r=>r.route_id),popup);
 }
@@ -759,12 +857,10 @@ async function loadReports(){
  const [data]=await Promise.all([api('/api/reports'),laadLijnIndex()]);
  reportMarkers.forEach(marker=>marker.remove());
  reportMarkers.length=0;
- const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude));
+ const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude)&&meldingStatus(meldingTijd(r))!=='weg');
  activeReportStopIds=new Set(reports.map(r=>String(r.stop_id||'')).filter(Boolean));
- actieveMeldingen=reports;controleRoutes=new Map();
- for(const r of reports)if(r.route_id&&r.route_id!=='all'){const v=controleRoutes.get(r.route_id);if(!v||new Date(r.created_at)>new Date(v))controleRoutes.set(r.route_id,r.created_at);}
- addRouteLinesToMap();
- activeReportCreatedAt.clear();reports.forEach(r=>{if(r.stop_id)activeReportCreatedAt.set(String(r.stop_id),r.created_at);});drawStopDots();
+ actieveMeldingen=reports;tekenMeldingStukken();
+ activeReportCreatedAt.clear();reports.forEach(r=>{if(!r.stop_id)return;const k=String(r.stop_id),t=meldingTijd(r),v=activeReportCreatedAt.get(k);if(!v||t>new Date(v).getTime())activeReportCreatedAt.set(k,new Date(t).toISOString());});zetHaltePuls();drawStopDots();
  $('countActive').textContent=reports.length;
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=reports.filter(r=>r.created_at.slice(0,10)===today).length;
