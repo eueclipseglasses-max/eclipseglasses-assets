@@ -102,6 +102,9 @@ textarea{min-height:75px;resize:vertical}
 .maplibregl-ctrl-attrib a{color:var(--muted)!important}
 .error{color:#ff927c;font-size:12px;margin-top:10px}.skeleton-line{display:block;height:13px;width:78%;margin:10px 0;border-radius:6px;background:linear-gradient(90deg,var(--panel2),var(--border),var(--panel2));background-size:200% 100%;animation:shimmer 1.25s infinite}.skeleton-line.short{width:44%}@keyframes shimmer{to{background-position:-200% 0}}.empty-state{padding:18px 8px;color:var(--muted);line-height:1.5}.empty-state strong{color:var(--text)}.empty-state p{margin:5px 0 0}.site-footer{display:flex;gap:16px;flex-wrap:wrap;align-items:center}.site-footer a{color:var(--muted);text-decoration:none}.site-footer a:hover{text-decoration:underline}.mobile-report-cta{display:none}.report-marker{animation:marker-in .35s ease-out}@keyframes marker-in{0%{transform:scale(.5);box-shadow:0 0 0 0 #ef444488}70%{transform:scale(1.15);box-shadow:0 0 0 10px #ef444400}100%{transform:scale(1)}}
 .success{color:var(--green);font-size:12px;margin-top:10px}
+.latest-status{margin:-8px 0 18px;padding:0 2px;color:var(--muted);font-size:12px}.latest-status strong{color:var(--text)}
+.how-it-works{margin-top:18px}.how-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.how-steps strong{font-size:13px}.how-steps p{font-size:12px;color:var(--muted);line-height:1.5;margin:6px 0 0}
+#routeSelect.is-loading{background-image:linear-gradient(90deg,transparent,rgba(180,150,110,.12),transparent);background-size:200% 100%;animation:shimmer 1.2s infinite}
 footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 .maplibregl-popup-content{background:var(--panel);color:var(--text);border-radius:9px;box-shadow:var(--shadow)}
 .maplibregl-popup-close-button{color:var(--text);font-size:18px;padding:4px 8px}
@@ -129,7 +132,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .eyebrow{font-size:9px}
  h1{font-size:25px;margin:5px 0}
  .heading .muted{font-size:12px;line-height:1.45;margin:0}
- .heading button{width:100%;font-size:13px;padding:12px}
+ #appScreen .heading #reportCta{position:fixed;z-index:1100;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));width:auto;min-height:52px;border-radius:13px;font-size:15px;box-shadow:0 8px 26px rgba(0,0,0,.28)}
+ main{padding-bottom:92px}
  .stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:13px}
  .stat{min-width:0;padding:10px 8px;border-radius:9px}
  .stat span{display:block;font-size:9px;line-height:1.25;min-height:23px;overflow-wrap:anywhere}
@@ -150,6 +154,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .map-legend>span:last-child{flex-basis:100%}
  .notice{font-size:11px;line-height:1.5}
  .side{display:flex;flex-direction:column;gap:12px;min-width:0}
+ .how-steps{grid-template-columns:1fr;gap:12px}.how-steps>div{padding-bottom:10px;border-bottom:1px solid var(--border)}.how-steps>div:last-child{border-bottom:0;padding-bottom:0}
+ .latest-status{margin:-5px 0 12px;font-size:11px}
  .panel{min-width:0;padding:14px;border-radius:10px}
  .panel h3{font-size:17px;margin-bottom:10px}
  .field{margin:11px 0}
@@ -218,6 +224,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
   <div class="stat"><span>Vandaag gemeld</span><strong id="countToday">0</strong></div>
   <div class="stat"><span>Account</span><strong id="userRole" style="font-size:17px">Gebruiker</strong></div>
  </div>
+ <p id="latestReportStatus" class="latest-status hidden" aria-live="polite"></p>
  <div class="layout">
   <section class="panel map-panel">
    <div class="panel-title"><div><h3>Kaart</h3><span class="muted">Meldingen op het De Lijn-netwerk</span></div></div>
@@ -258,6 +265,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    </section>
   </aside>
  </div>
+ <section class="how-it-works panel"><h3>Hoe werkt het?</h3><div class="how-steps"><div><strong>01 · Kies een halte</strong><p>Zoek een halte of tik op een halte op de kaart.</p></div><div><strong>02 · Meld de platte band</strong><p>Kies de lijn en het tijdstip. Een account is niet nodig.</p></div><div><strong>03 · Help de melding controleren</strong><p>Andere reizigers kunnen aangeven of de melding nog klopt.</p></div></div></section>
  <footer class="site-footer"><a href="/over">Over</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/voorwaarden">Voorwaarden</a><a href="/misbruik">Misbruik melden</a><span>DE GOLEM · VLAANDEREN · 2026</span></footer>
 </main>
 <section id="rankingScreen" class="hidden" style="max-width:900px;margin:auto;padding:30px 4%"><div class="heading"><div><div class="eyebrow">DE GOLEM / GEMEENSCHAP</div><h1>Ranglijst</h1><p class="muted">De reizigers die de meeste geverifieerde meldingen van platte banden bijdragen.</p></div><button class="secondary" type="button" onclick="closeRanking()">← Terug naar kaart</button></div><section class="panel"><div id="rankingSummary" class="muted">Ranglijst laden...</div><div id="rankingList" style="margin-top:16px"><p class="muted">Gegevens laden...</p></div><p class="notice">Alleen accounts tellen mee. Een melding levert pas een punt op zodra ze is goedgekeurd. Anonieme meldingen tellen niet mee.</p></section><footer>DE GOLEM · VLAANDEREN · 2026</footer></section>
@@ -380,8 +388,10 @@ function reportCard(r,admin=false){
 }
 let gpsCheck=null;
 async function loadRoutes(){
- const data=await api('/api/routes');allRoutes=data.routes||[];
- $('routeSelect').innerHTML='<option value="">Kies een lijn</option><option value="all">— Geen specifieke lijn / alle lijnen</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');
+ const select=$('routeSelect');select.classList.add('is-loading');select.disabled=true;
+ try{const data=await api('/api/routes');allRoutes=data.routes||[];select.innerHTML='<option value="">Kies een lijn</option><option value="all">— Geen specifieke lijn / alle lijnen</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');}
+ catch(error){select.innerHTML='<option value="">Lijnen konden niet laden</option>';throw error;}
+ finally{select.classList.remove('is-loading');select.disabled=false;}
 }
 async function loadMapStops(){
  const data=await api('/api/stops');mapStops=(data.stops||[]).filter(s=>Number.isFinite(Number(s.stop_lat))&&Number.isFinite(Number(s.stop_lon)));
@@ -508,6 +518,7 @@ async function loadReports(){
  $('countActive').textContent=data.reports.length;
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=data.reports.filter(r=>r.created_at.slice(0,10)===today).length;
+ const latest=$('latestReportStatus');if(data.reports.length){const newest=data.reports.reduce((a,b)=>new Date(a.created_at)>new Date(b.created_at)?a:b);latest.innerHTML='<strong>Laatste melding:</strong> '+esc(timeAgo(newest.created_at));latest.classList.remove('hidden');}else{latest.textContent='';latest.classList.add('hidden');}
  $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<div class="empty-state"><strong>Nog geen meldingen in de buurt.</strong><p>Wees de eerste en meld een platte band.</p></div>';
 }
 $('newReport').addEventListener('submit',async e=>{
@@ -519,9 +530,9 @@ $('newReport').addEventListener('submit',async e=>{
    gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,
    observed_at:new Date($('observed').value).toISOString()
   })});
-  $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.';
+  $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.';$('reportMessage').className='success';
   $('newReport').reset();gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});await loadReports();
- }catch(err){$('reportMessage').textContent=err.message;}
+ }catch(err){$('reportMessage').className='error';$('reportMessage').textContent=err.message;}
  finally{$('submitReportButton').disabled=false;}
 });
 async function loadPending(){
@@ -561,7 +572,10 @@ async function startApp(){
 async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
- $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();
+ $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);
+ const results=await Promise.allSettled([loadRoutes(),loadReports()]);
+ if(results[0].status==='rejected')$('reportMessage').textContent='De lijnen konden niet laden. Probeer het opnieuw.';
+ if(results[1].status==='rejected')$('reportsList').innerHTML='<div class="empty-state"><strong>Meldingen konden niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="loadReports().catch(()=>{})">Opnieuw proberen</button></div>';
 }
 $('authButton').classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
