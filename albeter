@@ -1225,10 +1225,7 @@ export default {
         page=page.replace(/async function loadPending\(\)\{[\s\S]*?\n\}\n(?=\$\('reportsList'\)\.addEventListener)/,"");
         page=page.replace(/\$\('pendingList'\)\.addEventListener\('click'[\s\S]*?\n\}\);\n/,"");
       }
-      page=page.replace('<meta property="og:image" content="/app-icon.png">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="De Golem | Platte banden">
-<meta name="twitter:description" content="Bekijk en meld platte banden op het De Lijn-netwerk.">','<meta property="og:image" content="'+url.origin+'/app-icon.png">');
+      page=page.replace(/<meta property="og:image" content="\/app-icon\.png">[\s\S]*?<meta name="twitter:description" content="Bekijk en meld platte banden op het De Lijn-netwerk\.">/,'<meta property="og:image" content="'+url.origin+'/app-icon.png">');
       return new Response(page,{
         headers:{
           "Content-Type":"text/html; charset=utf-8",
