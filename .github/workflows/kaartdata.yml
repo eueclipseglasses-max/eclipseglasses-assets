@@ -1,0 +1,60 @@
+# Bouwt elke week de lijntrajecten (bus en tram) uit OpenStreetMap en zet ze op de branch "kaartdata".
+# De app (albeter) leest ze via /kaartdata/... . Uitleg: kaartdata/LEESMIJ.md
+name: Kaartdata lijntrajecten
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"          # elke maandag om 03:17 UTC
+  workflow_dispatch: {}             # handmatig starten via het tabblad Actions
+  push:
+    paths:
+      - "kaartdata/bouw_lijnen.py"
+      - ".github/workflows/kaartdata.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: kaartdata
+  cancel-in-progress: true
+
+jobs:
+  bouw:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Hulpmiddelen installeren
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq osmium-tool
+          pip install --quiet osmium==4.3.2
+
+      - name: OpenStreetMap België downloaden (Geofabrik)
+        run: curl -fsSL --retry 3 --retry-delay 20 -o belgie.osm.pbf https://download.geofabrik.de/europe/belgium-latest.osm.pbf
+
+      - name: Alleen bus- en tramtrajecten overhouden
+        run: osmium tags-filter belgie.osm.pbf r/route=bus,tram r/route_master=bus,tram -o trajecten.osm.pbf --overwrite
+
+      - name: Lijntrajecten bouwen en koppelen aan de lijnen van de app
+        env:
+          APP_URL: https://eclipseglasses.eu
+        run: python kaartdata/bouw_lijnen.py --osm trajecten.osm.pbf --uit uitvoer
+
+      - name: Rapport tonen
+        run: cat uitvoer/RAPPORT.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publiceren naar de branch kaartdata
+        run: |
+          cd uitvoer
+          git init -q -b kaartdata
+          git config user.name "kaartdata-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Kaartdata $(date -u +%F) (bron: OpenStreetMap)"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" kaartdata:kaartdata
