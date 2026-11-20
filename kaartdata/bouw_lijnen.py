@@ -112,6 +112,11 @@ def is_de_lijn(tags: dict) -> bool:
     return "de lijn" in op or tags.get("network", "").upper() == "DL"
 
 
+def tekstkleur_tag(tags: dict) -> str | None:
+    """Kleur van het lijnnummer op het lijnbord (De Lijn: bv. witte streeklijnen met gekleurde cijfers)."""
+    return tags.get("text_colour") or tags.get("colour:text") or tags.get("text_color") or tags.get("color:text")
+
+
 def stop_refs(tags) -> set[str]:
     refs: set[str] = set()
     for key in ("ref:De_Lijn", "ref:De Lijn", "ref:delijn"):
@@ -129,15 +134,18 @@ class Relaties(osmium.SimpleHandler):
         super().__init__()
         self.routes: dict[int, dict] = {}
         self.master_kleur: dict[int, str] = {}
+        self.master_tekst: dict[int, str] = {}
 
     def relation(self, r):
         tags = {t.k: t.v for t in r.tags}
         if tags.get("type") == "route_master" and tags.get("route_master") in ROUTE_SOORTEN:
-            kleur = tags.get("colour") or tags.get("color")
-            if kleur:
-                for m in r.members:
-                    if m.type == "r":
+            kleur, tekst = tags.get("colour") or tags.get("color"), tekstkleur_tag(tags)
+            for m in r.members:
+                if m.type == "r":
+                    if kleur:
                         self.master_kleur[m.ref] = kleur
+                    if tekst:
+                        self.master_tekst[m.ref] = tekst
             return
         if tags.get("type") != "route" or tags.get("route") not in ROUTE_SOORTEN or not is_de_lijn(tags):
             return
@@ -198,6 +206,7 @@ def lees_osm(pad: str) -> tuple[dict, dict, dict]:
         t = r["tags"]
         kleur = normaliseer_kleur(t.get("colour") or t.get("color") or rel.master_kleur.get(rid))
         trajecten[rid] = Traject(rid, t, lijnen, refs, kleur, rijrichtingen(r["wegen"], geo.wegen))
+        trajecten[rid].tekstkleur = normaliseer_kleur(tekstkleur_tag(t) or rel.master_tekst.get(rid))
     # Alle OSM-haltes met een haltenummer, om de app-haltes te controleren.
     osm_haltes = defaultdict(list)
     for h in geo.haltes.values():
@@ -271,6 +280,7 @@ class Traject:
     def __init__(self, rid, tags, lijnen, refs, kleur, wegen=()):
         self.id, self.tags, self.lijnen, self.refs, self.kleur = rid, tags, lijnen, refs, kleur
         self.wegen = list(wegen)  # [(weg-id, +1 als in volgorde van de weg gereden, anders -1)]
+        self.tekstkleur = None
         self.ref = (tags.get("ref") or "").strip()
         self.naam = tags.get("name", "")
         self.soort = tags.get("route", "bus")
@@ -443,7 +453,10 @@ def bouw_netwerk(gekoppeld: list[dict], wegen: dict, uit: Path) -> tuple[dict, l
     sleutel = lambda g: (g["naam"].strip().upper(), g["kleur"] or "", g["soort"])
     groepen_set = sorted({sleutel(g) for g in gekoppeld}, key=lambda k: (lijn_volgorde(k[0]), k[1], k[2]))
     groep_nr = {k: i for i, k in enumerate(groepen_set)}
-    groepen = [{"n": k[0], "k": k[1] or None, "m": k[2]} for k in groepen_set]
+    tekst = {}
+    for g in gekoppeld:
+        tekst[sleutel(g)] = tekst.get(sleutel(g)) or g.get("tekst")
+    groepen = [{"n": k[0], "k": k[1] or None, "t": tekst.get(k), "m": k[2]} for k in groepen_set]
     gekoppeld = sorted(gekoppeld, key=lambda g: (groep_nr[sleutel(g)], g["rid"]))
     routes = [g["rid"] for g in gekoppeld]
 
@@ -568,12 +581,13 @@ def main() -> int:
             continue
         ts = res["trajecten"]
         kleur = next((t.kleur for t in ts if t.kleur), None)
-        gekoppeld.append({"rid": rid, "naam": str(r.get("route_short_name", "")), "kleur": kleur,
+        tekst = next((t.tekstkleur for t in ts if t.tekstkleur), None)
+        gekoppeld.append({"rid": rid, "naam": str(r.get("route_short_name", "")), "kleur": kleur, "tekst": tekst,
                           "soort": ts[0].soort, "trajecten": ts})
         kleurbron["OpenStreetMap" if kleur else "standaard bus/tram"] += 1
         w = min(t.bbox[0] for t in ts); s = min(t.bbox[1] for t in ts)
         e = max(t.bbox[2] for t in ts); n = max(t.bbox[3] for t in ts)
-        index[rid] = {"k": kleur, "m": ts[0].soort,
+        index[rid] = {"k": kleur, "t": tekst, "m": ts[0].soort,
                       "b": [round(w, 4), round(s, 4), round(e, 4), round(n, 4)], "d": round(res["dekking"], 2)}
         if res["dekking"] < 0.9:
             problemen.append((r, "gekoppeld, maar niet alle haltes liggen op het traject", res["dekking"], ts))
@@ -608,6 +622,8 @@ def main() -> int:
         f"- Gekoppeld aan een OSM-traject: **{ok}** ({(ok / totaal * 100 if totaal else 0):.0f}%)",
         f"- Wegennet: {net['stukken']} stukken straat in {len(net['tegels'])} tegels ({net['grootte'] / 1024:.0f} KB samen)",
         f"- Kleur uit OpenStreetMap: {kleurbron['OpenStreetMap']}, standaardkleur bus/tram: {kleurbron['standaard bus/tram']}",
+        f"- Witte lijnborden: {sum(1 for x in index.values() if (x.get('k') or '') == '#FFFFFF')} lijnen, "
+        f"waarvan {sum(1 for x in index.values() if (x.get('k') or '') == '#FFFFFF' and x.get('t'))} met cijferkleur (text_colour) in OSM",
         f"- App-haltes met een haltenummer in OSM: {sum(1 for h in alle_haltes.values() if h['nr'] in osm_haltes)} van {len(alle_haltes)}",
         "",
         "## Lijnen om na te kijken", "",

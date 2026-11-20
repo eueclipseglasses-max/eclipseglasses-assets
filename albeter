@@ -427,7 +427,7 @@ async function loadMapStops(){
 }
 function hslHex(h,s,l){h=((h%360)+360)%360/360;s/=100;l/=100;const hue=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;return '#'+[hue(p,q,h+1/3),hue(p,q,h),hue(p,q,h-1/3)].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');}
 /* Lijntrajecten uit OpenStreetMap. Gebouwd door kaartdata/bouw_lijnen.py (GitHub Action), geserveerd via /kaartdata/. */
-const LIJN_BUS='#2583eb',LIJN_TRAM='#f28c28',LIJN_MIN_ZOOM=10.5;
+const LIJN_BUS='#2583eb',LIJN_TRAM='#f28c28',LIJN_GRIJS='#8a94a6',LIJN_MIN_ZOOM=10.5;
 let lijnIndex=null,lijnIndexBelofte=null,lijnTimer=0,lijnVersie=0;
 const lijnTegels=new Map(),lijnBezig=new Map();
 function laadLijnIndex(){
@@ -440,9 +440,23 @@ function laadTegel(k){
  if(!lijnBezig.has(k))lijnBezig.set(k,fetch('/kaartdata/net/'+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null).then(d=>{const f=d&&Array.isArray(d.f)?d.f.map(x=>({g:x[0],r:x[1],c:decodeerLijn(x[2])})):null;lijnTegels.set(k,f);lijnBezig.delete(k);return f;}));
  return lijnBezig.get(k);
 }
-function lijnKleur(info){const k=info&&info.k;return /^#[0-9A-Fa-f]{6}$/.test(k||'')?k:(info&&info.m==='tram'?LIJN_TRAM:LIJN_BUS);}
-function tekstKleurOp(hex){const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;return (r*299+g*587+b*114)/1000>150?'#111111':'#ffffff';}
-function lijnBadge(r){const k=lijnKleur(lijnIndex&&lijnIndex.lijnen[r.route_id]);return '<span class="lijn-badge" style="background:'+k+';color:'+tekstKleurOp(k)+'">'+esc(r.route_short_name)+'</span>';}
+const geldigeKleur=k=>/^#[0-9A-Fa-f]{6}$/.test(k||'');
+function helderheid(hex){const n=parseInt(hex.slice(1),16);return ((n>>16)*299+((n>>8)&255)*587+(n&255)*114)/1000;}
+function tekstKleurOp(hex){return helderheid(hex)>150?'#111111':'#ffffff';}
+// Kleur van de lijn op de kaart. Witte lijnborden (streeklijnen) worden getekend in de kleur van het cijfer.
+function lijnKleur(info){
+ const k=info&&info.k,t=info&&info.t;
+ if(geldigeKleur(k)&&helderheid(k)<=215)return k;
+ if(geldigeKleur(t)&&helderheid(t)<=215)return t;
+ if(geldigeKleur(k))return LIJN_GRIJS;
+ return info&&info.m==='tram'?LIJN_TRAM:LIJN_BUS;
+}
+// Badge zoals het lijnbord van De Lijn: achtergrond = lijnkleur, cijfer = tekstkleur.
+function lijnBadge(r){
+ const info=lijnIndex&&lijnIndex.lijnen[r.route_id];
+ const bg=geldigeKleur(info&&info.k)?info.k:lijnKleur(info),fg=geldigeKleur(info&&info.t)?info.t:tekstKleurOp(bg);
+ return '<span class="lijn-badge" style="background:'+bg+';color:'+fg+(helderheid(bg)>215?';box-shadow:inset 0 0 0 1px rgba(0,0,0,.28)':'')+'">'+esc(r.route_short_name)+'</span>';
+}
 function lijnKnop(r){return '<button type="button" class="lijn-keuze" data-route="'+esc(r.route_id)+'">'+lijnBadge(r)+'<span>'+esc(r.route_long_name)+'</span></button>';}
 function gekozenLijnId(){const v=($('routeSelect')&&$('routeSelect').value)||'';return v&&v!=='all'?v:'';}
 function addRouteLinesToMap(){clearTimeout(lijnTimer);lijnTimer=setTimeout(()=>{tekenLijnen().catch(err=>console.warn('Lijntrajecten:',err));},150);}
