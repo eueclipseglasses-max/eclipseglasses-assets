@@ -36,7 +36,7 @@ import osmium
 # ---------------------------------------------------------------- instellingen
 MAX_AFSTAND_M = 50          # een halte "ligt op" het traject als ze hier binnen ligt
 MIN_SCORE = 0.6             # minimale overeenkomst om een traject te aanvaarden
-MAX_VARIANTEN = 3           # max. aantal OSM-trajecten dat samen één lijn vormt (bv. schoolritten)
+MAX_STUKKEN = 6             # max. aantal OSM-trajecten die samen één lijn vormen (varianten of stukken)
 VEREENVOUDIG_M = 2.0        # Douglas-Peucker-tolerantie: punten die minder dan 2 m afwijken vallen weg
 DECIMALEN = 5               # ~1 m nauwkeurig
 VERDACHTE_HALTE_M = 40      # haltes die verder dan dit van hun OSM-positie liggen, komen in het rapport
@@ -158,7 +158,7 @@ class Geometrie(osmium.SimpleHandler):
 
     def node(self, n):
         if n.id in self.halte_ids and n.location.valid():
-            self.haltes[n.id] = {"lon": n.location.lon, "lat": n.location.lat, "refs": stop_refs(n.tags)}
+            self.haltes[n.id] = {"id": n.id, "lon": n.location.lon, "lat": n.location.lat, "refs": stop_refs(n.tags)}
 
     def way(self, w):
         if w.id not in self.weg_ids:
@@ -198,7 +198,7 @@ def lees_osm(pad: str) -> tuple[dict, dict]:
     osm_haltes = defaultdict(list)
     for h in geo.haltes.values():
         for ref in h["refs"]:
-            osm_haltes[ref].append((h["lon"], h["lat"]))
+            osm_haltes[ref].append((h["lon"], h["lat"], h["id"]))
     return trajecten, osm_haltes
 
 
@@ -355,7 +355,7 @@ def score(t: Traject, haltes: list[dict]) -> tuple[float, float, set[str]]:
 def koppel(route: dict, haltes: list[dict], per_ref: dict, alle: list) -> dict:
     kand = kandidaten(route, haltes, per_ref, alle)
     if not kand:
-        return {"status": "geen OSM-traject met dit lijnnummer in de buurt", "trajecten": [], "dekking": 0.0}
+        return {"status": "geen OSM-traject met dit lijnnummer in de buurt", "trajecten": [], "dekking": 0.0, "kandidaten": []}
     van, naar = plaatsnamen(route.get("route_long_name", ""))
     beoordeeld = []
     for t in kand:
@@ -368,19 +368,27 @@ def koppel(route: dict, haltes: list[dict], per_ref: dict, alle: list) -> dict:
             richting += 0.01
         beoordeeld.append((sc + richting, geo, t, dichtbij))
     beoordeeld.sort(key=lambda x: -x[0])
+    top = [(t, sc) for sc, _, t, _ in beoordeeld[:3]]
     beste_sc, beste_geo, beste, gedekt = beoordeeld[0]
-    if beste_sc < MIN_SCORE or beste_geo < MIN_SCORE:
-        return {"status": f"beste OSM-traject past onvoldoende (score {beste_sc:.2f})", "trajecten": [], "dekking": beste_geo}
+    # Begin bij het best passende traject en voeg stukken toe die nog niet gedekte haltes
+    # van deze lijn bedienen: varianten (schoolritten, omleidingen) of lange lijnen die
+    # in OSM in stukken staan (bv. de Kusttram). Een traject in de andere rijrichting
+    # voegt niets toe, want het ligt op dezelfde straten.
     gekozen, gedekt = [beste], set(gedekt)
-    # Varianten toevoegen die haltes dekken die nog ontbreken (bv. schoolritten of omleidingen).
-    for sc, geo, t, dichtbij in beoordeeld[1:]:
-        if len(gekozen) >= MAX_VARIANTEN or len(gedekt) == len(haltes):
+    rest = [x for x in beoordeeld[1:] if x[1] >= 0.15]
+    while rest and len(gekozen) < MAX_STUKKEN and len(gedekt) < len(haltes):
+        x = max(rest, key=lambda x: (len(x[3] - gedekt), x[0]))
+        if len(x[3] - gedekt) < 2:
             break
-        nieuw = dichtbij - gedekt
-        if sc >= 0.5 and len(nieuw) >= 2:
-            gekozen.append(t)
-            gedekt |= dichtbij
-    return {"status": "ok", "trajecten": gekozen, "dekking": len(gedekt) / len(haltes)}
+        gekozen.append(x[2])
+        gedekt |= x[3]
+        rest.remove(x)
+    dekking = len(gedekt) / len(haltes)
+    alleen_beste_ok = beste_sc >= MIN_SCORE and beste_geo >= MIN_SCORE
+    if alleen_beste_ok or (len(gekozen) > 1 and dekking >= MIN_SCORE):
+        return {"status": "ok", "trajecten": gekozen, "dekking": dekking, "kandidaten": top}
+    return {"status": f"beste OSM-traject past onvoldoende (score {beste_sc:.2f})", "trajecten": [],
+            "dekking": beste_geo, "kandidaten": top}
 
 
 # ---------------------------------------------------------------- uitvoer
@@ -429,11 +437,11 @@ def main() -> int:
         rid = str(r["route_id"])
         haltes = per_lijn.get(rid, [])
         if len(haltes) < 2:
-            problemen.append((r, "minder dan 2 haltes in de app", 0.0))
+            problemen.append((r, "minder dan 2 haltes in de app", 0.0, []))
             continue
         res = koppel(r, haltes, per_ref, alle)
         if res["status"] != "ok":
-            problemen.append((r, res["status"], res["dekking"]))
+            problemen.append((r, res["status"], res["dekking"], res["kandidaten"]))
             continue
         ts = res["trajecten"]
         for t in ts:
@@ -446,7 +454,7 @@ def main() -> int:
         index[rid] = {"r": [t.id for t in ts], "k": kleur, "m": ts[0].soort,
                       "b": [round(w, 4), round(s, 4), round(e, 4), round(n, 4)], "d": round(res["dekking"], 2)}
         if res["dekking"] < 0.9:
-            problemen.append((r, "gekoppeld, maar niet alle haltes liggen op het traject", res["dekking"]))
+            problemen.append((r, "gekoppeld, maar niet alle haltes liggen op het traject", res["dekking"], ts))
 
     nu = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (uit / "index.json").write_text(json.dumps(
@@ -459,9 +467,9 @@ def main() -> int:
         posities = osm_haltes.get(h["nr"])
         if not posities:
             continue
-        d = min(math.hypot(*(a - b for a, b in zip(xy(h["lon"], h["lat"]), xy(*p)))) for p in posities)
+        d, p = min((math.hypot(*(a - b for a, b in zip(xy(h["lon"], h["lat"]), xy(p[0], p[1])))), p) for p in posities)
         if d > VERDACHTE_HALTE_M:
-            verdacht.append((d, h))
+            verdacht.append((d, h, p[2]))
     verdacht.sort(key=lambda x: -x[0])
 
     totaal = len(routes)
@@ -478,15 +486,22 @@ def main() -> int:
         "## Lijnen om na te kijken", "",
     ]
     if problemen:
-        regels += ["| Lijn | Traject | Probleem | Haltes op traject |", "|---|---|---|---|"]
-        for r, reden, dek in sorted(problemen, key=lambda p: (str(p[0].get("route_short_name")), str(p[0]["route_id"]))):
-            regels.append(f"| {r.get('route_short_name', '')} | {r.get('route_long_name', '')} (`{r['route_id']}`) | {reden} | {dek:.0%} |")
+        regels += ["| Lijn | Traject | Probleem | Haltes op traject | OSM-trajecten |", "|---|---|---|---|---|"]
+        for r, reden, dek, osm in sorted(problemen, key=lambda p: (str(p[0].get("route_short_name")), str(p[0]["route_id"]))):
+            links = ", ".join(
+                f"[{(x[0] if isinstance(x, tuple) else x).id}](https://www.openstreetmap.org/relation/{(x[0] if isinstance(x, tuple) else x).id})"
+                + (f" ({x[1]:.2f})" if isinstance(x, tuple) else "") for x in osm) or "–"
+            regels.append(f"| {r.get('route_short_name', '')} | {r.get('route_long_name', '')} (`{r['route_id']}`) | {reden} | {dek:.0%} | {links} |")
     else:
         regels.append("Geen: alle lijnen zijn volledig gekoppeld.")
     regels += ["", f"## Haltes die meer dan {VERDACHTE_HALTE_M} m van hun OSM-positie liggen", ""]
     if verdacht:
-        regels += ["| Halte | Nummer | Afstand |", "|---|---|---|"]
-        regels += [f"| {h['naam']} | {h['nr']} | {d:.0f} m |" for d, h in verdacht[:200]]
+        regels += ["Vergelijk beide plaatsen: de halte die op de verkeerde plek staat moet verbeterd worden "
+                   "(in de app-databank of in OpenStreetMap).", "",
+                   "| Halte | Nummer | Afstand | In de app | In OSM |", "|---|---|---|---|---|"]
+        regels += [f"| {h['naam']} | {h['nr']} | {d:.0f} m | "
+                   f"[kaart](https://www.openstreetmap.org/?mlat={h['lat']:.6f}&mlon={h['lon']:.6f}#map=18/{h['lat']:.6f}/{h['lon']:.6f}) | "
+                   f"[node {n}](https://www.openstreetmap.org/node/{n}) |" for d, h, n in verdacht[:200]]
     else:
         regels.append("Geen.")
     regels += ["", "Een lijn ontbreekt of klopt niet? Meestal ontbreekt het traject in OpenStreetMap of heeft het een ander lijnnummer.",
