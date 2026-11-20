@@ -248,6 +248,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <button type="button" class="secondary" id="searchStopButton">Zoeken</button>
     <button type="button" class="secondary" id="toggleStopsButton" aria-pressed="false">Haltes verbergen</button>
     <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
+     <button type="button" class="secondary" id="coordinatePickButton" aria-pressed="false">Coördinaten meten</button>
     <button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button>
     <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
    </div>
@@ -289,6 +290,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 const REPORT_LIFETIME_HOURS=0.75;
 let mode='login', map;
 let officialRouteShapeCity=null,officialRouteShapeData=null,officialRouteShapePromise=null;
+let coordinatePickMode=false;
 const CITY_MIN_REPORTERS=20;
 const CITY_DATA=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:22},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
 let cityStats=[],selectedCity=null,detectedCityId=null;
@@ -373,12 +375,26 @@ function initMap(){
  map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
  map.on('move',drawStopDots);map.on('resize',drawStopDots);
  map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
- map.on('click',handleStopDotClick);
+ map.on('click',e=>{
+   if(coordinatePickMode){
+    const lng=e.lngLat.lng,lat=e.lngLat.lat;
+    new maplibregl.Popup({closeButton:true,closeOnClick:true,offset:8}).setLngLat([lng,lat])
+     .setHTML('<div style="font-family:monospace;font-size:13px;line-height:1.7"><strong>Kaartcoördinaten</strong><br>Lengtegraad: '+lng.toFixed(7)+'<br>Breedtegraad: '+lat.toFixed(7)+'<br>['+lng.toFixed(7)+', '+lat.toFixed(7)+']</div>').addTo(map);
+    return;
+   }
+   handleStopDotClick(e);
+  });
  $('toggleStopsButton').addEventListener('click',()=>{
   hideStops=!hideStops;$('toggleStopsButton').setAttribute('aria-pressed',String(hideStops));
   $('toggleStopsButton').textContent=hideStops?'Haltes tonen':'Haltes verbergen';drawStopDots();
  });
  $('searchStopButton').addEventListener('click',searchMapStop);
+  $('coordinatePickButton').addEventListener('click',()=>{
+   coordinatePickMode=!coordinatePickMode;
+   $('coordinatePickButton').setAttribute('aria-pressed',String(coordinatePickMode));
+   $('coordinatePickButton').textContent=coordinatePickMode?'Coördinaten meten: AAN':'Coördinaten meten';
+   $('map').style.cursor=coordinatePickMode?'crosshair':'';
+  });
  $('toggleReportedButton').addEventListener('click',()=>{
   onlyReportedStops=!onlyReportedStops;$('toggleReportedButton').setAttribute('aria-pressed',String(onlyReportedStops));
   $('toggleReportedButton').textContent=onlyReportedStops?'Alle haltes tonen':'Alleen meldingen';drawStopDots();
@@ -430,7 +446,7 @@ async function addRouteLinesToMap(){
  if(officialRouteShapeCity!==selectedCity&&!officialRouteShapePromise){
   officialRouteShapePromise=(async()=>{
    try{
-    const data=await api('/api/route-shapes?city='+encodeURIComponent(selectedCity||'oostende')+'&v=5');
+    const data=await api('/api/route-shapes?city='+encodeURIComponent(selectedCity||'oostende')+'&v=6');
     officialRouteShapeCity=selectedCity;
     officialRouteShapeData=data.geojson||{type:'FeatureCollection',features:[]};
    }catch(error){console.error('Officiële reiswegen konden niet laden:',error);}
@@ -940,56 +956,14 @@ async function handleApi(request, env) {
     // Toon de officiële routegeometrie ongewijzigd als één doorlopende gekleurde spoorlijn.
     // Geen punt-voor-punt snapping of kunstmatige coördinaatverschuiving:
     // die veroorzaakten sprongen tussen naburige straten en zigzaglijnen.
-    const routeFeatures=(source.features||[]).filter(feature=>{
+    const features=(source.features||[]).filter(feature=>{
       const props=feature.properties||{};
       return String(props.LIJN||"").trim()==="5"&&feature.geometry;
-    });
-    // Match complete route traces against the OSM road network used by the basemap.
-    const sampleLine=(coords,step=22)=>{
-      if(!Array.isArray(coords)||coords.length<2)return coords||[];
-      const out=[coords[0]];
-      for(let i=1;i<coords.length;i++){
-        const a=coords[i-1],b=coords[i];
-        const dx=(b[0]-a[0])*111320*Math.cos((a[1]+b[1])*Math.PI/360);
-        const dy=(b[1]-a[1])*111320;
-        const n=Math.max(1,Math.ceil(Math.hypot(dx,dy)/step));
-        for(let j=1;j<=n;j++){const t=j/n;out.push([a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]);}
-      }
-      return out;
-    };
-    const matchLine=async coords=>{
-      const sampled=sampleLine(coords);
-      if(sampled.length<3)return coords;
-      const pieces=[];
-      for(let offset=0;offset<sampled.length-1;offset+=94){
-        const chunk=sampled.slice(offset,Math.min(offset+95,sampled.length));
-        if(chunk.length<3){pieces.push(chunk);continue;}
-        const pathCoords=chunk.map(p=>p[0].toFixed(6)+","+p[1].toFixed(6)).join(";");
-        const matchUrl="https://router.project-osrm.org/match/v1/driving/"+pathCoords;
-        const params=new URLSearchParams({geometries:"geojson",overview:"full",steps:"false",gaps:"ignore",tidy:"true",radiuses:chunk.map(()=>"30").join(";")});
-        try{
-          const response=await fetch(matchUrl+"?"+params.toString(),{headers:{Accept:"application/json"}});
-          if(!response.ok)throw new Error("OSRM "+response.status);
-          const result=await response.json();
-          const valid=(result.matchings||[]).filter(m=>m.geometry&&m.geometry.type==="LineString"&&Number(m.confidence||0)>=0.55);
-          const nullCount=(result.tracepoints||[]).filter(p=>!p).length;
-          if(result.code!=="Ok"||!valid.length||nullCount>Math.floor(chunk.length*0.2))throw new Error("Onvoldoende betrouwbare match");
-          for(const matching of valid){const line=matching.geometry.coordinates||[];if(line.length>1)pieces.push(line);}
-        }catch(error){console.warn("Routegedeelte niet betrouwbaar gematcht; officiële geometrie behouden.",error);pieces.push(chunk);}
-      }
-      const merged=[];
-      for(const piece of pieces)for(const point of piece){const last=merged[merged.length-1];if(!last||Math.abs(last[0]-point[0])>0.000002||Math.abs(last[1]-point[1])>0.000002)merged.push(point);}
-      return merged.length>=2?merged:coords;
-    };
-    const features=[];
-    for(const feature of routeFeatures){
-      const geometry=feature.geometry;
-      const lines=geometry.type==="LineString"?[geometry.coordinates]:geometry.type==="MultiLineString"?geometry.coordinates:null;
-      if(!lines){features.push({type:"Feature",properties:{route_id:"line-5",color:"#C8D300",direction:String(feature.properties?.RICHTING||"")},geometry});continue;}
-      const matched=[];
-      for(const line of lines){const coords=await matchLine(line);if(coords&&coords.length>1)matched.push(coords);}
-      features.push({type:"Feature",properties:{route_id:"line-5",color:"#C8D300",direction:String(feature.properties?.RICHTING||"")},geometry:matched.length===1?{type:"LineString",coordinates:matched[0]}:{type:"MultiLineString",coordinates:matched}});
-    }
+    }).map(feature=>({
+      type:"Feature",
+      properties:{route_id:"line-5",color:"#C8D300",direction:String(feature.properties?.RICHTING||"")},
+      geometry:feature.geometry
+    }));
     return new Response(JSON.stringify({geojson:{type:"FeatureCollection",features}}),{
       headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store, no-cache, must-revalidate"}
     });
