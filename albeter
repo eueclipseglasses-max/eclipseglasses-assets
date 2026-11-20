@@ -81,6 +81,8 @@ textarea{min-height:75px;resize:vertical}
 .tabs button{flex:1}
 .report{display:flex;flex-direction:column;gap:11px;padding:15px;background:var(--panel2);border:1px solid var(--border);border-radius:10px;margin:0 0 11px;min-width:0}
 .report:last-child{margin-bottom:0}
+.ranking-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;align-items:center;gap:12px;padding:14px 8px;border-bottom:1px solid var(--border)}.ranking-row:last-child{border-bottom:0}.ranking-position{font-size:19px;font-weight:700;color:var(--orange);text-align:center}.ranking-name{font-weight:700;overflow-wrap:anywhere}.ranking-count{font-size:13px;color:var(--muted);white-space:nowrap}.ranking-self{background:var(--panel2);border-radius:8px}.ranking-empty{padding:20px 4px;color:var(--muted)}
+@media(max-width:600px){#rankingScreen{padding:18px 11px!important}.ranking-row{grid-template-columns:34px minmax(0,1fr) auto;gap:8px;padding:12px 5px}.ranking-name{font-size:13px}.ranking-count{font-size:11px}}
 .report-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 .report-title{font-size:14px;font-weight:700;line-height:1.4;color:var(--text)}
 .report-time{font-size:11px;color:var(--muted);white-space:nowrap}
@@ -180,7 +182,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <body>
 <header>
  <div class="brand"><img class="logo" id="brandLogo" src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
- <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="header-right"><span class="status">● SYSTEEM ACTIEF</span><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <section id="authScreen" class="auth-wrap hidden">
@@ -253,6 +255,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  </div>
  <footer>DE GOLEM · VLAANDEREN · 2026</footer>
 </main>
+<section id="rankingScreen" class="hidden" style="max-width:900px;margin:auto;padding:30px 4%"><div class="heading"><div><div class="eyebrow">DE GOLEM / GEMEENSCHAP</div><h1>Ranglijst</h1><p class="muted">De reizigers die de meeste geverifieerde vervoersmeldingen bijdragen.</p></div><button class="secondary" type="button" onclick="closeRanking()">← Terug naar kaart</button></div><section class="panel"><div id="rankingSummary" class="muted">Ranglijst laden...</div><div id="rankingList" style="margin-top:16px"><p class="muted">Gegevens laden...</p></div><p class="notice">Alleen accounts tellen mee. Een melding levert pas een punt op zodra ze is goedgekeurd. Anonieme meldingen tellen niet mee.</p></section><footer>DE GOLEM · VLAANDEREN · 2026</footer></section>
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
@@ -470,6 +473,15 @@ $('gpsButton').addEventListener('click',()=>{
   $('gpsMessage').textContent='GPS-locatie ontvangen. De server controleert of je dicht bij de gekozen halte bent.';
  },err=>{$('gpsMessage').textContent='Locatie kon niet worden gecontroleerd. Controleer de locatietoestemming en probeer opnieuw.';}, {enableHighAccuracy:true,timeout:15000,maximumAge:0});
 });
+async function loadRanking(){
+ const data=await api("/api/ranking");
+ const rows=data.rankings||[];
+ $("rankingSummary").textContent=rows.length?rows.length+" gerangschikte accounts · totaaloverzicht":"Er zijn nog geen geverifieerde accountmeldingen.";
+ $("rankingList").innerHTML=rows.map((u,i)=>`<div class="ranking-row ${data.me&&data.me.id===u.id?"ranking-self":""}"><span class="ranking-position">${i+1}</span><span class="ranking-name">${esc(u.username)}${data.me&&data.me.id===u.id?" · jij":""}</span><span class="ranking-count">${Number(u.verified_count)} ${Number(u.verified_count)===1?"melding":"meldingen"}</span></div>`).join("")||'<div class="ranking-empty">De ranglijst verschijnt zodra een account een geverifieerde melding heeft.</div>';
+ if(data.me&&data.me.position>rows.length)$("rankingList").insertAdjacentHTML("beforeend",`<div class="ranking-row ranking-self"><span class="ranking-position">${data.me.position}</span><span class="ranking-name">${esc(data.me.username)} · jij</span><span class="ranking-count">${data.me.verified_count} meldingen</span></div>`);
+}
+function openRanking(){ $("appScreen").classList.add("hidden");$("authScreen").classList.add("hidden");$("rankingScreen").classList.remove("hidden");loadRanking().catch(e=>{$("rankingSummary").textContent=e.message;$("rankingList").innerHTML="";}); }
+function closeRanking(){ $("rankingScreen").classList.add("hidden");$("appScreen").classList.remove("hidden"); }
 async function loadReports(){
  const data=await api('/api/reports');
  reportMarkers.forEach(marker=>marker.remove());
@@ -844,6 +856,32 @@ async function handleApi(request, env) {
       GROUP BY s.stop_id,s.stop_name,s.stop_lat,s.stop_lon ORDER BY s.stop_name
     `).all();
     return json({stops:result.results||[]});
+  }
+
+  if (path === "/api/ranking" && method === "GET") {
+    const user=await currentUser(request,env);
+    const result=await env.DB.prepare(`
+      SELECT u.id,substr(u.email,1,instr(u.email,'@')-1) AS username,COUNT(r.id) AS verified_count
+      FROM users u JOIN reports r ON r.user_id=u.id
+      WHERE r.status='approved' AND u.email NOT LIKE 'anonymous+%@degolem.invalid'
+      GROUP BY u.id,u.email
+      HAVING COUNT(r.id)>0
+      ORDER BY verified_count DESC,username COLLATE NOCASE ASC
+      LIMIT 100
+    `).all();
+    let me=null;
+    if(user){
+      me=await env.DB.prepare(`
+        WITH scores AS (
+          SELECT u.id,substr(u.email,1,instr(u.email,'@')-1) AS username,COUNT(r.id) AS verified_count
+          FROM users u JOIN reports r ON r.user_id=u.id
+          WHERE r.status='approved' AND u.email NOT LIKE 'anonymous+%@degolem.invalid'
+          GROUP BY u.id,u.email HAVING COUNT(r.id)>0
+        ), ranked AS (SELECT *,ROW_NUMBER() OVER(ORDER BY verified_count DESC,username COLLATE NOCASE ASC) AS position FROM scores)
+        SELECT id,username,verified_count,position FROM ranked WHERE id=?
+      `).bind(user.id).first();
+    }
+    return json({rankings:result.results||[],me});
   }
 
   if (path === "/api/reports" && method === "GET") {
