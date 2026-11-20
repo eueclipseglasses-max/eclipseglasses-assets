@@ -937,13 +937,25 @@ async function handleApi(request, env) {
     const response=await fetch(upstream.toString(),{headers:{"Accept":"application/geo+json, application/json"}});
     if(!response.ok)return json({error:"Officiële reiswegen tijdelijk niet beschikbaar",status:response.status},502);
     const source=await response.json();
+    // De officiële lijn 5-geometrie ligt in Oostende systematisch westelijk
+    // van de overeenkomstige straatas op de kaart. Corrigeer die lokale
+    // dataset-offset oostwaarts; 0.00075° lengtegraad is hier ongeveer 52 m.
+    const shiftOostende=(coordinates)=>{
+      if(!Array.isArray(coordinates))return coordinates;
+      if(typeof coordinates[0]==="number"){
+        return [coordinates[0]+0.00075,coordinates[1],...coordinates.slice(2)];
+      }
+      return coordinates.map(shiftOostende);
+    };
     const features=(source.features||[]).filter(feature=>{
       const props=feature.properties||{};
       return String(props.LIJN||"").trim()==="5"&&feature.geometry;
     }).map(feature=>({
       type:"Feature",
       properties:{route_id:"line-5",color:"#C8D300",direction:String(feature.properties?.RICHTING||"")},
-      geometry:feature.geometry
+      geometry:cityId==="oostende"
+        ? {...feature.geometry,coordinates:shiftOostende(feature.geometry.coordinates)}
+        : feature.geometry
     }));
     return new Response(JSON.stringify({geojson:{type:"FeatureCollection",features}}),{
       headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"public, max-age=21600"}
