@@ -239,9 +239,9 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <h3>Platte band melden</h3>
     <p class="notice">Zag je een platte band? Meld de locatie. Een account is niet nodig.</p>
     <form id="newReport">
-     <div class="field"><label>De Lijn-nummer en traject</label><select id="routeSelect" required><option value="">Lijnen laden…</option></select></div>
+     <div class="field"><label>De Lijn-nummer en traject</label><select id="routeSelect" required><option value="">Lijnen worden geladen…</option></select></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Selecteer eerst een lijn</option></select></div>
-     <div class="field"><button type="button" class="secondary full" id="gpsButton">Controleer mijn locatie</button><div id="gpsMessage" class="notice">GPS-controle is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
+     <div class="field"><button type="button" class="secondary full" id="gpsButton">Controleer mijn locatie</button><div id="gpsMessage" class="notice">GPS-check is optioneel. Je exacte GPS-coördinaten worden niet openbaar getoond of opgeslagen.</div></div>
      <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local" required></div>
      <button class="full" id="submitReportButton">Melding indienen</button>
      <div id="reportMessage" class="error"></div>
@@ -499,7 +499,7 @@ async function loadReports(){
  $('reportsList').innerHTML=data.reports.slice(0,12).map(r=>reportCard(r)).join('')||'<div class="empty-state"><strong>Nog geen meldingen in de buurt.</strong><p>Wees de eerste en meld een platte band.</p></div>';
 }
 $('newReport').addEventListener('submit',async e=>{
- e.preventDefault();$('reportMessage').textContent='Melding wordt ingediend...';$('submitReportButton').disabled=true;
+ e.preventDefault();$('reportMessage').textContent='Melding wordt ingediend…';$('submitReportButton').disabled=true;
  try{
   if(!$('routeSelect').value || !$('stopSelect').value) throw new Error('Kies eerst een lijn en halte.');
   await api('/api/reports',{method:'POST',body:JSON.stringify({
@@ -507,7 +507,7 @@ $('newReport').addEventListener('submit',async e=>{
    gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,
    observed_at:new Date($('observed').value).toISOString()
   })});
-  $('reportMessage').textContent='Melding is meteen zichtbaar als niet bevestigd.';
+  $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.';
   $('newReport').reset();gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});await loadReports();
  }catch(err){$('reportMessage').textContent=err.message;}
  finally{$('submitReportButton').disabled=false;}
@@ -516,7 +516,7 @@ async function loadPending(){
  const data=await api('/api/admin/pending');
  $('pendingList').innerHTML=data.reports.map(r=>
   reportCard(r,true)
- ).join('')||'<p class="muted">Geen openstaande meldingen.</p>';
+ ).join('')||'<p class="muted">Geen nieuwe meldingen om te beoordelen.</p>';
 }
 $('reportsList').addEventListener('click',async e=>{
  const button=e.target.closest('button[data-vote]');if(!button)return;button.disabled=true;
@@ -542,13 +542,13 @@ $('pendingList').addEventListener('click',async e=>{
 });
 async function startApp(){
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
- $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=openReportForm;
+ $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
- $('reportForm').classList.remove('hidden');$('adminPanel').classList.add('hidden');$('reportCta').textContent='+ Nieuwe melding';$('reportCta').onclick=openReportForm;
+ $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();
 }
 $('authButton').classList.add('hidden');
