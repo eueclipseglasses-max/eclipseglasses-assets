@@ -258,7 +258,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    </section>
   </aside>
  </div>
- <footer class="site-footer"><a href="/over">Over</a><a href="mailto:contact@degolem.be">Contact</a><a href="/privacy">Privacy</a><a href="/voorwaarden">Voorwaarden</a><a href="mailto:misbruik@degolem.be?subject=Melding%20van%20misbruik">Misbruik melden</a><span>DE GOLEM · VLAANDEREN · 2026</span></footer>
+ <footer class="site-footer"><a href="/over">Over</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/voorwaarden">Voorwaarden</a><a href="/misbruik">Misbruik melden</a><span>DE GOLEM · VLAANDEREN · 2026</span></footer>
 </main>
 <section id="rankingScreen" class="hidden" style="max-width:900px;margin:auto;padding:30px 4%"><div class="heading"><div><div class="eyebrow">DE GOLEM / GEMEENSCHAP</div><h1>Ranglijst</h1><p class="muted">De reizigers die de meeste geverifieerde meldingen van platte banden bijdragen.</p></div><button class="secondary" type="button" onclick="closeRanking()">← Terug naar kaart</button></div><section class="panel"><div id="rankingSummary" class="muted">Ranglijst laden...</div><div id="rankingList" style="margin-top:16px"><p class="muted">Gegevens laden...</p></div><p class="notice">Alleen accounts tellen mee. Een melding levert pas een punt op zodra ze is goedgekeurd. Anonieme meldingen tellen niet mee.</p></section><footer>DE GOLEM · VLAANDEREN · 2026</footer></section>
 
@@ -1130,7 +1130,30 @@ export default {
         return new Response("Method not allowed",{status:405});
       }
 
-      return new Response(HTML,{
+      if (request.method !== "GET") return new Response("Method not allowed",{status:405});
+      if (!["/","/index.html","/over","/contact","/privacy","/voorwaarden","/misbruik"].includes(url.pathname)) {
+        return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pagina niet gevonden · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:16px Georgia,serif;min-height:100vh;display:grid;place-items:center;text-align:center"><main style="padding:32px"><h1>Deze pagina bestaat niet.</h1><p>Misschien is de link verouderd.</p><a href="/" style="color:#925b35">Terug naar De Golem</a></main></body></html>',{status:404,headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
+      }
+      const infoPages={
+        "/over":["Over De Golem","De Golem is een gemeenschapskaart waarop bezoekers meldingen van platte banden op het De Lijn-netwerk kunnen bekijken en delen."],
+        "/contact":["Contact","Heb je een vraag of opmerking over De Golem? Gebruik voorlopig de optie Misbruik melden voor inhoudelijke meldingen. Een algemeen contactadres wordt toegevoegd zodra het officieel is vastgelegd."],
+        "/privacy":["Privacy","Je kunt een melding insturen zonder account. Voor misbruikpreventie verwerkt de dienst technische gegevens zoals een gehashte netwerkidentificatie en tijdstip. Meldingen worden tijdelijk bewaard en verdwijnen na de ingestelde bewaartermijn. GPS-controle is optioneel; de exacte GPS-coördinaten worden niet publiek getoond of opgeslagen."],
+        "/voorwaarden":["Voorwaarden","Gebruik De Golem alleen voor correcte, te goeder trouw gedeelde waarnemingen. Plaats geen persoonsgegevens, beledigingen of bewust foutieve meldingen. Meldingen zijn gebruikerswaarnemingen en worden niet onafhankelijk gegarandeerd. Beheerders kunnen inhoud verwijderen of afwijzen."],
+        "/misbruik":["Misbruik melden","Vermoed je een foutieve, dubbele of misbruikmakende melding? Noteer de halte, het tijdstip en de reden en neem contact op via het officiële contactkanaal zodra dit op deze pagina wordt gepubliceerd."]
+      };
+      if(infoPages[url.pathname]){
+        const [title,body]=infoPages[url.pathname];
+        return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FBEED8"><title>'+title+' · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:17px Georgia,serif;line-height:1.6;min-height:100vh;display:grid;place-items:center"><main style="max-width:680px;padding:32px"><p style="letter-spacing:2px;color:#925b35">DE GOLEM</p><h1>'+title+'</h1><p>'+body+'</p><a href="/" style="color:#925b35">← Terug naar de kaart</a></main></body></html>',{headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
+      }
+      let page=HTML;
+      let viewer=null;
+      if(env.DB){try{viewer=await currentUser(request,env);}catch(e){viewer=null;}}
+      if(!viewer||viewer.role!=="admin"){
+        page=page.replace(/\s*<section class="panel hidden" id="adminPanel">[\s\S]*?<\/section>/,"");
+        page=page.replace(/function loadPending\(\)\{[\s\S]*?(?=async function startApp\(\)\{)/,"");
+      }
+      page=page.replace('<meta property="og:image" content="/app-icon.png">','<meta property="og:image" content="'+url.origin+'/app-icon.png">');
+      return new Response(page,{
         headers:{
           "Content-Type":"text/html; charset=utf-8",
           "Cache-Control":"no-store",
