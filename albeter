@@ -13,10 +13,10 @@ const HTML = String.raw`<!DOCTYPE html>
 <meta name="map-provider" content="OpenFreeMap">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/app-icon.png">
-<link rel="icon" type="image/png" href="/app-icon.png">
+<link rel="icon" type="image/svg+xml" href="/icon.svg"><link rel="alternate icon" type="image/png" href="/app-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>De Golem | Vlaanderen</title>
+<title>De Golem | Platte banden</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
@@ -186,7 +186,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" id="brandLogo" src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/048542c5-7d06-47d6-9a15-edfbd26cde9a.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="/app-icon.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>DE LIJN · VLAANDEREN</small></div></div>
  <div class="header-right"><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
@@ -214,8 +214,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
   <button id="reportCta" onclick="openReportForm()">Platte band melden</button>
  </div>
  <div class="stats">
-  <div class="stat"><span>Goedgekeurde meldingen</span><strong id="countActive">0</strong></div>
-  <div class="stat"><span>Vandaag geregistreerd</span><strong id="countToday">0</strong></div>
+  <div class="stat"><span>Actieve meldingen</span><strong id="countActive">0</strong></div>
+  <div class="stat"><span>Vandaag gemeld</span><strong id="countToday">0</strong></div>
   <div class="stat"><span>Account</span><strong id="userRole" style="font-size:17px">Gebruiker</strong></div>
  </div>
  <div class="layout">
@@ -248,7 +248,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     </form>
    </section>
    <section class="panel">
-    <h3>Recente meldingen</h3>
+    <h3>Recente platte banden</h3>
     <div id="reportsList"><p class="muted"><span class="skeleton-line"></span><span class="skeleton-line short"></span></p></div>
    </section>
    <section class="panel hidden" id="adminPanel">
