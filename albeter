@@ -427,7 +427,7 @@ function hslHex(h,s,l){h=((h%360)+360)%360/360;s/=100;l/=100;const hue=(p,q,t)=>
 function addRouteLinesToMap(){
  if(!map||!map.isStyleLoaded()||!mapStops.length||!allRoutes.length)return;
  const routeIds=new Set(allRoutes.filter(r=>String(r.route_short_name||'').trim()==='5').map(r=>String(r.route_id)));
- const normalizeStopName=value=>String(value||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLocaleLowerCase('nl-BE').replace(/[^a-z0-9]+/g,' ').trim();
+ const normalizeStopName=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLocaleLowerCase('nl-BE').replace(/[^a-z0-9]+/g,' ').trim();
  const line5Stops=mapStops.filter(stop=>String(stop.route_ids||'').split(',').some(id=>routeIds.has(id)));
  const sequence=[
   'Oostende Station perron 2',
