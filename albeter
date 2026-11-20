@@ -430,7 +430,7 @@ async function addRouteLinesToMap(){
  if(officialRouteShapeCity!==selectedCity&&!officialRouteShapePromise){
   officialRouteShapePromise=(async()=>{
    try{
-    const data=await api('/api/route-shapes?city='+encodeURIComponent(selectedCity||'oostende')+'&v=2');
+    const data=await api('/api/route-shapes?city='+encodeURIComponent(selectedCity||'oostende')+'&v=3');
     officialRouteShapeCity=selectedCity;
     officialRouteShapeData=data.geojson||{type:'FeatureCollection',features:[]};
    }catch(error){console.error('Officiële reiswegen konden niet laden:',error);}
@@ -943,11 +943,22 @@ async function handleApi(request, env) {
     const features=(source.features||[]).filter(feature=>{
       const props=feature.properties||{};
       return String(props.LIJN||"").trim()==="5"&&feature.geometry;
-    }).map(feature=>({
-      type:"Feature",
-      properties:{route_id:"line-5",color:"#C8D300",direction:String(feature.properties?.RICHTING||"")},
-      geometry:feature.geometry
-    }));
+    }).map(feature=>{
+      // De vorm blijft exact behouden; corrigeer alleen de kleine globale kaart-offset
+      // voor lijn 5 in Oostende: 12 m oostwaarts en 8 m noordwaarts.
+      const shift=(coords)=>{
+        if(!Array.isArray(coords))return coords;
+        if(typeof coords[0]==="number"&&typeof coords[1]==="number"){
+          return [coords[0]+(cityId==="oostende"?0.000175:0),coords[1]+(cityId==="oostende"?0.000072:0),...coords.slice(2)];
+        }
+        return coords.map(shift);
+      };
+      return {
+        type:"Feature",
+        properties:{route_id:"line-5",color:"#C8D300",direction:String(feature.properties?.RICHTING||"")},
+        geometry:{...feature.geometry,coordinates:shift(feature.geometry.coordinates)}
+      };
+    });
     return new Response(JSON.stringify({geojson:{type:"FeatureCollection",features}}),{
       headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store, no-cache, must-revalidate"}
     });
