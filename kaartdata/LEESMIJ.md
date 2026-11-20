@@ -11,10 +11,18 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
    - zelfde lijnnummer;
    - haltes binnen 50 m van het traject;
    - bij voorkeur dezelfde haltenummers (zo kiest het script ook de juiste rijrichting).
-4. Het resultaat komt op de branch **`kaartdata`**: een `index.json`, één klein bestand per traject (`lijnen/r<nummer>.json`) en een `RAPPORT.md`.
-5. De Worker (`albeter`) geeft die bestanden door via `/kaartdata/...`. De kaart laadt alleen de lijnen die in beeld zijn.
+4. Daarna bouwt het één **wegennet**: per straat (OSM-weg) welke lijnen erover rijden.
+   - Rijden er meerdere lijnen door dezelfde straat, dan krijgt elke lijn een eigen strook, zoals op een metroplan. Zo verdwijnt geen enkele kleur onder een andere.
+   - De volgorde van de stroken ligt vast: lijnnummer van klein naar groot. Lijnen die samen rijden, gebruiken dezelfde rijrichting, zodat ze in bochten niet van kant wisselen.
+   - Op een drukke straat worden de stroken smaller, zodat de bundel niet te breed wordt.
+5. Het net wordt geknipt in tegels van ongeveer 7 × 7 km. Het resultaat komt op de branch **`kaartdata`**:
+   - `index.json` met per lijn de kleur, de soort, het gebied en de tegels;
+   - `net/<x>_<y>.json` per tegel;
+   - `RAPPORT.md`.
+6. De Worker (`albeter`) geeft die bestanden door via `/kaartdata/...`. De kaart laadt alleen de tegels die in beeld zijn (vanaf zoom 10,5), plus de tegels van de gekozen lijn.
 
 De kleur komt uit OpenStreetMap (tag `colour` van het traject of de lijn). Ontbreekt die, dan krijgt een buslijn blauw en een tramlijn oranje, zoals de haltes.
+Dezelfde kleur staat als badge bij het lijnnummer in de keuzelijst die verschijnt als je op een lijn of op een halte tikt.
 
 ## Wat moet je zelf doen?
 
@@ -36,6 +44,8 @@ Bovenaan `bouw_lijnen.py`:
 | `MAX_AFSTAND_M` | 50 | een halte "ligt op" het traject binnen deze afstand |
 | `MIN_SCORE` | 0.6 | minimale overeenkomst om een traject te aanvaarden |
 | `VEREENVOUDIG_M` | 2.0 | punten die minder dan 2 m afwijken worden weggelaten (kleinere bestanden) |
+| `MAX_STUKKEN` | 6 | max. aantal OSM-trajecten die samen één lijn vormen (varianten, of een lijn die in OSM in stukken staat) |
+| `TEGEL_LON`, `TEGEL_LAT` | 0.1, 0.0625 | tegelgrootte in graden |
 | `ALIASSEN` | `KT` → kusttram | lijnnummers die in OpenStreetMap anders heten |
 
 ## Lokaal testen

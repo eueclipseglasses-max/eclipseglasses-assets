@@ -7,7 +7,10 @@ Wat dit script doet
 2. Leest de bus- en tramtrajecten van De Lijn uit een OpenStreetMap-bestand (.osm.pbf).
 3. Zoekt per lijn (per richting) het OSM-traject dat echt langs de haltes van die lijn rijdt:
    zelfde lijnnummer, haltes binnen 50 m van het traject en bij voorkeur dezelfde haltenummers.
-4. Schrijft per traject een klein GeoJSON-bestand en een index (lijn -> traject, kleur, soort, gebied).
+4. Bouwt één wegennet: per OSM-weg welke lijnen erover rijden. Lijnen die dezelfde straat delen,
+   krijgen elk een eigen strook naast elkaar (zoals op een metroplan), in een vaste volgorde.
+   Het net wordt in tegels van ~7 x 7 km geknipt, zodat de app alleen laadt wat in beeld is.
+   Daarnaast een index (lijn -> kleur, soort, gebied, tegels).
 5. Schrijft RAPPORT.md met wat niet gekoppeld kon worden en haltes die verdacht ver van OSM liggen.
 
 Het script is bedoeld om wekelijks te draaien in GitHub Actions (zie .github/workflows/kaartdata.yml),
@@ -39,6 +42,7 @@ MIN_SCORE = 0.6             # minimale overeenkomst om een traject te aanvaarden
 MAX_STUKKEN = 6             # max. aantal OSM-trajecten die samen één lijn vormen (varianten of stukken)
 VEREENVOUDIG_M = 2.0        # Douglas-Peucker-tolerantie: punten die minder dan 2 m afwijken vallen weg
 DECIMALEN = 5               # ~1 m nauwkeurig
+TEGEL_LON, TEGEL_LAT = 0.1, 0.0625   # tegelgrootte in graden (~7 x 7 km in Vlaanderen)
 VERDACHTE_HALTE_M = 40      # haltes die verder dan dit van hun OSM-positie liggen, komen in het rapport
 ROUTE_SOORTEN = {"bus", "tram"}
 # Lijnnummers die in OSM anders heten (app-nummer -> woorden in de OSM-naam).
@@ -171,7 +175,7 @@ class Geometrie(osmium.SimpleHandler):
             self.wegen[w.id] = punten
 
 
-def lees_osm(pad: str) -> tuple[dict, dict]:
+def lees_osm(pad: str) -> tuple[dict, dict, dict]:
     print(f"OpenStreetMap lezen: {pad}")
     rel = Relaties()
     rel.apply_file(pad)
@@ -193,13 +197,32 @@ def lees_osm(pad: str) -> tuple[dict, dict]:
                 halte_pos.append(geo.haltes[h])
         t = r["tags"]
         kleur = normaliseer_kleur(t.get("colour") or t.get("color") or rel.master_kleur.get(rid))
-        trajecten[rid] = Traject(rid, t, lijnen, refs, kleur)
+        trajecten[rid] = Traject(rid, t, lijnen, refs, kleur, rijrichtingen(r["wegen"], geo.wegen))
     # Alle OSM-haltes met een haltenummer, om de app-haltes te controleren.
     osm_haltes = defaultdict(list)
     for h in geo.haltes.values():
         for ref in h["refs"]:
             osm_haltes[ref].append((h["lon"], h["lat"], h["id"]))
-    return trajecten, osm_haltes
+    return trajecten, osm_haltes, geo.wegen
+
+
+def rijrichtingen(ids: list[int], wegen: dict) -> list[tuple[int, int]]:
+    """Per weg van een traject: +1 als de bus de weg in tekenvolgorde rijdt, -1 als omgekeerd."""
+    ids = [w for w in ids if w in wegen]
+    res, uit = [], None
+    for i, w in enumerate(ids):
+        a, b = wegen[w][0], wegen[w][-1]
+        d = 0
+        if uit is not None:
+            d = 1 if a == uit else (-1 if b == uit else 0)
+        if d == 0 and i + 1 < len(ids):
+            volgende = wegen[ids[i + 1]]
+            einden = (volgende[0], volgende[-1])
+            d = 1 if b in einden else (-1 if a in einden else 0)
+        d = d or 1
+        res.append((w, d))
+        uit = b if d == 1 else a
+    return res
 
 
 def ketting(wegen: list[list[tuple[float, float]]]) -> list[list[tuple[float, float]]]:
@@ -245,8 +268,9 @@ def normaliseer_kleur(k: str | None) -> str | None:
 class Traject:
     CEL = 200.0  # rastercel in meter voor snelle afstandsberekening
 
-    def __init__(self, rid, tags, lijnen, refs, kleur):
+    def __init__(self, rid, tags, lijnen, refs, kleur, wegen=()):
         self.id, self.tags, self.lijnen, self.refs, self.kleur = rid, tags, lijnen, refs, kleur
+        self.wegen = list(wegen)  # [(weg-id, +1 als in volgorde van de weg gereden, anders -1)]
         self.ref = (tags.get("ref") or "").strip()
         self.naam = tags.get("name", "")
         self.soort = tags.get("route", "bus")
@@ -392,23 +416,123 @@ def koppel(route: dict, haltes: list[dict], per_ref: dict, alle: list) -> dict:
 
 
 # ---------------------------------------------------------------- uitvoer
-def schrijf_traject(t: Traject, map_lijnen: Path) -> int:
-    lijnen = []
-    for l in t.lijnen:
-        v = vereenvoudig(l, VEREENVOUDIG_M)
-        coords, vorige = [], None
-        for lon, lat in v:
-            p = [round(lon, DECIMALEN), round(lat, DECIMALEN)]
-            if p != vorige:
-                coords.append(p)
-            vorige = p
-        if len(coords) >= 2:
-            lijnen.append(coords)
-    data = {"type": "Feature", "properties": {"osm": t.id},
-            "geometry": {"type": "MultiLineString", "coordinates": lijnen}}
-    tekst = json.dumps(data, separators=(",", ":"))
-    (map_lijnen / f"r{t.id}.json").write_text(tekst, encoding="utf-8")
-    return len(tekst)
+def lijn_volgorde(naam: str):
+    m = re.match(r"(\d+)(.*)", naam or "")
+    return (0, int(m.group(1)), m.group(2)) if m else (1, 0, naam or "")
+
+
+def codeer(punten: list[tuple[float, float]]) -> list[int]:
+    """Coördinaten als gehele getallen (x 100000) en verschillen: ~3x kleiner dan gewone GeoJSON."""
+    uit, vx, vy = [], 0, 0
+    for lon, lat in punten:
+        x, y = round(lon * 10 ** DECIMALEN), round(lat * 10 ** DECIMALEN)
+        if uit and x == vx and y == vy:
+            continue
+        uit += [x - vx, y - vy]
+        vx, vy = x, y
+    return uit
+
+
+def bouw_netwerk(gekoppeld: list[dict], wegen: dict, uit: Path) -> tuple[dict, list, list, dict]:
+    """Eén wegennet met per weg de lijnen die erover rijden, in tegels.
+
+    gekoppeld: [{"rid", "naam", "kleur", "soort", "trajecten": [Traject]}]
+    Geeft (tegel-bbox per tegel, groepen, routes, extra info per route).
+    """
+    # Groepen: één groep per zichtbare lijn (zelfde nummer + kleur + soort; beide richtingen samen).
+    sleutel = lambda g: (g["naam"].strip().upper(), g["kleur"] or "", g["soort"])
+    groepen_set = sorted({sleutel(g) for g in gekoppeld}, key=lambda k: (lijn_volgorde(k[0]), k[1], k[2]))
+    groep_nr = {k: i for i, k in enumerate(groepen_set)}
+    groepen = [{"n": k[0], "k": k[1] or None, "m": k[2]} for k in groepen_set]
+    gekoppeld = sorted(gekoppeld, key=lambda g: (groep_nr[sleutel(g)], g["rid"]))
+    routes = [g["rid"] for g in gekoppeld]
+
+    weg_routes = defaultdict(set)
+    for i, g in enumerate(gekoppeld):
+        for t in g["trajecten"]:
+            for w, _ in t.wegen:
+                weg_routes[w].add(i)
+
+    # Rijrichting op elkaar afstemmen: elke weg krijgt één tekenrichting. Lijnen die een stuk
+    # straat delen, volgen dezelfde richting, zodat hun strook links/rechts niet omwisselt.
+    richting: dict[int, int] = {}
+    per_groep = defaultdict(list)
+    for g in gekoppeld:
+        for t in g["trajecten"]:
+            if t not in per_groep[groep_nr[sleutel(g)]]:
+                per_groep[groep_nr[sleutel(g)]].append(t)
+    for gi in range(len(groepen)):
+        open_ = list(per_groep[gi])
+        while open_:
+            t = max(open_, key=lambda t: (sum(1 for w, _ in t.wegen if w in richting), len(t.wegen)))
+            stemmen = sum(richting[w] * d for w, d in t.wegen if w in richting)
+            teken = 1 if stemmen >= 0 else -1
+            for w, d in t.wegen:
+                richting.setdefault(w, d * teken)
+            open_.remove(t)
+
+    # Per weg: groepen (stroken) en routes, in een vaste volgorde; tegel volgens het midden van de weg.
+    groep_van_route = [groep_nr[sleutel(g)] for g in gekoppeld]
+    punten, sleutels = {}, {}
+    for w, rs in weg_routes.items():
+        pts = wegen[w] if richting.get(w, 1) == 1 else wegen[w][::-1]
+        mid = pts[len(pts) // 2]
+        tegel = (math.floor(mid[0] / TEGEL_LON), math.floor(mid[1] / TEGEL_LAT))
+        gs = tuple(sorted({groep_van_route[r] for r in rs}))
+        punten[w] = pts
+        sleutels[w] = (tegel, gs, tuple(sorted(rs)))
+
+    # Opeenvolgende wegen met dezelfde lijnen aan elkaar plakken (minder objecten om te tekenen).
+    begin, einde = defaultdict(list), defaultdict(list)
+    for w, k in sleutels.items():
+        begin[(k, punten[w][0])].append(w)
+        einde[(k, punten[w][-1])].append(w)
+    gebruikt, kettingen = set(), []
+    for w in sorted(sleutels):
+        if w in gebruikt:
+            continue
+        k, cur, gezien = sleutels[w], w, {w}
+        while True:
+            knoop = (k, punten[cur][0])
+            vorige = [x for x in einde[knoop] if x not in gebruikt and x not in gezien]
+            if len(vorige) != 1 or len(begin[knoop]) != 1 or len(einde[knoop]) != 1:
+                break
+            cur = vorige[0]
+            gezien.add(cur)
+        gebruikt.add(cur)
+        pts = list(punten[cur])
+        while True:
+            knoop = (k, pts[-1])
+            volgende = [x for x in begin[knoop] if x not in gebruikt]
+            if len(volgende) != 1 or len(begin[knoop]) != 1 or len(einde[knoop]) != 1:
+                break
+            gebruikt.add(volgende[0])
+            pts.extend(punten[volgende[0]][1:])
+        kettingen.append((k, vereenvoudig(pts, VEREENVOUDIG_M)))
+
+    per_tegel = defaultdict(list)
+    tegel_bbox: dict[str, list[float]] = {}
+    route_tegels = defaultdict(set)
+    for (tegel, gs, rs), pts in kettingen:
+        naam = f"{tegel[0]}_{tegel[1]}"
+        per_tegel[naam].append([list(gs), list(rs), codeer(pts)])
+        lons, lats = [p[0] for p in pts], [p[1] for p in pts]
+        bb = tegel_bbox.get(naam, [math.inf, math.inf, -math.inf, -math.inf])
+        tegel_bbox[naam] = [min(bb[0], min(lons)), min(bb[1], min(lats)), max(bb[2], max(lons)), max(bb[3], max(lats))]
+        for r in rs:
+            route_tegels[routes[r]].add(naam)
+
+    map_net = uit / "net"
+    map_net.mkdir(parents=True, exist_ok=True)
+    grootte = 0
+    for naam, f in per_tegel.items():
+        tekst = json.dumps({"f": f}, separators=(",", ":"))
+        (map_net / f"{naam}.json").write_text(tekst, encoding="utf-8")
+        grootte += len(tekst)
+    tegels = {n: [round(v, 5) for v in bb] for n, bb in sorted(tegel_bbox.items())}
+    extra = {rid: {"g": groep_van_route[i], "t": sorted(route_tegels[rid])} for i, rid in enumerate(routes)}
+    print(f"  wegennet: {len(weg_routes)} wegen, {len(kettingen)} stukken, {len(tegels)} tegels, {grootte / 1024:.0f} KB")
+    return {"tegels": tegels, "grootte": grootte, "stukken": len(kettingen)}, groepen, routes, extra
 
 
 def main() -> int:
@@ -421,17 +545,16 @@ def main() -> int:
     args = ap.parse_args()
 
     routes, per_lijn, alle_haltes = lees_app_data(args)
-    trajecten, osm_haltes = lees_osm(args.osm)
+    trajecten, osm_haltes, osm_wegen = lees_osm(args.osm)
     per_ref = defaultdict(list)
     for t in trajecten.values():
         per_ref[norm(t.ref)].append(t)
     alle = list(trajecten.values())
 
     uit = Path(args.uit)
-    map_lijnen = uit / "lijnen"
-    map_lijnen.mkdir(parents=True, exist_ok=True)
+    uit.mkdir(parents=True, exist_ok=True)
 
-    index, problemen, geschreven = {}, [], {}
+    index, problemen, gekoppeld = {}, [], []
     kleurbron = defaultdict(int)
     for r in routes:
         rid = str(r["route_id"])
@@ -444,21 +567,25 @@ def main() -> int:
             problemen.append((r, res["status"], res["dekking"], res["kandidaten"]))
             continue
         ts = res["trajecten"]
-        for t in ts:
-            if t.id not in geschreven:
-                geschreven[t.id] = schrijf_traject(t, map_lijnen)
         kleur = next((t.kleur for t in ts if t.kleur), None)
+        gekoppeld.append({"rid": rid, "naam": str(r.get("route_short_name", "")), "kleur": kleur,
+                          "soort": ts[0].soort, "trajecten": ts})
         kleurbron["OpenStreetMap" if kleur else "standaard bus/tram"] += 1
         w = min(t.bbox[0] for t in ts); s = min(t.bbox[1] for t in ts)
         e = max(t.bbox[2] for t in ts); n = max(t.bbox[3] for t in ts)
-        index[rid] = {"r": [t.id for t in ts], "k": kleur, "m": ts[0].soort,
+        index[rid] = {"k": kleur, "m": ts[0].soort,
                       "b": [round(w, 4), round(s, 4), round(e, 4), round(n, 4)], "d": round(res["dekking"], 2)}
         if res["dekking"] < 0.9:
             problemen.append((r, "gekoppeld, maar niet alle haltes liggen op het traject", res["dekking"], ts))
 
+    net, groepen, net_routes, extra = bouw_netwerk(gekoppeld, osm_wegen, uit)
+    for rid, x in extra.items():
+        index[rid].update(x)
     nu = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (uit / "index.json").write_text(json.dumps(
-        {"versie": 1, "gemaakt": nu, "bron": "© OpenStreetMap-bijdragers (ODbL)", "lijnen": index},
+        {"versie": 2, "gemaakt": nu, "bron": "© OpenStreetMap-bijdragers (ODbL)",
+         "tegelmaat": [TEGEL_LON, TEGEL_LAT], "groepen": groepen, "routes": net_routes,
+         "tegels": net["tegels"], "lijnen": index},
         separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
 
     # Haltecontrole: app-positie vs. OSM-positie met hetzelfde haltenummer.
@@ -479,7 +606,7 @@ def main() -> int:
         f"Gemaakt: {nu}", "",
         f"- Lijnen in de app: **{totaal}**",
         f"- Gekoppeld aan een OSM-traject: **{ok}** ({(ok / totaal * 100 if totaal else 0):.0f}%)",
-        f"- Trajectbestanden: {len(geschreven)} ({sum(geschreven.values()) / 1024:.0f} KB samen)",
+        f"- Wegennet: {net['stukken']} stukken straat in {len(net['tegels'])} tegels ({net['grootte'] / 1024:.0f} KB samen)",
         f"- Kleur uit OpenStreetMap: {kleurbron['OpenStreetMap']}, standaardkleur bus/tram: {kleurbron['standaard bus/tram']}",
         f"- App-haltes met een haltenummer in OSM: {sum(1 for h in alle_haltes.values() if h['nr'] in osm_haltes)} van {len(alle_haltes)}",
         "",
@@ -508,7 +635,7 @@ def main() -> int:
                "Je kunt het zelf aanvullen op openstreetmap.org; volgende week neemt dit script het automatisch over."]
     (uit / "RAPPORT.md").write_text("\n".join(regels) + "\n", encoding="utf-8")
 
-    print(f"Klaar: {ok}/{totaal} lijnen gekoppeld, {len(geschreven)} trajecten, {len(verdacht)} verdachte haltes.")
+    print(f"Klaar: {ok}/{totaal} lijnen gekoppeld, {len(net['tegels'])} tegels, {len(verdacht)} verdachte haltes.")
     if totaal and ok == 0:
         print("Geen enkele lijn gekoppeld: er is waarschijnlijk iets mis met de invoer.", file=sys.stderr)
         return 2
