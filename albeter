@@ -716,7 +716,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v16";
+      const CACHE = "degolem-shell-v17";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
