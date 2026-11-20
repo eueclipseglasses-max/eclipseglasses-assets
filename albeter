@@ -277,21 +277,32 @@ function applyMapTone(){
   :'none';
 }
 function applyTheme(theme){
-  $('brandLogo').src='/app-icon.png';
+ theme=theme==='light'?'light':'dark';
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
- $('themeButton').textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
+ const button=$('themeButton');
+ if(button){
+  button.textContent=theme==='light'?'☾ Donkere modus':'☼ Lichte modus';
+  button.setAttribute('aria-label',theme==='light'?'Schakel naar donkere modus':'Schakel naar lichte modus');
+  button.setAttribute('aria-pressed',String(theme==='light'));
+ }
  if(map){
-  map.setStyle(theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark');
-  map.once('style.load',applyMapTone);
+  const styleUrl=theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark';
+  if(map.getStyle()?.sprite!==styleUrl){
+   map.setStyle(styleUrl);
+   map.once('style.load',()=>{applyMapTone();drawStopDots();});
+  }else applyMapTone();
  }
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
 function toggleTheme(){
- applyTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
+ const next=document.documentElement.dataset.theme==='light'?'dark':'light';
+ applyTheme(next);
 }
-try{applyTheme(localStorage.getItem('radar-theme')||'dark');}catch(e){document.documentElement.dataset.theme='dark';}
+let savedTheme='dark';
+try{savedTheme=localStorage.getItem('radar-theme')==='light'?'light':'dark';}catch(e){}
+applyTheme(savedTheme);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(path,options={}) {
  const r=await fetch(path,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
@@ -546,7 +557,7 @@ async function startApp(){
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
-async function startPublicApp(){
+async async function startPublicApp(){
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band melden';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();
