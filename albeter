@@ -330,7 +330,8 @@ async function logout(){try{await api('/api/auth/logout',{method:'POST',body:'{}
 function authAction(){if($('reportForm').classList.contains('hidden'))openAuth();else logout();}
 function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton').classList.add('hidden');setMode('login');}
 function showPublicDashboard(){startPublicApp();}
-function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-error'))return;el.insertAdjacentHTML('beforeend','<div class="map-error" style="position:absolute;inset:0;z-index:20;display:grid;place-content:center;text-align:center;padding:24px;background:var(--panel);color:var(--text)"><strong>Kon de kaart niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="location.reload()">Opnieuw proberen</button></div>');console.error('Kaart:',error);}\nfunction initMap(){
+function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-error'))return;el.insertAdjacentHTML('beforeend','<div class="map-error" style="position:absolute;inset:0;z-index:20;display:grid;place-content:center;text-align:center;padding:24px;background:var(--panel);color:var(--text)"><strong>Kon de kaart niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="location.reload()">Opnieuw proberen</button></div>');console.error('Kaart:',error);}
+function initMap(){
  if(map)return;
  map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:[4.45,51.05],zoom:8,attributionControl:true});
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
@@ -1161,8 +1162,8 @@ export default {
       if(env.DB){try{viewer=await currentUser(request,env);}catch(e){viewer=null;}}
       if(!viewer||viewer.role!=="admin"){
         page=page.replace(/\s*<section class="panel hidden" id="adminPanel">[\s\S]*?<\/section>/,"");
-        page=page.replace(/function loadPending\(\)\{[\s\S]*?(?=async function startApp\(\)\{)/,"");
-        page=page.replace(/\$\('pendingList'\)\.addEventListener\('click',[\s\S]*?\n\}\);\nasync function startApp/,"async function startApp");
+        page=page.replace(/async function loadPending\(\)\{[\s\S]*?\n\}\n(?=\$\('reportsList'\)\.addEventListener)/,"");
+        page=page.replace(/\$\('pendingList'\)\.addEventListener\('click'[\s\S]*?\n\}\);\n/,"");
       }
       page=page.replace('<meta property="og:image" content="/app-icon.png">','<meta property="og:image" content="'+url.origin+'/app-icon.png">');
       return new Response(page,{
