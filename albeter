@@ -317,10 +317,7 @@ function applyTheme(theme){
  }
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
-const golemClickSound=new Audio('/golem-click.mp3');
-golemClickSound.preload='auto';
 function toggleTheme(){
- try{golemClickSound.currentTime=0;const soundPlay=golemClickSound.play();if(soundPlay) soundPlay.catch(()=>{});}catch(e){}
  const next=document.documentElement.dataset.theme==='light'?'dark':'light';
  applyTheme(next);
 }
@@ -717,15 +714,6 @@ async function handleApi(request, env) {
     if (origin && origin !== url.origin) {
       return json({error:"Ongeldige oorsprong"},403);
     }
-  }
-
-  if (path === "/golem-click.mp3" && method === "GET") {
-    const asset=await fetch("https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/golem-click.mp3.b64");
-    if(!asset.ok)return new Response("Geluid niet beschikbaar",{status:502});
-    const encoded=(await asset.text()).trim();
-    const binary=atob(encoded);
-    const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));
-    return new Response(bytes,{headers:{"Content-Type":"audio/mpeg","Cache-Control":"public, max-age=31536000, immutable","X-Content-Type-Options":"nosniff"}});
   }
 
   if (path === "/app-icon.png" && method === "GET") {
@@ -1193,7 +1181,7 @@ export default {
     try {
       const url = new URL(request.url);
 
-      if (["/manifest.webmanifest","/icon.svg","/app-icon.png","/sw.js","/golem-click.mp3"].includes(url.pathname)) {
+      if (["/manifest.webmanifest","/icon.svg","/app-icon.png","/sw.js"].includes(url.pathname)) {
         return await handleApi(request,env);
       }
 
