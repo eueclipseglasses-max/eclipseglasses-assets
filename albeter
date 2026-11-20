@@ -205,7 +205,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <body>
 <header>
  <div class="brand"><img class="logo" id="brandLogo" src="/app-icon.png" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small id="cityBrandLabel">DE LIJN · VLAANDEREN</small></div></div>
- <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">☼ Licht</button><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <section id="cityGate" class="city-gate"><div class="eyebrow">DE GOLEM / JOUW REGIO</div><h1>Waar ben je?</h1><p class="muted">We zoeken automatisch je stad. Je bevestigt zelf voordat we de lokale kaart openen.</p><div id="cityDetection" class="city-confirm"><strong>Je locatie wordt bepaald…</strong><p class="muted">Even geduld.</p></div><div class="city-top"><h3 style="margin:0">Andere steden</h3><span class="muted" style="font-size:11px">Binnenkort beschikbaar</span></div><div id="cityOptions" class="city-grid"></div><button id="cityInterestButton" class="secondary city-request" type="button" onclick="requestCityInterest()" disabled>Zet mijn stad vooruit</button><div id="cityStatus" class="city-status" aria-live="polite"></div><p class="notice">Een stad wordt pas geopend zodra minstens 20 verschillende melders er in de afgelopen 30 dagen actief waren. Locatiegegevens worden alleen gebruikt om een stad voor te stellen.</p></section>
@@ -227,7 +227,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  <p class="notice">Je accountgegevens worden beveiligd opgeslagen. Deel nooit je wachtwoord met anderen.</p>
 </section>
 
-<main id="appScreen">
+<main id="appScreen" class="hidden">
  <div class="heading">
   <div><div class="eyebrow">MONITORING / VLAANDEREN</div><h1>Platte banden op de kaart</h1><p class="muted">Meldingen van platte banden op het De Lijn-netwerk.</p></div>
   <button id="reportCta" onclick="openReportForm()">Platte band gezien? Meld het</button>
@@ -602,7 +602,7 @@ async function startApp(){
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
- $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('cityBrandLabel').textContent=CITY_DATA.find(c=>c.id===selectedCity)?.name.toUpperCase()+' · DE LIJN';
+ $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('rankingButton').classList.remove('hidden');$('cityBrandLabel').textContent=CITY_DATA.find(c=>c.id===selectedCity)?.name.toUpperCase()+' · DE LIJN';
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.add('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
