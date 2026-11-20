@@ -426,10 +426,52 @@ async function loadMapStops(){
 function hslHex(h,s,l){h=((h%360)+360)%360/360;s/=100;l/=100;const hue=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;return '#'+[hue(p,q,h+1/3),hue(p,q,h),hue(p,q,h-1/3)].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');}
 function addRouteLinesToMap(){
  if(!map||!map.isStyleLoaded()||!mapStops.length||!allRoutes.length)return;
- const routeMeta=new Map(allRoutes.filter(r=>String(r.route_short_name||'').trim()==='5').map(r=>[String(r.route_id),r]));const byRoute=new Map();
- for(const stop of mapStops){for(const id of String(stop.route_ids||'').split(',').filter(Boolean)){if(!routeMeta.has(id))continue;if(!byRoute.has(id))byRoute.set(id,[]);byRoute.get(id).push({id:String(stop.stop_id),name:String(stop.stop_name||''),coords:[Number(stop.stop_lon),Number(stop.stop_lat)]});}}
- const ordered=[...byRoute.entries()].filter(([,stops])=>stops.length>=2);
- const features=ordered.map(([id,stops])=>{const remaining=stops.slice();remaining.sort((a,b)=>a.coords[1]-b.coords[1]||a.coords[0]-b.coords[0]);const path=[remaining.shift()];while(remaining.length){const last=path[path.length-1];let best=0,bestD=Infinity;for(let i=0;i<remaining.length;i++){const p=remaining[i].coords,d=Math.pow((p[0]-last.coords[0])*Math.cos(last.coords[1]*Math.PI/180),2)+Math.pow(p[1]-last.coords[1],2);if(d<bestD){bestD=d;best=i;}}path.push(remaining.splice(best,1)[0]);}return {type:'Feature',properties:{route_id:id,color:'#C8D300'},geometry:{type:'LineString',coordinates:path.map(p=>p.coords)}};});
+ const routeIds=new Set(allRoutes.filter(r=>String(r.route_short_name||'').trim()==='5').map(r=>String(r.route_id)));
+ const normalizeStopName=value=>String(value||'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLocaleLowerCase('nl-BE').replace(/[^a-z0-9]+/g,' ').trim();
+ const line5Stops=mapStops.filter(stop=>String(stop.route_ids||'').split(',').some(id=>routeIds.has(id)));
+ const sequence=[
+  'Oostende Station perron 2',
+  'Oostende Kapellestraat',
+  'Oostende Stadhuis',
+  'Oostende Marie-Joséplein perron 3',
+  'Oostende Leopold I Plein',
+  'Oostende Petit Paris',
+  'Oostende Mac Leodplein',
+  'Oostende Zwaluwenstraat',
+  'Oostende Elisabethlaan',
+  'Stene Sint-Janskerk',
+  'Stene Cité Edebau',
+  'Stene Nieuw Kerkhof',
+  'Stene Ligusterlaan',
+  'Stene Heidebloemstraat',
+  'Stene Dorp',
+  'Stene Druivenlaan',
+  'Stene Lyceum',
+  'Oostende Duinkerkseweg',
+  'Oostende Hoge Bareel',
+  'Oostende Mariakerkelaan',
+  'Oostende Elisabethlaan',
+  'Oostende Zwaluwenstraat',
+  'Oostende Mac Leodplein',
+  'Oostende Petit Paris',
+  'Oostende Leopold I Plein',
+  'Oostende Marie-Joséplein perron 4',
+  'Oostende Stadhuis',
+  'Oostende Kapellestraat',
+  'Oostende Station perron 2'
+ ];
+ const path=[];
+ for(const requestedName of sequence){
+  const target=normalizeStopName(requestedName);
+  const candidates=line5Stops.map(stop=>({stop,name:normalizeStopName(stop.stop_name)}))
+   .filter(item=>item.name&&(item.name===target||item.name.includes(target)||target.includes(item.name)))
+   .sort((a,b)=>Math.abs(a.name.length-target.length)-Math.abs(b.name.length-target.length));
+  if(!candidates.length)continue;
+  const stop=candidates[0].stop;
+  const coords=[Number(stop.stop_lon),Number(stop.stop_lat)];
+  if(coords.every(Number.isFinite))path.push(coords);
+ }
+ const features=path.length>=2?[{type:'Feature',properties:{route_id:'line-5',color:'#C8D300'},geometry:{type:'LineString',coordinates:path}}]:[];
  const collection={type:'FeatureCollection',features};
  if(!map.getSource('golem-route-lines'))map.addSource('golem-route-lines',{type:'geojson',data:collection});else map.getSource('golem-route-lines').setData(collection);
  if(!map.getLayer('golem-route-lines-layer')){const before=map.getStyle().layers?.find(layer=>layer.type==='symbol')?.id;map.addLayer({id:'golem-route-lines-layer',type:'line',source:'golem-route-lines',layout:{'line-join':'round','line-cap':'round'},paint:{'line-color':['get','color'],'line-width':['interpolate',['linear'],['zoom'],8,1.8,12,3.2,16,5],'line-opacity':0.82}},before);}
