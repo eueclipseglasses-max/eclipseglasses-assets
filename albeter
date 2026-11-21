@@ -696,6 +696,8 @@ function focusRoutes(){
  const f=new Map();
  for(const rid of tijdelijkeFocus)for(const b of lijnBroers(rid))f.set(b,'tijdelijk');
  const sel=gekozenLijnId();if(sel)for(const b of lijnBroers(sel))f.set(b,'kies');
+ // Een lijn met een melding krijgt haar eigen kleur; het rode en gele stuk liggen erbovenop.
+ for(const m of actieveMeldingen)if(m.route_id&&m.route_id!=='all'&&meldingStatus(meldingTijd(m))!=='weg')for(const b of lijnBroers(m.route_id))if(!f.has(b))f.set(b,'melding');
  return f;
 }
 // Traject van één lijn (richting) met de plaats van elke halte erop; alleen geladen als er een melding op die lijn is.
@@ -711,6 +713,82 @@ function laadRouteVolgorde(rid){
  }));
  return routeVolgordeBezig.get(rid);
 }
+// ---------- Live: echte positie van bussen en trams (realtime doorkomsttijden, bron: De Lijn) ----------
+// De server haalt per lijnrichting de ritten op met hun (realtime) tijd aan elke halte. Tussen twee haltes
+// schuift het voertuig evenredig met de tijd. Elke 20 s nieuwe gegevens, elke 2 s een nieuwe positie.
+const liveData=new Map(),liveBezig=new Map(),meldingRit=new Map();
+let livePeilTimer=0,liveTekenTimer=0,liveUitgeschakeld=false;
+function laadLive(rid){
+ const d=liveData.get(rid);if(d&&Date.now()-d.opgehaald<18000)return Promise.resolve(d);
+ if(liveUitgeschakeld)return Promise.resolve(null);
+ if(!liveBezig.has(rid))liveBezig.set(rid,fetch('/api/live/lijn?route='+encodeURIComponent(rid)).then(r=>{if(r.status===503)liveUitgeschakeld=true;return r.ok?r.json():null;}).catch(()=>null).then(d=>{liveBezig.delete(rid);if(d&&Array.isArray(d.ritten)){d.opgehaald=Date.now();liveData.set(rid,d);return d;}return liveData.get(rid)||null;}));
+ return liveBezig.get(rid);
+}
+// Positie van een rit op het traject van de route: {li, d, vorige, volgende, na, vertraging} of null.
+function ritPositie(rit,rv,nu){
+ const plaats=new Map(rv.h.map(h=>[String(h[0]).replace(/^.*?(\d+)$/,'$1'),h]));
+ const pts=rit.h.map(x=>{const p=plaats.get(String(x[0]));return p?{li:p[1],d:p[2],t:x[1],rt:x[2],plan:x[3]}:null;}).filter(Boolean);
+ if(pts.length<2)return null;
+ const telling={};pts.forEach(p=>telling[p.li]=(telling[p.li]||0)+1);
+ const li=+Object.keys(telling).sort((a,b)=>telling[b]-telling[a])[0];
+ const op=pts.filter(p=>p.li===li).sort((a,b)=>a.t-b.t);
+ if(op.length<2||nu<op[0].t-60000||nu>op[op.length-1].t+60000)return null;
+ let i=0;while(i<op.length-2&&op[i+1].t<=nu)i++;
+ const a=op[i],b=op[i+1],f=b.t>a.t?Math.min(1,Math.max(0,(nu-a.t)/(b.t-a.t))):0;
+ const vertraging=b.rt&&b.plan?Math.round((b.t-b.plan)/60000):null;
+ return {li,d:a.d+(b.d-a.d)*f,vorige:a.d,volgende:b.d,na:op[i+2]?op[i+2].d:null,vertraging,klaar:nu>=op[op.length-1].t};
+}
+// Welke rit hoort bij een melding "ze zijn mee opgestapt"? De rit die rond het meldtijdstip aan die halte was.
+function ritVoorMelding(r,live){
+ if(meldingRit.has(r.id)){const rit=live.ritten.find(x=>x.rit===meldingRit.get(r.id));if(rit)return rit;}
+ const halte=String(r.stop_id||'').replace(/^.*?(\d+)$/,'$1'),t0=tijdMs(r.observed_at)||tijdMs(r.created_at);
+ let best=null,verschil=12*60000;
+ for(const rit of live.ritten){const p=rit.h.find(x=>String(x[0])===halte);if(p&&Math.abs(p[1]-t0)<verschil){verschil=Math.abs(p[1]-t0);best=rit;}}
+ if(best)meldingRit.set(r.id,best.rit);
+ return best;
+}
+function liveRoutesNodig(){
+ const s=new Set(),sel=gekozenLijnId();
+ if(sel)for(const b of lijnBroers(sel))s.add(b);
+ for(const m of actieveMeldingen)if(Number(m.meegestapt)===1&&m.route_id&&m.route_id!=='all'&&meldingStatus(meldingTijd(m))==='vers')s.add(m.route_id);
+ return [...s].slice(0,6);
+}
+function zetLivePeiling(){
+ const nodig=liveRoutesNodig().length>0&&!liveUitgeschakeld;
+ if(nodig&&!livePeilTimer){
+  const peil=()=>{if(document.hidden)return;Promise.all(liveRoutesNodig().map(laadLive)).then(()=>{tekenVoertuigen();if(actieveMeldingen.some(m=>Number(m.meegestapt)===1))tekenMeldingStukken();});};
+  peil();livePeilTimer=setInterval(peil,20000);liveTekenTimer=setInterval(()=>{if(!document.hidden)tekenVoertuigen();},2000);
+ }else if(!nodig&&livePeilTimer){clearInterval(livePeilTimer);clearInterval(liveTekenTimer);livePeilTimer=liveTekenTimer=0;tekenVoertuigen();}
+}
+async function tekenVoertuigen(){
+ if(!map||!stijlKlaar||!lijnIndex)return;
+ zorgVoorLijnLagen();
+ const sel=gekozenLijnId(),features=[],nu=Date.now();
+ if(sel){
+  for(const rid of lijnBroers(sel)){
+   const live=liveData.get(rid);if(!live)continue;
+   const rv=await laadRouteVolgorde(rid);if(!rv)continue;
+   const route=allRoutes.find(x=>x.route_id===rid)||{},info=lijnIndex.lijnen[rid]||{},groep=lijnIndex.groepen[info.g]||info;
+   for(const rit of live.ritten){
+    const pos=ritPositie(rit,rv,nu);if(!pos||pos.klaar)continue;
+    const lijn=rv.lijnen[pos.li];if(!lijn)continue;
+    const p=lijnDeel(lijn.c,lijn.cum,pos.d,pos.d)[0];
+    features.push({type:'Feature',properties:{kleur:lijnKleur(groep),rid,nummer:route.route_short_name||'',naar:richtingVan(route.route_long_name),vertraging:pos.vertraging==null?'':String(pos.vertraging)},geometry:{type:'Point',coordinates:p}});
+   }
+  }
+ }
+ if(map.getSource('golem-voertuigen'))map.getSource('golem-voertuigen').setData({type:'FeatureCollection',features});
+}
+function toonVoertuigBijKlik(e){
+ if(!map.getLayer('golem-voertuigen'))return false;
+ const p=e.point,f=map.queryRenderedFeatures([[p.x-10,p.y-10],[p.x+10,p.y+10]],{layers:['golem-voertuigen']})[0];if(!f)return false;
+ const r=allRoutes.find(x=>x.route_id===f.properties.rid)||{route_id:f.properties.rid,route_short_name:f.properties.nummer};
+ const v=f.properties.vertraging,tekst=v===''?'Gepland':v==='0'?'Op tijd':(+v>0?v+' min vertraging':Math.abs(+v)+' min te vroeg');
+ const node=document.createElement('div');
+ node.innerHTML='<div class="halte-melding" style="background:transparent;padding:0">'+lijnBadge(r)+'<span>'+(f.properties.naar?'→ '+esc(f.properties.naar):'')+'</span></div><p style="margin:6px 0 0;font-size:12px">'+esc(tekst)+' · live, bron: De Lijn</p>';
+ toonKeuze(node,f.geometry.coordinates,10);return true;
+}
+
 // Melding op een lijn: het stuk van de halte tot de volgende halte rood, het stuk daarna geel
 // (in de rijrichting van die lijn). Na 25 minuten wordt het rode stuk grijs, na 1 uur verdwijnt het.
 async function tekenMeldingStukken(){
@@ -728,6 +806,15 @@ async function tekenMeldingStukken(){
   const lijn=rv.lijnen[li];if(!lijn)continue;
   const vers=status==='vers'?1:0;
   const stuk=(a,b,soort)=>{if(b<=a)return;features.push({type:'Feature',properties:{soort,vers},geometry:{type:'LineString',coordinates:rondHoeken(lijnDeel(lijn.c,lijn.cum,a,b))}});};
+  const live=rijdtMee(r)&&liveData.get(r.route_id),rit=live&&ritVoorMelding(r,live),lp=rit&&ritPositie(rit,rv,Date.now());
+  if(lp&&rv.lijnen[lp.li]){
+   const l2=rv.lijnen[lp.li],stuk2=(a,b,soort)=>{if(b<=a)return;features.push({type:'Feature',properties:{soort,vers},geometry:{type:'LineString',coordinates:rondHoeken(lijnDeel(l2.c,l2.cum,a,b))}});};
+   stuk2(lp.vorige,lp.volgende,vers?'rood':'grijs');
+   if(vers&&lp.na!=null)stuk2(lp.volgende,lp.na,'geel');
+   features.push({type:'Feature',properties:{soort:'positie',vers,live:1},geometry:{type:'Point',coordinates:lijnDeel(l2.c,l2.cum,lp.d,lp.d)[0]}});
+   if(vers)meerijdend=true;
+   continue;
+  }
   if(rijdtMee(r)){
    const einde=lijn.cum[lijn.cum.length-1],t0=tijdMs(r.observed_at)||tijdMs(r.created_at);
    const sec=Math.max(0,Math.min((Date.now()-t0)/1000,MEERIJ_MAX_MIN*60));
@@ -762,6 +849,7 @@ function zetTijdelijkeFocus(ids,popup){
 function zorgVoorLijnLagen(){
  const bron=id=>{if(!map.getSource(id))map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'Lijntrajecten © OpenStreetMap-bijdragers'});};
  bron('golem-net');bron('golem-lijnen');bron('golem-meldingen');
+ if(!map.getSource('golem-voertuigen'))map.addSource('golem-voertuigen',{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'Realtime: bron: De Lijn'});
  const before=map.getStyle().layers?.find(l=>l.type==='symbol')?.id,rond={'line-join':'round','line-cap':'round'};
  if(!map.getLayer('golem-net'))map.addLayer({id:'golem-net',type:'line',source:'golem-net',layout:rond,paint:{'line-color':'#000000','line-width':['interpolate',['linear'],['zoom'],11,2.5,14,5,17,8]}},before);
  if(!map.getLayer('golem-lijnen-rand'))map.addLayer({id:'golem-lijnen-rand',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':'#ffffff','line-width':2}},before);
@@ -772,6 +860,7 @@ function zorgVoorLijnLagen(){
  if(!map.getLayer('golem-melding'))map.addLayer({id:'golem-melding',type:'line',source:'golem-meldingen',filter:['==',['geometry-type'],'LineString'],layout:rond,paint:{'line-color':['match',['get','soort'],'rood',MELDING_ROOD,'geel','#f5c400','#9097a0'],'line-width':breed(w=>w)}},before);
  if(!map.getLayer('golem-melding-positie-gloed'))map.addLayer({id:'golem-melding-positie-gloed',type:'circle',source:'golem-meldingen',filter:['all',['==',['geometry-type'],'Point'],['==',['get','vers'],1]],paint:{'circle-color':MELDING_ROOD,'circle-radius':14,'circle-opacity':0.3,'circle-blur':0.4}});
  if(!map.getLayer('golem-melding-positie'))map.addLayer({id:'golem-melding-positie',type:'circle',source:'golem-meldingen',filter:['==',['geometry-type'],'Point'],paint:{'circle-color':['case',['==',['get','vers'],1],MELDING_ROOD,'#9097a0'],'circle-radius':['interpolate',['linear'],['zoom'],11,4,15,6.5,18,8],'circle-stroke-color':'#ffffff','circle-stroke-width':2}});
+ if(!map.getLayer('golem-voertuigen'))map.addLayer({id:'golem-voertuigen',type:'circle',source:'golem-voertuigen',paint:{'circle-color':['get','kleur'],'circle-radius':['interpolate',['linear'],['zoom'],11,5,15,8,18,10],'circle-stroke-color':'#ffffff','circle-stroke-width':2.5}});
  pasLijnStijlToe();
 }
 // Lijnen met kleur liggen naast elkaar, één strook per kleur (zelfde kleur = één strook).
@@ -924,7 +1013,7 @@ function kiesLijnKnoppen(node,popup,stop){
   try{
    $('routeSelect').value=rid;await loadStops(rid);
    if(stop)$('stopSelect').value=stop.stop_id;
-   toonRouteBadge();popup.remove();addRouteLinesToMap();
+   toonRouteBadge();popup.remove();addRouteLinesToMap();zetLivePeiling();
    $('reportForm').scrollIntoView({behavior:'smooth',block:'start'});
    $('reportMessage').textContent=stop?'Halte en lijn geselecteerd. Vul het tijdstip in en dien je melding in.':'Lijn gekozen. Kies nu de halte.';
   }catch(err){$('reportMessage').textContent=err.message;}
@@ -1031,14 +1120,14 @@ function drawStopDot(ctx,x,y,r,color,opacity=1,puls=false){
  ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=r<3?1:1.3;ctx.strokeStyle=donker?'#080a0d':'rgba(30,30,30,.7)';ctx.stroke();ctx.restore();
 }
 async function handleStopDotClick(e){
- let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if(!hit){toonLijnenBijKlik(e);return;}
+ let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if((!hit||best>8)&&toonVoertuigBijKlik(e))return;if(!hit){toonLijnenBijKlik(e);return;}
  if(hit.cluster){const coords=hit.cluster.map(d=>[Number(d.stop.stop_lon),Number(d.stop.stop_lat)]);const b=coords.reduce((acc,coord)=>acc.extend(coord),new maplibregl.LngLatBounds(coords[0],coords[0]));map.fitBounds(b,{padding:65,maxZoom:13});return;}
  const stop=hit.stop;
  const routeIds=String(stop.route_ids||'').split(',').filter(Boolean),routes=allRoutes.filter(r=>routeIds.includes(r.route_id)).sort(opLijnnummer);if(!routes.length)return;
  if(!lijnIndex)await laadLijnIndex();
  const meldingen=actieveMeldingen.filter(m=>String(m.stop_id)===String(stop.stop_id)&&meldingStatus(meldingTijd(m))!=='weg');
  const node=document.createElement('div');
- node.innerHTML='<strong>'+esc(stop.stop_name)+'</strong>'+meldingen.map(m=>{const vers=meldingStatus(meldingTijd(m))==='vers';return '<div class="halte-melding'+(vers?'':' halte-melding-oud')+'">'+(m.route_id&&m.route_id!=='all'?lijnBadge(m):'<span class="lijn-badge lijn-badge-alle">alle</span>')+'<span>Controle gemeld'+(Number(m.meegestapt)===1?' · rijdt mee':'')+' · '+esc(timeAgo(new Date(meldingTijd(m)).toISOString()))+'</span></div>';}).join('')+'<p style="margin:7px 0 2px">Kies de lijn:</p>'+routes.map(lijnKnop).join('')+'<button type="button" class="lijn-keuze lijn-alle" data-route="all"><span class="lijn-badge">?</span><span>Andere lijn / weet ik niet</span></button>';
+ node.innerHTML='<strong>'+esc(stop.stop_name)+'</strong>'+meldingen.map(m=>{const vers=meldingStatus(meldingTijd(m))==='vers';return '<div class="halte-melding'+(vers?'':' halte-melding-oud')+'">'+(m.route_id&&m.route_id!=='all'?lijnBadge(m):'<span class="lijn-badge lijn-badge-alle">alle</span>')+'<span>Controle gemeld'+(Number(m.meegestapt)===1?(meldingRit.has(m.id)?' · rijdt mee (live)':' · rijdt mee'):'')+' · '+esc(timeAgo(new Date(meldingTijd(m)).toISOString()))+'</span></div>';}).join('')+'<p style="margin:7px 0 2px">Kies de lijn:</p>'+routes.map(lijnKnop).join('')+'<button type="button" class="lijn-keuze lijn-alle" data-route="all"><span class="lijn-badge">?</span><span>Andere lijn / weet ik niet</span></button>';
  const popup=toonKeuze(node,[Number(stop.stop_lon),Number(stop.stop_lat)],12);
  kiesLijnKnoppen(node,popup,stop);
  zetTijdelijkeFocus(routes.map(r=>r.route_id),popup);
@@ -1052,7 +1141,7 @@ async function loadStops(routeId){
  $('stopSelect').innerHTML='<option value="">Kies een halte</option>'+localStops.map(s=>'<option value="'+esc(s.stop_id)+'">'+esc(s.stop_name)+'</option>').join('');
  $('stopSelect').disabled=false;
 }
-$('routeSelect').addEventListener('change',()=>{toonRouteBadge();addRouteLinesToMap();});
+$('routeSelect').addEventListener('change',()=>{toonRouteBadge();addRouteLinesToMap();zetLivePeiling();tekenVoertuigen();});
 $('lijnKiezer').addEventListener('click',openLijnKiezer);
 $('routeSelect').addEventListener('change',e=>loadStops(e.target.value).catch(err=>{$('stopSelect').innerHTML='<option value="">Haltes konden niet laden</option>';$('reportMessage').textContent=err.message;}));
 $('gpsButton').addEventListener('click',()=>{
@@ -1079,7 +1168,7 @@ async function loadReports(){
  reportMarkers.length=0;
  const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude)&&meldingStatus(meldingTijd(r))!=='weg');
  activeReportStopIds=new Set(reports.map(r=>String(r.stop_id||'')).filter(Boolean));
- actieveMeldingen=reports;tekenMeldingStukken();
+ actieveMeldingen=reports;tekenMeldingStukken();addRouteLinesToMap();zetLivePeiling();
  activeReportCreatedAt.clear();reports.forEach(r=>{if(!r.stop_id)return;const k=String(r.stop_id),t=meldingTijd(r),v=activeReportCreatedAt.get(k);if(!v||t>new Date(v).getTime())activeReportCreatedAt.set(k,new Date(t).toISOString());});zetHaltePuls();drawStopDots();
  $('countActive').textContent=reports.length;
  const today=new Date().toLocaleDateString('en-CA');
@@ -1729,6 +1818,31 @@ async function handleApi(request, env) {
     return new Response(new Uint8Array(rij.data),{headers:{"Content-Type":rij.mime,"Cache-Control":admin&&rij.status!=="approved"?"private, no-store":"public, max-age=3600","X-Content-Type-Options":"nosniff"}});
   }
 
+  // Live posities: ritten van één lijnrichting met realtime doorkomsttijden (bron: De Lijn).
+  if(path === "/api/live/lijn" && method === "GET") {
+    const route=url.searchParams.get("route")||"";
+    if(!/^[A-Za-z0-9:_-]{3,40}$/.test(route)) return json({error:"Ongeldige lijn"},400);
+    try{
+      const d=await liveVoorRoute(env,route);
+      if(d.fout) return json({error:d.fout},d.status===503?503:502);
+      return new Response(JSON.stringify(d),{headers:{"Content-Type":"application/json; charset=utf-8","Cache-Control":"public, max-age=15"}});
+    }catch(e){return json({error:"Live gegevens niet beschikbaar"},502);}
+  }
+  // Controle voor beheerders: toont de vorm van het antwoord van De Lijn (zonder sleutels).
+  if(path === "/api/live/test" && method === "GET") {
+    const user=await currentUser(request,env);
+    if(!user||user.role!=="admin") return json({error:"Geen beheerdersrechten"},403);
+    const route=url.searchParams.get("route")||"gr:delijn:50491";
+    const m=route.match(/(\d)(\d{3})(\d)$/);if(!m)return json({error:"Ongeldige lijn"},400);
+    const uit={sleutels:delijnSleutels(env).length,route};
+    for(const richting of ["HEEN","TERUG"]){
+      const r=await delijnGet(env,"/lijnen/"+m[1]+"/"+parseInt(m[2],10)+"/lijnrichtingen/"+richting+"/real-time");
+      const ritten=r.ok?delijnRitten(r.data):[];
+      uit[richting]={status:r.status,fout:r.fout||null,velden:r.data?Object.keys(r.data):[],ritten:ritten.length,voorbeeld:ritten[0]?{rit:ritten[0].rit,haltes:ritten[0].h.slice(0,4).map(h=>[h[0],new Date(h[1]).toISOString(),h[2]])}:null};
+    }
+    return json(uit);
+  }
+
   if(path === "/api/reports/vote" && method === "POST") {
     const b=await request.json().catch(()=>null);
     if(!b || typeof b.id!=="string" || !["still","gone"].includes(b.vote))return json({error:"Ongeldige bevestiging."},400);
@@ -1810,6 +1924,77 @@ async function handleApi(request, env) {
 // Lijntrajecten: gebouwd door .github/workflows/kaartdata.yml en bewaard op de branch "kaartdata".
 const MELDLIMIET_PER_UUR = 20;
 const CONTACT_EMAIL = ""; // vul in, bv. "info@jouwdomein.be" (verplicht volgens de GDPR)
+// ---------- Realtime De Lijn (open data, bron: De Lijn) ----------
+// Sleutels staan als geheime variabelen in Cloudflare: DELIJN_API_KEY (primary) en een tweede sleutel
+// (bv. "API key 2"). Bij een fout (401/403/429) proberen we de volgende sleutel.
+const DELIJN_API = "https://api.delijn.be/DLKernOpenData/api/v1";
+function delijnSleutels(env){
+  const uit=[];
+  const voeg=v=>{if(typeof v==="string"&&/^[A-Za-z0-9]{16,64}$/.test(v.trim())&&!uit.includes(v.trim()))uit.push(v.trim());};
+  voeg(env.DELIJN_API_KEY);
+  for(const naam of Object.keys(env||{}))if(/delijn|api[\s_-]*key/i.test(naam))voeg(env[naam]);
+  return uit;
+}
+async function delijnGet(env,pad){
+  const sleutels=delijnSleutels(env);
+  if(!sleutels.length)return {ok:false,status:503,fout:"geen sleutel"};
+  let laatste=null;
+  for(const k of sleutels){
+    const res=await fetch(DELIJN_API+pad,{headers:{"Ocp-Apim-Subscription-Key":k,"Cache-Control":"no-cache","Accept":"application/json"}});
+    if(res.ok)return {ok:true,status:200,data:await res.json().catch(()=>null)};
+    laatste=res.status;
+    if(![401,403,429].includes(res.status))break;
+  }
+  return {ok:false,status:laatste||502,fout:"De Lijn antwoordde "+laatste};
+}
+// De Lijn geeft lokale Belgische tijd zonder tijdzone ("2026-11-21T14:05:00").
+function brusselsMs(s){
+  if(!s)return null;const m=String(s).match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);if(!m)return Date.parse(s)||null;
+  const alsUtc=Date.UTC(+m[1],+m[2]-1,+m[3],+m[4],+m[5],+(m[6]||0));
+  const offset=t=>{const d=new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Brussels",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",second:"2-digit",hourCycle:"h23"}).formatToParts(new Date(t));const g=n=>+d.find(x=>x.type===n).value;return Date.UTC(g("year"),g("month")-1,g("day"),g("hour"),g("minute"),g("second"))-t;};
+  let t=alsUtc-offset(alsUtc);t=alsUtc-offset(t);return t;
+}
+// Ritten van een lijnrichting in een eenvoudige vorm: [{rit, h:[[haltenummer, tijd ms, realtime 0/1, gepland ms]]}].
+function delijnRitten(data){
+  const lijst=(data&&(data.ritDoorkomsten||data.ritten||data.lijnrichtingDoorkomsten))||[];
+  return lijst.map(r=>{
+    const doorkomsten=r.doorkomsten||r.halteDoorkomsten||r.passages||[];
+    const h=doorkomsten.map(p=>{
+      const halte=String(p.haltenummer??p.halteNummer??(p.halte&&p.halte.haltenummer)??"");
+      const rt=p["real-timeTijdstip"]||p.realtimeTijdstip||p.realTimeTijdstip,dr=p.dienstregelingTijdstip||p.dienstregelingsTijdstip;
+      const tijd=brusselsMs(rt||dr);
+      return halte&&tijd?[halte,tijd,rt?1:0,dr?brusselsMs(dr):null]:null;
+    }).filter(Boolean).sort((a,b)=>a[1]-b[1]);
+    return {rit:String(r.ritnummer??r.ritNummer??r.vrtnum??""),h};
+  }).filter(r=>r.h.length>=2);
+}
+// App-route "gr:delijn:50491" = entiteit 5, lijnnummer 049, richting (0/1). Welke richting HEEN of TERUG is,
+// bepalen we één keer door de haltes te vergelijken met die van de route in de databank.
+const liveRichting=new Map(),liveCache=new Map();
+async function liveVoorRoute(env,routeId){
+  const m=String(routeId).match(/(\d)(\d{3})(\d)$/);if(!m)return {fout:"onbekende lijn",status:404};
+  const e=m[1],nr=String(parseInt(m[2],10));
+  const bewaard=liveCache.get(routeId);if(bewaard&&Date.now()-bewaard.tijd<20000)return bewaard;
+  const cache=caches.default,sleutel=new Request("https://golem-cache.invalid/live/"+encodeURIComponent(routeId));
+  const gecached=await cache.match(sleutel);if(gecached){const d=await gecached.json();liveCache.set(routeId,d);return d;}
+  const haal=async richting=>{const r=await delijnGet(env,"/lijnen/"+e+"/"+nr+"/lijnrichtingen/"+richting+"/real-time");return r.ok?{richting,ritten:delijnRitten(r.data)}:{richting,fout:r.fout,status:r.status};};
+  let keuze=liveRichting.get(routeId),res;
+  if(keuze){res=await haal(keuze);}
+  else{
+    const rij=await env.DB.prepare("SELECT GROUP_CONCAT(stop_id) AS s FROM route_stops WHERE route_id=?").bind(routeId).first();
+    const eigen=new Set(String(rij&&rij.s||"").split(",").map(x=>(x.match(/(\d+)$/)||[])[1]).filter(Boolean));
+    const [heen,terug]=await Promise.all([haal("HEEN"),haal("TERUG")]);
+    const score=x=>x.ritten?new Set(x.ritten.flatMap(r=>r.h.map(h=>h[0])).filter(h=>eigen.has(h))).size:-1;
+    res=score(heen)>=score(terug)?heen:terug;
+    if(res.ritten&&score(res)>0)liveRichting.set(routeId,res.richting);
+  }
+  if(!res.ritten)return {fout:res.fout||"geen gegevens",status:res.status||502};
+  const uit={route:routeId,richting:res.richting,tijd:Date.now(),bron:"De Lijn",ritten:res.ritten};
+  liveCache.set(routeId,uit);
+  await cache.put(sleutel,new Response(JSON.stringify(uit),{headers:{"Content-Type":"application/json","Cache-Control":"public, max-age=20"}}));
+  return uit;
+}
+
 const KAARTDATA_BRON = "https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/kaartdata/";
 async function kaartdata(request,pathname){
   if(request.method!=="GET"&&request.method!=="HEAD") return new Response("Method not allowed",{status:405});
