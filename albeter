@@ -1204,6 +1204,8 @@ function cookie(name, value, maxAge) {
   return `${name}=${value}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${maxAge}`;
 }
 
+const ADMIN_EMAILS = new Set(["achilles.vandycke@telenet.be"]);
+
 async function currentUser(request, env) {
   const raw = request.headers.get("Cookie") || "";
   const token = raw.split(";").map(x => x.trim())
@@ -1215,7 +1217,12 @@ async function currentUser(request, env) {
     FROM sessions JOIN users ON users.id=sessions.user_id
     WHERE sessions.token_hash=? AND sessions.expires_at > ?
   `).bind(tokenHash, new Date().toISOString()).first();
-  return row || null;
+  if (!row) return null;
+  const email = String(row.email || "").trim().toLowerCase();
+  return {
+    ...row,
+    role: ADMIN_EMAILS.has(email) ? "admin" : row.role
+  };
 }
 
 async function createSession(userId, env) {
