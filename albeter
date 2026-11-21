@@ -202,7 +202,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .map-tools button{font-size:10px}
 }
 .lijn-keuze{display:flex;align-items:center;gap:8px;width:100%;margin-top:6px;padding:7px 8px;text-align:left;font-weight:600;line-height:1.25;background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.lijn-kiezer-veld{position:relative}.lijn-kiezer-veld #routeSelect{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.lijn-kiezer{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:7px;text-align:left;font-weight:600;font:inherit;box-shadow:none}.lijn-kiezer-tekst{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lijn-kiezer-pijl{flex:none;opacity:.7}.lijn-kiezer-paneel{position:absolute;left:0;right:0;top:100%;z-index:60;margin-top:4px;max-height:min(60vh,420px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:10px}.lijn-zoek{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input);color:var(--text);font:inherit}.keuze-blad .lijn-zoek{font-size:16px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
+.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.foto-veld{display:flex;align-items:center;gap:10px}.foto-knop{flex:none;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--panel2)!important;color:var(--text)!important;border:1px solid var(--border)}.foto-knop.heeft-foto{border-color:var(--orange);color:var(--orange)!important}.foto-info{font-size:12px;color:var(--muted);line-height:1.3}.foto-voorbeeld{position:relative;display:inline-flex}.foto-voorbeeld:empty{display:none}.foto-voorbeeld img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-wis{position:absolute;top:-7px;right:-7px;width:20px;height:20px;padding:0;border-radius:50%;font-size:13px;line-height:1;background:#e53935!important;color:#fff!important}.report-foto{display:block;margin-top:9px}.report-foto img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-icoon{vertical-align:-3px;margin-right:2px}.lijn-kiezer-veld{position:relative}.lijn-kiezer-veld #routeSelect{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.lijn-kiezer{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:7px;text-align:left;font-weight:600;font:inherit;box-shadow:none}.lijn-kiezer-tekst{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lijn-kiezer-pijl{flex:none;opacity:.7}.lijn-kiezer-paneel{position:absolute;left:0;right:0;top:100%;z-index:60;margin-top:4px;max-height:min(60vh,420px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:10px}.lijn-zoek{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input);color:var(--text);font:inherit}.keuze-blad .lijn-zoek{font-size:16px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
 </style>
 </head>
 <body>
@@ -266,6 +266,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
      <div class="field lijn-kiezer-veld"><label for="lijnKiezer">De Lijn-nummer en traject</label><select id="routeSelect" tabindex="-1" aria-hidden="true"><option value="">Lijnen worden geladen…</option></select><button type="button" id="lijnKiezer" class="lijn-kiezer" aria-haspopup="listbox"><span class="muted">Lijnen worden geladen…</span></button></div>
      <div class="field"><label>Halte op dit traject</label><select id="stopSelect" required disabled><option value="">Selecteer eerst een lijn</option></select></div>
      <div class="field"><button type="button" class="secondary full" id="gpsButton">Ik sta hier nu (optioneel)</button><div id="gpsMessage" class="notice">Locatie is niet nodig om te melden. Met GPS wordt je melding wel als "GPS bevestigd" getoond; je coördinaten worden niet bewaard.</div></div>
+     <div class="field foto-veld"><input type="file" id="fotoInput" accept="image/*" capture="environment" hidden><button type="button" class="foto-knop" id="fotoKnop" aria-label="Foto maken" title="Foto maken"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg></button><span id="fotoVoorbeeld" class="foto-voorbeeld"></span><span id="fotoInfo" class="foto-info">Foto toevoegen (optioneel)</span></div>
      <div class="field"><label>Tijdstip waarneming</label><input id="observed" type="datetime-local"></div>
      <button class="full" id="submitReportButton">Verstuur</button>
      <div id="reportMessage" class="error"></div>
@@ -464,16 +465,21 @@ function initMap(){
   },()=>{}, {enableHighAccuracy:true,timeout:10000,maximumAge:60000});
  });
 }
-function formatDate(s){return new Date(s).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
-function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-new Date(s).getTime())/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
+// Tijd van de server in milliseconden. SQLite geeft soms "YYYY-MM-DD HH:MM:SS" zonder tijdzone: dat is UTC.
+// (Zonder deze omzetting las de browser dat als Belgische tijd, waardoor nieuwe meldingen meteen "ouder dan 1 uur" leken.)
+function tijdMs(s){if(s==null||s==='')return NaN;if(typeof s==='number')return s;const v=String(s).trim();return Date.parse(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(v)?v.replace(' ','T')+'Z':v);}
+function formatDate(s){return new Date(tijdMs(s)).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
+function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-tijdMs(s))/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
 const MELDING_VERS_MS=25*60000,MELDING_WEG_MS=60*60000;
 // Tijdstip dat telt: de melding zelf of de laatste herbevestiging ("nog daar").
-function meldingTijd(r){const a=new Date(r.created_at).getTime()||0,b=r.last_still_at?new Date(r.last_still_at).getTime()||0:0;return Math.max(a,b);}
-function meldingStatus(tijd){const age=Date.now()-(typeof tijd==='number'?tijd:new Date(tijd).getTime());return age<MELDING_VERS_MS?'vers':age<MELDING_WEG_MS?'oud':'weg';}
+function meldingTijd(r){const a=tijdMs(r.created_at)||0,b=r.last_still_at?tijdMs(r.last_still_at)||0:0;return Math.max(a,b);}
+function meldingStatus(tijd){const age=Date.now()-tijdMs(tijd);return age<MELDING_VERS_MS?'vers':age<MELDING_WEG_MS?'oud':'weg';}
 function reportAgeOpacity(s){return meldingStatus(s)==='vers'?1:.55;}
 function reportMarkerColor(stopId,stop){const t=activeReportCreatedAt.get(String(stopId));return t&&meldingStatus(t)!=='vers'?'#929292':stopDotColor(stop,true);}
 function halteIsVers(stopId){const t=activeReportCreatedAt.get(String(stopId));return !!t&&meldingStatus(t)==='vers';}
 function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton').classList.remove('hidden');$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
+const FOTO_ICOON='<svg class="foto-icoon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>';
+function isBeheerder(){return ($('userRole')&&$('userRole').textContent)==='Beheerder';}
 function reportCard(r,admin=false){
  const lang=(allRoutes.find(x=>x.route_id===r.route_id)||{}).route_long_name,richting=richtingVan(lang);
  const route=r.route_id==='all'?'<span class="tag">Alle lijnen</span>':'<span class="report-lijn">'+lijnBadge({route_id:r.route_id,route_short_name:r.route_short_name||'—'})+(richting?'<span>→ '+esc(richting)+'</span>':'')+'</span>';
@@ -484,13 +490,45 @@ function reportCard(r,admin=false){
  const status=r.status==='approved'?'<span class="tag">✓ Bevestigd</span>':'<span class="tag orange">Niet bevestigd</span>';
  const actions='<div class="report-actions community-votes"><button class="secondary" data-vote="still" data-id="'+esc(r.id)+'">Nog daar · '+Number(r.still_count||0)+'</button><button class="secondary" data-vote="gone" data-id="'+esc(r.id)+'">Weg · '+Number(r.gone_count||0)+'</button></div>';
  const adminActions=admin?'<div class="report-actions"><button data-id="'+esc(r.id)+'" data-status="approved">Goedkeuren</button><button class="danger" data-id="'+esc(r.id)+'" data-status="rejected">Afwijzen</button></div>':'';
- const tijd=meldingTijd(r),bevestigd=r.last_still_at&&new Date(r.last_still_at).getTime()>new Date(r.created_at).getTime();
+ const tijd=meldingTijd(r),bevestigd=r.last_still_at&&tijdMs(r.last_still_at)>tijdMs(r.created_at);
+ const fotoZichtbaar=r.has_photo&&(r.status==='approved'||admin||isBeheerder());
+ const foto=!r.has_photo?'':fotoZichtbaar?'<a class="report-foto" href="/api/reports/'+encodeURIComponent(r.id)+'/foto" target="_blank" rel="noopener"><img src="/api/reports/'+encodeURIComponent(r.id)+'/foto" alt="Foto bij de melding" loading="lazy"></a>'
+  :'<span class="tag">'+FOTO_ICOON+'Foto · zichtbaar na bevestiging</span>';
  return '<article class="report" style="opacity:'+reportAgeOpacity(tijd)+'">'+
   '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time" title="'+esc(formatDate(r.created_at))+'">'+esc(bevestigd?'bevestigd '+timeAgo(r.last_still_at):timeAgo(r.created_at))+'</time></div>'+
-  '<div class="report-meta">'+route+status+gps+'</div>'+
+  '<div class="report-meta">'+route+status+gps+(fotoZichtbaar?'':foto)+'</div>'+(fotoZichtbaar?foto:'')+
   actions+adminActions+'</article>';
 }
-let gpsCheck=null;
+let gpsCheck=null,fotoData=null,fotoUrl=null;
+// Foto ter plekke: verkleinen tot max. 1280 px als JPEG. Opnieuw tekenen op een canvas verwijdert ook
+// alle metadata (EXIF, GPS-locatie van de gsm), zodat er niets extra's meegestuurd wordt.
+async function verkleinFoto(bestand){
+ let beeld;
+ try{beeld=await createImageBitmap(bestand,{imageOrientation:'from-image'});}
+ catch(e){beeld=await new Promise((ok,nok)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=nok;i.src=URL.createObjectURL(bestand);});}
+ const w=beeld.width,h=beeld.height;
+ for(const [max,kwaliteit] of [[1280,0.72],[1024,0.62],[800,0.55]]){
+  const s=Math.min(1,max/Math.max(w,h)),c=document.createElement('canvas');c.width=Math.round(w*s);c.height=Math.round(h*s);
+  c.getContext('2d').drawImage(beeld,0,0,c.width,c.height);
+  const data=c.toDataURL('image/jpeg',kwaliteit);
+  if(data.length<=1000000)return data;
+ }
+ throw new Error('De foto is te groot.');
+}
+function wisFoto(){fotoData=null;if(fotoUrl)URL.revokeObjectURL(fotoUrl);fotoUrl=null;const i=$('fotoInput');if(i)i.value='';if($('fotoVoorbeeld'))$('fotoVoorbeeld').innerHTML='';if($('fotoInfo'))$('fotoInfo').textContent='Foto toevoegen (optioneel)';if($('fotoKnop'))$('fotoKnop').classList.remove('heeft-foto');}
+$('fotoKnop').addEventListener('click',()=>$('fotoInput').click());
+$('fotoInput').addEventListener('change',async e=>{
+ const f=e.target.files&&e.target.files[0];if(!f)return;
+ $('fotoInfo').textContent='Foto verwerken…';
+ try{
+  fotoData=await verkleinFoto(f);
+  if(fotoUrl)URL.revokeObjectURL(fotoUrl);
+  fotoUrl=URL.createObjectURL(await (await fetch(fotoData)).blob());
+  $('fotoVoorbeeld').innerHTML='<img src="'+fotoUrl+'" alt="Gekozen foto"><button type="button" class="foto-wis" aria-label="Foto verwijderen">×</button>';
+  $('fotoVoorbeeld').querySelector('.foto-wis').addEventListener('click',wisFoto);
+  $('fotoInfo').textContent='Foto toegevoegd · fotografeer liefst geen gezichten';$('fotoKnop').classList.add('heeft-foto');
+ }catch(err){wisFoto();$('fotoInfo').textContent=err.message||'Foto kon niet gelezen worden.';}
+});
 async function loadRoutes(){
  const select=$('routeSelect');select.classList.add('is-loading');select.disabled=true;
  try{const data=await api('/api/routes'+(selectedCity?'?city='+encodeURIComponent(selectedCity):''));allRoutes=data.routes||[];select.innerHTML='<option value="">Kies een lijn</option><option value="all">— Geen specifieke lijn / alle lijnen</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');toonRouteBadge();addRouteLinesToMap();}
@@ -966,10 +1004,10 @@ $('newReport').addEventListener('submit',async e=>{
   if(!$('routeSelect').value || !$('stopSelect').value) throw new Error('Kies eerst een lijn en halte.');
   await api('/api/reports',{method:'POST',body:JSON.stringify({
    route_id:$('routeSelect').value,stop_id:$('stopSelect').value,
-   gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,
+   gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,foto:fotoData,
    observed_at:($('observed').value?new Date($('observed').value):new Date()).toISOString()
   })});
-  $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.';$('reportMessage').className='success';
+  $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.'+(fotoData?' Je foto wordt zichtbaar zodra de melding bevestigd is.':'');$('reportMessage').className='success';wisFoto();
   $('newReport').reset();$('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);gpsCheck=null;$('stopSelect').disabled=true;$('stopSelect').innerHTML='<option value="">Kies eerst een lijn</option>';loadRoutes().catch(()=>{});await loadReports();
  }catch(err){$('reportMessage').className='error';$('reportMessage').textContent=err.message;}
  finally{$('submitReportButton').disabled=false;}
@@ -1103,6 +1141,7 @@ async function ensureCityTables(env){await env.DB.prepare('CREATE TABLE IF NOT E
 async function ensureCommunityTables(env) {
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_votes (report_id TEXT NOT NULL,voter_key TEXT NOT NULL,vote TEXT NOT NULL CHECK(vote IN ('still','gone')),created_at TEXT NOT NULL,PRIMARY KEY(report_id,voter_key))`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_rate_limits (rate_key TEXT NOT NULL,created_at TEXT NOT NULL)`).run();
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS report_photos (report_id TEXT PRIMARY KEY,mime TEXT NOT NULL,data BLOB NOT NULL,created_at TEXT NOT NULL)`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_community_rate_key_time ON community_rate_limits(rate_key,created_at)").run();
 }
 async function rateLimitCommunity(env,key,limit,windowMs) {
@@ -1117,7 +1156,7 @@ async function handleApi(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
-  if(path.startsWith("/api/reports")) await ensureCommunityTables(env);
+  if(path.startsWith("/api/reports")||path.startsWith("/api/admin")) await ensureCommunityTables(env);
   if(path.startsWith("/api/cities")) await ensureCityTables(env);
 
   if (method !== "GET") {
@@ -1413,7 +1452,8 @@ async function handleApi(request, env) {
         r.latitude,
         r.longitude,
         r.observed_at,
-        COALESCE(r.created_at,r.observed_at) AS created_at,
+        strftime('%Y-%m-%dT%H:%M:%SZ',COALESCE(r.created_at,r.observed_at)) AS created_at,
+        EXISTS(SELECT 1 FROM report_photos p WHERE p.report_id=r.id) AS has_photo,
         r.gps_confirmed,
         r.status,
         (SELECT COUNT(*) FROM community_votes v WHERE v.report_id=r.id AND v.vote='still') AS still_count,
@@ -1474,6 +1514,16 @@ async function handleApi(request, env) {
     }
 
     const observed = new Date(b.observed_at);
+    // Optionele foto: verkleinde JPEG/WebP als data-URL (de app verkleint en verwijdert EXIF/GPS).
+    let foto=null;
+    if(b.foto!=null&&b.foto!==""){
+      const m=typeof b.foto==="string"&&b.foto.match(/^data:(image\/(?:jpeg|webp));base64,([A-Za-z0-9+/=]+)$/);
+      if(!m||m[2].length>1400000) return json({error:"De foto is ongeldig of te groot."},400);
+      const bin=atob(m[2]),bytes=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)bytes[i]=bin.charCodeAt(i);
+      const jpeg=bytes[0]===0xFF&&bytes[1]===0xD8&&bytes[2]===0xFF,webp=bin.slice(0,4)==="RIFF"&&bin.slice(8,12)==="WEBP";
+      if(!(m[1]==="image/jpeg"?jpeg:webp)) return json({error:"De foto is geen geldige afbeelding."},400);
+      foto={mime:m[1],bytes};
+    }
 
     if (observed.getTime() > Date.now()+5*60000 ||
         observed.getTime() < Date.now()-24*3600000) {
@@ -1516,6 +1566,7 @@ async function handleApi(request, env) {
         .bind(reportUserId,'anonymous+'+anonHash+'@degolem.invalid','anonymous-account').run();
     }
 
+    const reportId=randomId();
     await env.DB.prepare(`
       INSERT INTO reports(
         id,
@@ -1533,7 +1584,7 @@ async function handleApi(request, env) {
       )
       VALUES(?,?,?,?,?,?,?,'pending',?,?,?,?)
     `).bind(
-      randomId(),
+      reportId,
       reportUserId,
       "",
       stop.stop_name,
@@ -1546,11 +1597,24 @@ async function handleApi(request, env) {
       gpsConfirmed
     ).run();
 
+    if(foto) await env.DB.prepare("INSERT INTO report_photos(report_id,mime,data,created_at) VALUES(?,?,?,?)").bind(reportId,foto.mime,foto.bytes,new Date().toISOString()).run();
+
     return json({
       success:true,
       message:"Melding is meteen zichtbaar als niet bevestigd.",
-      gps_confirmed:!!gpsConfirmed
+      gps_confirmed:!!gpsConfirmed,
+      foto:!!foto
     },201);
+  }
+
+  // Foto bij een melding: openbaar zodra de melding bevestigd is, beheerders zien ze altijd.
+  const fotoPad=path.match(/^\/api\/reports\/([A-Za-z0-9-]{8,64})\/foto$/);
+  if(fotoPad && method === "GET") {
+    const rij=await env.DB.prepare("SELECT p.mime,p.data,r.status FROM report_photos p JOIN reports r ON r.id=p.report_id WHERE p.report_id=?").bind(fotoPad[1]).first();
+    if(!rij) return json({error:"Geen foto"},404);
+    const user=await currentUser(request,env),admin=user&&user.role==="admin";
+    if(rij.status!=="approved"&&!admin) return json({error:"Deze foto is zichtbaar zodra de melding bevestigd is."},403);
+    return new Response(new Uint8Array(rij.data),{headers:{"Content-Type":rij.mime,"Cache-Control":admin&&rij.status!=="approved"?"private, no-store":"public, max-age=3600","X-Content-Type-Options":"nosniff"}});
   }
 
   if(path === "/api/reports/vote" && method === "POST") {
@@ -1588,6 +1652,9 @@ async function handleApi(request, env) {
         r.longitude,
         r.observed_at,
         r.gps_confirmed,
+        r.status,
+        strftime('%Y-%m-%dT%H:%M:%SZ',COALESCE(r.created_at,r.observed_at)) AS created_at,
+        EXISTS(SELECT 1 FROM report_photos p WHERE p.report_id=r.id) AS has_photo,
         CASE WHEN r.route_id='all' THEN '—' ELSE tr.route_short_name END AS route_short_name,
         r.route_id,
         ts.stop_name
