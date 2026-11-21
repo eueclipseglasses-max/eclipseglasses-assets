@@ -1,27 +1,29 @@
 # Configuratie om de Worker (het bestand `albeter`) automatisch vanuit GitHub naar Cloudflare te zetten.
-# Uitleg en stappen: zie DEPLOY.md. Vul de waarden met "vul-in" (en het nul-ID) aan voor je de koppeling aanzet.
+# Uitleg: zie DEPLOY.md.
 
-# 1. Exact de naam van de Worker in Cloudflare (Workers & Pages → naam bovenaan).
-name = "vul-in-worker-naam"
+# Naam van de Worker in Cloudflare. Moet exact kloppen, anders weigert de build.
+name = "curly-block-7b36"
 
 # `albeter` heeft geen extensie; voor het bouwen kopiëren we het naar build/worker.js.
 main = "build/worker.js"
 compatibility_date = "2024-09-23"
 
 # Variabelen die in het dashboard staan (geen geheimen) niet overschrijven.
-# Geheimen zoals DELIJN_API_KEY blijven sowieso bewaard bij een deploy.
+# Geheimen zoals DELIJN_API_KEY en de tweede sleutel blijven sowieso bewaard bij een deploy.
 keep_vars = true
 
-# 3. Het domein. Staat eclipseglasses.eu als "Custom Domain" bij de Worker (Settings → Domains & Routes)?
-#    Laat dit dan zo. Is het een "Route" (bv. eclipseglasses.eu/*), vervang het dan door:
-#    routes = [{ pattern = "eclipseglasses.eu/*", zone_name = "eclipseglasses.eu" }]
+# Het domein. Als Custom Domain gekoppeld aan deze Worker.
 routes = [{ pattern = "eclipseglasses.eu", custom_domain = true }]
+
+# De workers.dev-link aan laten (anders zet een deploy met een domein ze uit),
+# en previewlinks toelaten zodat elke branch/pull request een testversie krijgt.
+workers_dev = true
+preview_urls = true
 
 [build]
 command = "mkdir -p build && cp albeter build/worker.js"
 
-# 2. De D1-databank (Workers & Pages → D1 → je databank: naam en "Database ID").
+# De D1-databank, gekoppeld op ID. De naam is optioneel; zonder naam kan ze niet verkeerd zijn.
 [[d1_databases]]
 binding = "DB"
-database_name = "vul-in-databank-naam"
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "bfd5d01e-00cc-42af-a95d-e56f0002ec1c"
