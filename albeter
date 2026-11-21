@@ -400,7 +400,7 @@ $('authForm').addEventListener('submit',async e=>{
  }catch(err){$('authMessage').textContent=err.message;}
 });
 async function logout(){try{await api('/api/auth/logout',{method:'POST',body:'{}'});}catch{} await startPublicApp();}
-function authAction(){if($('reportForm').classList.contains('hidden'))openAuth();else logout();}
+function authAction(){if($('authButton').textContent.trim()==='Uitloggen')logout();else openAuth();}
 function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton').classList.add('hidden');setMode('login');}
 function showPublicDashboard(){startPublicApp();}
 function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-error'))return;el.insertAdjacentHTML('beforeend','<div class="map-error" style="position:absolute;inset:0;z-index:20;display:grid;place-content:center;text-align:center;padding:24px;background:var(--panel);color:var(--text)"><strong>Kon de kaart niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="location.reload()">Opnieuw proberen</button></div>');console.error('Kaart:',error);}
@@ -1138,7 +1138,7 @@ async function startApp(){
 }
 async function startPublicApp(){
  $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('rankingButton').classList.remove('hidden');
- $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.add('hidden');$('authButton').textContent='Inloggen';
+ $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
  const results=await Promise.allSettled([loadRoutes(),loadReports()]);
