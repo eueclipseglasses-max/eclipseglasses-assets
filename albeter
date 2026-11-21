@@ -763,7 +763,7 @@ function zorgVoorLijnLagen(){
  const bron=id=>{if(!map.getSource(id))map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'Lijntrajecten © OpenStreetMap-bijdragers'});};
  bron('golem-net');bron('golem-lijnen');bron('golem-meldingen');
  const before=map.getStyle().layers?.find(l=>l.type==='symbol')?.id,rond={'line-join':'round','line-cap':'round'};
- if(!map.getLayer('golem-net'))map.addLayer({id:'golem-net',type:'line',source:'golem-net',layout:rond,paint:{'line-color':'#8f98a6','line-width':1}},before);
+ if(!map.getLayer('golem-net'))map.addLayer({id:'golem-net',type:'line',source:'golem-net',layout:rond,paint:{'line-color':'#000000','line-width':['interpolate',['linear'],['zoom'],11,2.5,14,5,17,8]}},before);
  if(!map.getLayer('golem-lijnen-rand'))map.addLayer({id:'golem-lijnen-rand',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':'#ffffff','line-width':2}},before);
  if(!map.getLayer('golem-lijnen'))map.addLayer({id:'golem-lijnen',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':['get','kleur'],'line-width':1}},before);
  const breed=(f)=>['interpolate',['linear'],['zoom'],11,f(2.5),14,f(5),17,f(8)];
@@ -783,9 +783,9 @@ function pasLijnStijlToe(){
  const strook=(w,max)=>['min',w,['/',max,['get','n']]];
  const perZoom=f=>['interpolate',['linear'],['zoom']].concat(...LIJN_STROKEN.map(([z,w,max])=>[z,f(strook(w,max),w)]));
  const offset=perZoom(s=>['*',['get','c'],s]);
- map.setPaintProperty('golem-net','line-color',donker?'#5d6573':'#949cab');
- map.setPaintProperty('golem-net','line-opacity',donker?0.8:0.7);
- map.setPaintProperty('golem-net','line-width',['interpolate',['linear'],['zoom'],10,0.7,13,1.2,15,1.8,17,2.8]);
+ map.setPaintProperty('golem-net','line-color','#000000');
+  map.setPaintProperty('golem-net','line-opacity',1);
+  map.setPaintProperty('golem-net','line-width',['interpolate',['linear'],['zoom'],11,2.5,14,5,17,8]);
  for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setPaintProperty(id,'line-offset',offset);
  map.setPaintProperty('golem-lijnen','line-width',perZoom((s,w)=>['max',1,['-',s,w>3?1:0.6]]));
  map.setPaintProperty('golem-lijnen-rand','line-width',perZoom((s,w)=>['+',s,w>3?2:1.4]));
