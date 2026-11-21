@@ -1,7 +1,7 @@
 # Concept & juridische risicobeheersing
 
 **Status:** werkdocument — geen juridisch advies of formeel advocatenadvies  
-**Datum:** 20 november 2026  
+**Datum:** 21 november 2026  
 **Repository:** `eueclipseglasses-max/eclipseglasses-assets`  
 **Branch:** `concept-legale-indekking`  
 **Werkgebied van deze nota:** Vlaanderen/België, met De Lijn als concreet referentiekader; FreiFahren als vergelijkend productvoorbeeld.
