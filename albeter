@@ -856,10 +856,10 @@ function zorgVoorLijnLagen(){
  if(!map.getLayer('golem-lijnen'))map.addLayer({id:'golem-lijnen',type:'line',source:'golem-lijnen',layout:rond,paint:{'line-color':['get','kleur'],'line-width':1}},before);
  const breed=(f)=>['interpolate',['linear'],['zoom'],11,f(2.5),14,f(5),17,f(8)];
  if(!map.getLayer('golem-melding-gloed'))map.addLayer({id:'golem-melding-gloed',type:'line',source:'golem-meldingen',filter:['all',['==',['geometry-type'],'LineString'],['==',['get','vers'],1],['==',['get','soort'],'rood']],layout:rond,paint:{'line-color':MELDING_ROOD,'line-blur':2,'line-width':breed(w=>w*2.4+5),'line-opacity':0.3}},before);
- if(!map.getLayer('golem-melding-rand'))map.addLayer({id:'golem-melding-rand',type:'line',source:'golem-meldingen',filter:['==',['geometry-type'],'LineString'],layout:rond,paint:{'line-color':'#ffffff','line-width':breed(w=>w+3)}},before);
+ if(map.getLayer('golem-melding-rand'))map.removeLayer('golem-melding-rand');
  if(!map.getLayer('golem-melding'))map.addLayer({id:'golem-melding',type:'line',source:'golem-meldingen',filter:['==',['geometry-type'],'LineString'],layout:rond,paint:{'line-color':['match',['get','soort'],'rood',MELDING_ROOD,'geel','#f5c400','#9097a0'],'line-width':breed(w=>w)}},before);
  if(!map.getLayer('golem-melding-positie-gloed'))map.addLayer({id:'golem-melding-positie-gloed',type:'circle',source:'golem-meldingen',filter:['all',['==',['geometry-type'],'Point'],['==',['get','vers'],1]],paint:{'circle-color':MELDING_ROOD,'circle-radius':14,'circle-opacity':0.3,'circle-blur':0.4}});
- if(!map.getLayer('golem-melding-positie'))map.addLayer({id:'golem-melding-positie',type:'circle',source:'golem-meldingen',filter:['==',['geometry-type'],'Point'],paint:{'circle-color':['case',['==',['get','vers'],1],MELDING_ROOD,'#9097a0'],'circle-radius':['interpolate',['linear'],['zoom'],11,4,15,6.5,18,8],'circle-stroke-color':'#ffffff','circle-stroke-width':2}});
+ if(!map.getLayer('golem-melding-positie'))map.addLayer({id:'golem-melding-positie',type:'circle',source:'golem-meldingen',filter:['==',['geometry-type'],'Point'],paint:{'circle-color':['case',['==',['get','vers'],1],MELDING_ROOD,'#9097a0'],'circle-radius':['interpolate',['linear'],['zoom'],11,4,15,6.5,18,8],'circle-stroke-width':0}});
  if(!map.getLayer('golem-voertuigen'))map.addLayer({id:'golem-voertuigen',type:'circle',source:'golem-voertuigen',paint:{'circle-color':['get','kleur'],'circle-radius':['interpolate',['linear'],['zoom'],11,5,15,8,18,10],'circle-stroke-color':'#ffffff','circle-stroke-width':2.5}});
  pasLijnStijlToe();
 }
@@ -872,14 +872,14 @@ function pasLijnStijlToe(){
  const strook=(w,max)=>['min',w,['/',max,['get','n']]];
  const perZoom=f=>['interpolate',['linear'],['zoom']].concat(...LIJN_STROKEN.map(([z,w,max])=>[z,f(strook(w,max),w)]));
  const offset=perZoom(s=>['*',['get','c'],s]);
- map.setPaintProperty('golem-net','line-color','#000000');
+ map.setPaintProperty('golem-net','line-color',donker?'#45413D':'#77716A');
   map.setPaintProperty('golem-net','line-opacity',1);
   map.setPaintProperty('golem-net','line-width',['interpolate',['linear'],['zoom'],11,2.5,14,5,17,8]);
  for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setPaintProperty(id,'line-offset',offset);
  map.setPaintProperty('golem-lijnen','line-width',perZoom((s,w)=>['max',1,['-',s,w>3?1:0.6]]));
  map.setPaintProperty('golem-lijnen-rand','line-width',perZoom((s,w)=>['+',s,w>3?2:1.4]));
  map.setPaintProperty('golem-lijnen','line-opacity',1);
- if(map.getLayer('golem-melding-rand'))map.setPaintProperty('golem-melding-rand','line-color',donker?'#0b0d10':'#ffffff');
+ 
  map.setPaintProperty('golem-lijnen-rand','line-opacity',0.9);
  map.setPaintProperty('golem-lijnen-rand','line-color',donker?'#0b0d10':'#ffffff');
  for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setLayoutProperty(id,'line-sort-key',['get','sk']);
@@ -1099,7 +1099,7 @@ function drawStopDots(){
    const red=group.some(d=>d.red),tramCount=group.filter(d=>isTramStop(d.stop)).length;
    const opacity=red?Math.max(...group.filter(d=>d.red).map(d=>stopReportOpacity(d.stop.stop_id))):1;
    if(group.length===1){const vers=red&&halteIsVers(group[0].stop.stop_id);if(vers)pulsZichtbaar=true;drawStopDot(ctx,p.x,p.y,red?halteStraal()+1.8:halteStraal(),red?reportMarkerColor(group[0].stop.stop_id,group[0].stop):stopDotColor(group[0].stop,false),red?stopReportOpacity(group[0].stop.stop_id):1,vers);screenStopDots.push({x:p.x,y:p.y,stop:group[0].stop});continue;}
-   ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);const aged=group.filter(d=>d.red).every(d=>!halteIsVers(d.stop.stop_id));const tram=tramCount>group.length/2;ctx.fillStyle=red?(aged?'#929292':'#c93232'):(tram?'#6d3fd6':'#d9a900');ctx.fill();ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();ctx.restore();
+   ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(p.x,p.y,Math.min(17,10+Math.log2(group.length)*1.3),0,Math.PI*2);const aged=group.filter(d=>d.red).every(d=>!halteIsVers(d.stop.stop_id));const tram=tramCount>group.length/2;ctx.fillStyle=red?(aged?'#929292':'#c93232'):(tram?'#6d3fd6':'#d9a900');ctx.fill();if(red){ctx.lineWidth=2;ctx.strokeStyle=document.documentElement.dataset.theme==='dark'?'#080a0d':'#fff';ctx.stroke();}ctx.restore();
    ctx.fillStyle=(!red&&tramCount<=group.length/2)?'#1d1a10':'#fff';ctx.font='bold 10px Arial';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(String(group.length),p.x,p.y);
    screenStopDots.push({x:p.x,y:p.y,cluster:group});
   }
@@ -1117,7 +1117,7 @@ function drawStopDots(){
 function drawStopDot(ctx,x,y,r,color,opacity=1,puls=false){
  const donker=document.documentElement.dataset.theme==='dark';
  if(puls){const f=(performance.now()%1600)/1600;ctx.save();ctx.globalAlpha=0.55*(1-f);ctx.beginPath();ctx.arc(x,y,r+2+f*10,0,Math.PI*2);ctx.fillStyle='#e53935';ctx.fill();ctx.restore();}
- ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=r<3?1:1.3;ctx.strokeStyle=donker?'#080a0d':'rgba(30,30,30,.7)';ctx.stroke();ctx.restore();
+ ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();if(color!=='#f5c400'&&color!=='#8b5cf6'){ctx.lineWidth=r<3?1:1.3;ctx.strokeStyle=donker?'#080a0d':'rgba(30,30,30,.7)';ctx.stroke();}ctx.restore();
 }
 async function handleStopDotClick(e){
  let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if((!hit||best>8)&&toonVoertuigBijKlik(e))return;if(!hit){toonLijnenBijKlik(e);return;}
