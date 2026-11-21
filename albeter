@@ -1690,7 +1690,7 @@ async function handleApi(request, env) {
         gps_confirmed,
         meegestapt
       )
-      VALUES(?,?,?,?,?,?,?,'pending',?,?,?,?,?)
+      VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)
     `).bind(
       reportId,
       reportUserId,
@@ -1699,6 +1699,7 @@ async function handleApi(request, env) {
       stop.stop_lat,
       stop.stop_lon,
       observed.toISOString(),
+      user?.role==="admin"?"approved":"pending",
       new Date(Date.now()+REPORT_LIFETIME_HOURS*3600000).toISOString(),
       b.route_id,
       b.stop_id,
