@@ -840,11 +840,11 @@ async function tekenMeldingStukken(){
 }
 // Bij een drukke straat of halte (meer dan 5 lijnnummers) kleuren we niets bij: dan wordt het te druk.
 // De lijnen staan wel in de popup; kies er één en die kleurt.
+// Een aangetikte weg of halte toont de gedeelde routebundel via het zwarte basisnetwerk.
+// Alleen een expliciet gekozen lijn (gekozenLijnId) krijgt haar eigen kleur en volledige traject.
 function zetTijdelijkeFocus(ids,popup){
- const nummers=new Set(allRoutes.filter(r=>ids.includes(r.route_id)).map(r=>r.route_short_name));
- if(nummers.size>5)return;
- tijdelijkeFocus=ids;addRouteLinesToMap();
- popup.on('close',()=>{if(tijdelijkeFocus===ids){tijdelijkeFocus=[];addRouteLinesToMap();}});
+ tijdelijkeFocus=[];
+ addRouteLinesToMap();
 }
 function zorgVoorLijnLagen(){
  const bron=id=>{if(!map.getSource(id))map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'Lijntrajecten © OpenStreetMap-bijdragers'});};
