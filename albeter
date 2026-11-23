@@ -872,7 +872,7 @@ function pasLijnStijlToe(){
  const strook=(w,max)=>['min',w,['/',max,['get','n']]];
  const perZoom=f=>['interpolate',['linear'],['zoom']].concat(...LIJN_STROKEN.map(([z,w,max])=>[z,f(strook(w,max),w)]));
  const offset=perZoom(s=>['*',['get','c'],s]);
- map.setPaintProperty('golem-net','line-color',donker?'#45413D':'#77716A');
+ map.setPaintProperty('golem-net','line-color',donker?'#343434':'#4A4A4A');
   map.setPaintProperty('golem-net','line-opacity',1);
   map.setPaintProperty('golem-net','line-width',['interpolate',['linear'],['zoom'],11,2.5,14,5,17,8]);
  for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setPaintProperty(id,'line-offset',offset);
