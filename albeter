@@ -843,8 +843,14 @@ async function tekenMeldingStukken(){
 // Een aangetikte weg of halte toont de gedeelde routebundel via het zwarte basisnetwerk.
 // Alleen een expliciet gekozen lijn (gekozenLijnId) krijgt haar eigen kleur en volledige traject.
 function zetTijdelijkeFocus(ids,popup){
- tijdelijkeFocus=[];
+ tijdelijkeFocus=ids;
  addRouteLinesToMap();
+ popup.on('close',()=>{
+  if(tijdelijkeFocus===ids){
+   tijdelijkeFocus=[];
+   addRouteLinesToMap();
+  }
+ });
 }
 function zorgVoorLijnLagen(){
  const bron=id=>{if(!map.getSource(id))map.addSource(id,{type:'geojson',data:{type:'FeatureCollection',features:[]},attribution:'Lijntrajecten © OpenStreetMap-bijdragers'});};
@@ -872,7 +878,7 @@ function pasLijnStijlToe(){
  const strook=(w,max)=>['min',w,['/',max,['get','n']]];
  const perZoom=f=>['interpolate',['linear'],['zoom']].concat(...LIJN_STROKEN.map(([z,w,max])=>[z,f(strook(w,max),w)]));
  const offset=perZoom(s=>['*',['get','c'],s]);
- map.setPaintProperty('golem-net','line-color',donker?'#343434':'#4A4A4A');
+ map.setPaintProperty('golem-net','line-color',donker?'#45413D':'#77716A');
   map.setPaintProperty('golem-net','line-opacity',1);
   map.setPaintProperty('golem-net','line-width',['interpolate',['linear'],['zoom'],11,2.5,14,5,17,8]);
  for(const id of ['golem-lijnen','golem-lijnen-rand'])map.setPaintProperty(id,'line-offset',offset);
@@ -956,7 +962,7 @@ async function tekenLijnen(){
    const strips=new Map();
    for(const rid of rids){
     const soort=focus.get(rid);if(!soort)continue;
-    const info=idx.lijnen[rid],kleur=lijnKleur(idx.groepen[info.g]||info),sleutel=kleur;
+    const info=idx.lijnen[rid],donker=document.documentElement.dataset.theme==='dark',kleur=soort==='tijdelijk'?(donker?'#343434':'#4A4A4A'):lijnKleur(idx.groepen[info.g]||info),sleutel=soort==='tijdelijk'?'gedeeld-'+kleur:kleur;
     if(!strips.has(sleutel))strips.set(sleutel,{kleur,ids:[],orde:info.g,sk:soort==='kies'?10:0});
     const x=strips.get(sleutel);x.ids.push(rid);x.orde=Math.min(x.orde,info.g);
    }
