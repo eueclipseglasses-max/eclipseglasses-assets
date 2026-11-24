@@ -9,12 +9,7 @@
 
 ## Eenmalig instellen (± 10 minuten)
 
-1. **Vul `wrangler.toml` in** (drie waarden, staan erin uitgelegd):
-   - de naam van de Worker;
-   - de naam en het ID van de D1-databank;
-   - hoe het domein gekoppeld is: Custom Domain of Route.
-
-   Commit dit via een pull request. Met die waarden kan ik het ook voor je doen.
+1. **`wrangler.toml` is ingevuld:** Worker `curly-block-7b36`, D1-databank op ID, domein `eclipseglasses.eu` als Custom Domain. De workers.dev-link en previewlinks blijven aan.
 2. **Koppel GitHub in Cloudflare:** Workers & Pages → je Worker → **Settings** → **Build** → **Connect** → kies GitHub en de repository `eclipseglasses-assets`.
    - Productiebranch: `main`.
    - Build command: leeg laten (staat al in `wrangler.toml`).
