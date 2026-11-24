@@ -20,6 +20,11 @@ routes = [{ pattern = "eclipseglasses.eu", custom_domain = true }]
 workers_dev = true
 preview_urls = true
 
+# Elke minuut een kleine stap van de import van het netwerk van heel Vlaanderen (lijnen en haltes van De Lijn).
+# Is alles bijgewerkt, dan doet de stap niets tot de wekelijkse vernieuwing.
+[triggers]
+crons = ["* * * * *"]
+
 [build]
 command = "mkdir -p build && cp albeter build/worker.js"
 

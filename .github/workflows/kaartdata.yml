@@ -1,10 +1,13 @@
-# Bouwt elke week de lijntrajecten (bus en tram) uit OpenStreetMap en zet ze op de branch "kaartdata".
+# Bouwt de lijntrajecten (bus en tram) van heel Vlaanderen uit OpenStreetMap en zet ze op de branch "kaartdata".
 # De app (albeter) leest ze via /kaartdata/... . Uitleg: kaartdata/LEESMIJ.md
+#
+# Draait elke nacht, maar bouwt alleen opnieuw als het netwerk in de app veranderd is
+# of als de kaartdata een week oud is. Met "Run workflow" bouw je altijd meteen.
 name: Kaartdata lijntrajecten
 
 on:
   schedule:
-    - cron: "17 3 * * 1"          # elke maandag om 03:17 UTC
+    - cron: "17 3 * * *"          # elke nacht om 03:17 UTC
   workflow_dispatch: {}             # handmatig starten via het tabblad Actions
   push:
     paths:
@@ -21,7 +24,9 @@ concurrency:
 jobs:
   bouw:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
+    env:
+      APP_URL: https://eclipseglasses.eu
     steps:
       - uses: actions/checkout@v4
 
@@ -29,27 +34,38 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Python-module voor OpenStreetMap
+        run: pip install --quiet osmium==4.3.2
+
+      - name: Nieuwe bouw nodig?
+        id: nodig
+        if: github.event_name == 'schedule'
+        run: python kaartdata/bouw_lijnen.py --controleer --huidige-index "https://raw.githubusercontent.com/${{ github.repository }}/kaartdata/index.json"
+
       - name: Hulpmiddelen installeren
+        if: steps.nodig.outputs.nodig != 'false'
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq osmium-tool
-          pip install --quiet osmium==4.3.2
 
       - name: OpenStreetMap België downloaden (Geofabrik)
+        if: steps.nodig.outputs.nodig != 'false'
         run: curl -fsSL --retry 3 --retry-delay 20 -o belgie.osm.pbf https://download.geofabrik.de/europe/belgium-latest.osm.pbf
 
       - name: Alleen bus- en tramtrajecten overhouden
+        if: steps.nodig.outputs.nodig != 'false'
         run: osmium tags-filter belgie.osm.pbf r/route=bus,tram r/route_master=bus,tram -o trajecten.osm.pbf --overwrite
 
       - name: Lijntrajecten bouwen en koppelen aan de lijnen van de app
-        env:
-          APP_URL: https://eclipseglasses.eu
+        if: steps.nodig.outputs.nodig != 'false'
         run: python kaartdata/bouw_lijnen.py --osm trajecten.osm.pbf --uit uitvoer
 
       - name: Rapport tonen
+        if: steps.nodig.outputs.nodig != 'false'
         run: cat uitvoer/RAPPORT.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publiceren naar de branch kaartdata
+        if: steps.nodig.outputs.nodig != 'false'
         run: |
           cd uitvoer
           git init -q -b kaartdata

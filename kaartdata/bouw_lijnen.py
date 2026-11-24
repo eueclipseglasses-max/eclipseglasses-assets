@@ -30,6 +30,7 @@ import os
 import re
 import sys
 import time
+import urllib.parse
 import urllib.request
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -90,7 +91,14 @@ def lees_app_data(args) -> tuple[list[dict], dict[str, list[dict]], dict[str, di
         basis = args.app_url.rstrip("/")
         print(f"App-data ophalen van {basis} …")
         routes = haal_json(basis + "/api/routes")
-        stops = haal_json(basis + "/api/stops")
+        # Haltes komen in pagina's (heel Vlaanderen past niet in één antwoord).
+        stops, na = [], ""
+        for _ in range(200):
+            pagina = haal_json(basis + "/api/stops?aantal=5000&na=" + urllib.parse.quote(na))
+            stops += pagina.get("stops", [])
+            na = pagina.get("volgende") or ""
+            if not na:
+                break
     routes = routes.get("routes", routes) if isinstance(routes, dict) else routes
     stops = stops.get("stops", stops) if isinstance(stops, dict) else stops
 
@@ -762,14 +770,55 @@ def bouw_netwerk(gekoppeld: list[dict], wegen: dict, uit: Path) -> tuple[dict, l
     return {"tegels": tegels, "grootte": grootte, "stukken": len(kettingen)}, groepen, routes, extra
 
 
+def controleer(args) -> int:
+    """Nieuwe bouw nodig? Ja als het netwerk in de app nieuwer is, of als de kaartdata ouder is dan 7 dagen.
+    Tijdens een lopende import van het netwerk wachten we (tenzij de kaartdata al een week oud is)."""
+    nodig, reden = True, "geen huidige kaartdata"
+    try:
+        netwerk = haal_json(args.app_url.rstrip("/") + "/api/netwerk")
+    except Exception:  # noqa: BLE001
+        netwerk = {}
+    try:
+        huidig = haal_json(args.huidige_index) if args.huidige_index else {}
+    except Exception:  # noqa: BLE001
+        huidig = {}
+    if huidig.get("gemaakt"):
+        leeftijd = (datetime.now(timezone.utc) - datetime.strptime(huidig["gemaakt"], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)).days
+        if leeftijd >= 7:
+            nodig, reden = True, f"kaartdata is {leeftijd} dagen oud"
+        elif netwerk.get("bezig"):
+            nodig, reden = False, "het netwerk wordt nog ingeladen"
+        elif netwerk.get("versie") and netwerk.get("versie") != huidig.get("bron_versie"):
+            nodig, reden = True, "nieuw netwerk in de app"
+        else:
+            nodig, reden = False, "niets veranderd"
+    print(f"Nieuwe bouw nodig: {'ja' if nodig else 'nee'} ({reden})")
+    if os.environ.get("GITHUB_OUTPUT"):
+        with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as f:
+            f.write(f"nodig={'true' if nodig else 'false'}\n")
+    return 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--osm", required=True, help="OSM-bestand (.osm.pbf), liefst al gefilterd op route=bus,tram")
+    ap.add_argument("--osm", help="OSM-bestand (.osm.pbf), liefst al gefilterd op route=bus,tram")
+    ap.add_argument("--controleer", action="store_true", help="alleen nagaan of een nieuwe bouw nodig is (schrijft nodig=true/false naar $GITHUB_OUTPUT)")
+    ap.add_argument("--huidige-index", default="", help="URL van de huidige index.json (voor --controleer)")
     ap.add_argument("--uit", default="uitvoer", help="uitvoermap")
     ap.add_argument("--app-url", default=os.environ.get("APP_URL", "https://eclipseglasses.eu"))
     ap.add_argument("--routes-json", help="lokaal bestand i.p.v. /api/routes (om te testen)")
     ap.add_argument("--stops-json", help="lokaal bestand i.p.v. /api/stops (om te testen)")
     args = ap.parse_args()
+    args.bron_versie = None
+    if not (args.routes_json and args.stops_json):
+        try:
+            args.bron_versie = haal_json(args.app_url.rstrip("/") + "/api/netwerk").get("versie")
+        except Exception as fout:  # noqa: BLE001
+            print(f"  netwerkversie onbekend ({fout})", file=sys.stderr)
+    if args.controleer:
+        return controleer(args)
+    if not args.osm:
+        ap.error("--osm is verplicht")
 
     routes, per_lijn, alle_haltes = lees_app_data(args)
     trajecten, osm_haltes, geo = lees_osm(args.osm)
@@ -794,19 +843,21 @@ def main() -> int:
             problemen.append((r, res["status"], res["dekking"], res["kandidaten"]))
             continue
         ts = res["trajecten"]
-        kleur = next((t.kleur for t in ts if t.kleur), None)
-        tekst = next((t.tekstkleur for t in ts if t.tekstkleur), None)
+        # Kleur: eerst de officiële van De Lijn (uit de app), anders die uit OpenStreetMap.
+        kleur = normaliseer_kleur(r.get("kleur")) or next((t.kleur for t in ts if t.kleur), None)
+        tekst = normaliseer_kleur(r.get("tekstkleur")) or next((t.tekstkleur for t in ts if t.tekstkleur), None)
+        soort = "tram" if str(r.get("vervoer") or "").upper() == "TRAM" else ts[0].soort
         # Gaten tussen de OSM-stukken van één lijn (bv. Kusttram in stukken) ook dichten.
         eigen = {w for x in ts for w, _ in x.wegen}
         alle_wegen, n_route, gaten = overbrug([w for x in ts for w, _ in x.wegen], geo, geo.net)
         extra = [(w, 1) for w in dict.fromkeys(alle_wegen) if w not in eigen]
         gekoppeld.append({"rid": rid, "naam": str(r.get("route_short_name", "")), "kleur": kleur, "tekst": tekst,
-                          "soort": ts[0].soort, "trajecten": ts, "extra": extra, "gaten": gaten, "route": r,
+                          "soort": soort, "trajecten": ts, "extra": extra, "gaten": gaten, "route": r,
                           "gedicht": n_route + sum(getattr(x, "gedicht", 0) for x in ts)})
-        kleurbron["OpenStreetMap" if kleur else "standaard bus/tram"] += 1
+        kleurbron["De Lijn" if normaliseer_kleur(r.get("kleur")) else "OpenStreetMap" if kleur else "standaard bus/tram"] += 1
         w = min(t.bbox[0] for t in ts); s = min(t.bbox[1] for t in ts)
         e = max(t.bbox[2] for t in ts); n = max(t.bbox[3] for t in ts)
-        index[rid] = {"k": kleur, "t": tekst, "m": ts[0].soort,
+        index[rid] = {"k": kleur, "t": tekst, "m": soort,
                       "b": [round(w, 4), round(s, 4), round(e, 4), round(n, 4)], "d": round(res["dekking"], 2)}
         if res["dekking"] < 0.9:
             problemen.append((r, "gekoppeld, maar niet alle haltes liggen op het traject", res["dekking"], ts))
@@ -819,7 +870,7 @@ def main() -> int:
         index[rid].update(x)
     nu = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     (uit / "index.json").write_text(json.dumps(
-        {"versie": 2, "gemaakt": nu, "bron": "© OpenStreetMap-bijdragers (ODbL)",
+        {"versie": 2, "gemaakt": nu, "bron": "© OpenStreetMap-bijdragers (ODbL)", "bron_versie": args.bron_versie,
          "tegelmaat": [TEGEL_LON, TEGEL_LAT], "groepen": groepen, "routes": net_routes,
          "tegels": net["tegels"], "lijnen": index},
         separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
@@ -843,7 +894,7 @@ def main() -> int:
         f"- Lijnen in de app: **{totaal}**",
         f"- Gekoppeld aan een OSM-traject: **{ok}** ({(ok / totaal * 100 if totaal else 0):.0f}%)",
         f"- Wegennet: {net['stukken']} stukken straat in {len(net['tegels'])} tegels ({net['grootte'] / 1024:.0f} KB samen)",
-        f"- Kleur uit OpenStreetMap: {kleurbron['OpenStreetMap']}, standaardkleur bus/tram: {kleurbron['standaard bus/tram']}",
+        f"- Kleur van De Lijn: {kleurbron['De Lijn']}, uit OpenStreetMap: {kleurbron['OpenStreetMap']}, standaardkleur bus/tram: {kleurbron['standaard bus/tram']}",
         f"- Witte lijnborden: {sum(1 for x in index.values() if (x.get('k') or '') == '#FFFFFF')} lijnen, "
         f"waarvan {sum(1 for x in index.values() if (x.get('k') or '') == '#FFFFFF' and x.get('t'))} met cijferkleur (text_colour) in OSM",
         f"- App-haltes met een haltenummer in OSM: {sum(1 for h in alle_haltes.values() if h['nr'] in osm_haltes)} van {len(alle_haltes)}",

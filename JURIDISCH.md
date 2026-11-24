@@ -1,6 +1,6 @@
 # De Golem – juridisch overzicht
 
-*Laatst bijgewerkt: 21 november 2026. Dit is geen juridisch advies: laat de teksten nakijken door een jurist voor de officiële lancering.*
+*Laatst bijgewerkt: 24 november 2026. Dit is geen juridisch advies: laat de teksten nakijken door een jurist voor de officiële lancering.*
 
 ## 1. Uitgangspunt
 
@@ -15,7 +15,7 @@ De Golem is **louter informatief**: reizigers melden waar ze een controle ("plat
 
 | Plaats | Inhoud |
 |---|---|
-| Melding bij het openen | Verschijnt één keer per versie (`VOORAF_VERSIE` in `albeter`). Bevat: ticket verplicht (boete tot € 474), louter informatief, niet verbonden aan De Lijn, respect voor controleurs en geen herkenbare personen fotograferen. Met links naar de voorwaarden en het privacybeleid. |
+| Melding bij het openen | Een kaartje onderaan over de kaart (de kaart zelf is meteen zichtbaar); melden kan pas na "Begrepen". Verschijnt één keer per versie (`VOORAF_VERSIE` in `albeter`). Bevat: ticket verplicht (boete tot € 474), louter informatief, niet verbonden aan De Lijn, respect voor controleurs en geen herkenbare personen fotograferen. Met links naar de voorwaarden en het privacybeleid. |
 | Meldformulier | Vaste regel: "Louter informatief: een geldig vervoerbewijs blijft altijd verplicht." |
 | `/voorwaarden` | Informatief karakter, ticketplicht, geen garantie en beperking van aansprakelijkheid, regels voor meldingen en foto's, moderatie, niet verbonden aan De Lijn, wijzigingen, Belgisch recht. |
 | `/privacy` | Welke gegevens, doel en grondslag, bewaartermijnen, delen (Cloudflare, OpenFreeMap), lokale opslag en cookie, rechten en klacht bij de Gegevensbeschermingsautoriteit. |
@@ -30,7 +30,8 @@ De Golem is **louter informatief**: reizigers melden waar ze een controle ("plat
 | Melding (lijn, halte, tijdstip, "rijdt mee") | De dienst laten werken | Zichtbaar tot 30 min na de laatste bevestiging, daarna alleen voor statistiek (zonder naam) |
 | Push-abonnement, straal, lijnen, locatie (±100 m) | "Waarschuw me" | Gewist bij uitzetten of na 30 dagen niet gebruikt |
 | Gehashte code van de internetverbinding | Misbruik voorkomen en meldlimiet | 24 uur (automatisch gewist) |
-| GPS (optioneel, alleen na tikken) | Vergelijken met de halte | Niet bewaard |
+| GPS (optioneel, alleen als je je locatie op de kaart aanzet) | Vergelijken met de halte | Niet bewaard |
+| Ruwe ligging van de verbinding (van Cloudflare, ±1 km) | Kaart bij een eerste bezoek in je regio openen | Niet bewaard |
 | Foto (optioneel) | Melding staven | 30 dagen (automatisch gewist); EXIF/GPS van de foto wordt in de app verwijderd |
 | Account (optioneel) | Inloggen | Zolang het account bestaat |
 
