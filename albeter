@@ -207,7 +207,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .map-tools button{font-size:10px}
 }
 .lijn-keuze{display:flex;align-items:center;gap:8px;width:100%;margin-top:6px;padding:7px 8px;text-align:left;font-weight:600;line-height:1.25;background:var(--panel2);color:var(--text);border:1px solid var(--border)}
-.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.foto-veld{display:flex;align-items:center;gap:10px}.foto-knop{flex:none;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--panel2)!important;color:var(--text)!important;border:1px solid var(--border)}.foto-knop.heeft-foto{border-color:var(--orange);color:var(--orange)!important}.foto-info{font-size:12px;color:var(--muted);line-height:1.3}.foto-voorbeeld{position:relative;display:inline-flex}.foto-voorbeeld:empty{display:none}.foto-voorbeeld img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-wis{position:absolute;top:-7px;right:-7px;width:20px;height:20px;padding:0;border-radius:50%;font-size:13px;line-height:1;background:#e53935!important;color:#fff!important}.report-foto{display:block;margin-top:9px}.report-foto img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-icoon{vertical-align:-3px;margin-right:2px}.meerijden{display:flex;gap:10px;align-items:flex-start;margin:4px 0 12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);cursor:pointer;line-height:1.35}.meerijden input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:#e53935}.meerijden small{color:var(--muted)}.tag-meerijden{background:rgba(229,57,53,.14);color:#c62828;font-weight:700}.lijn-kiezer-veld{position:relative}.lijn-kiezer-veld #routeSelect{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.lijn-kiezer{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:7px;text-align:left;font-weight:600;font:inherit;box-shadow:none}.lijn-kiezer-tekst{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lijn-kiezer-pijl{flex:none;opacity:.7}.lijn-kiezer-paneel{position:absolute;left:0;right:0;top:100%;z-index:60;margin-top:4px;max-height:min(60vh,420px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:10px}.lijn-zoek{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input);color:var(--text);font:inherit}.keuze-blad .lijn-zoek{font-size:16px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
+.lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.foto-veld{display:flex;align-items:center;gap:10px}.foto-knop{flex:none;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--panel2)!important;color:var(--text)!important;border:1px solid var(--border)}.foto-knop.heeft-foto{border-color:var(--orange);color:var(--orange)!important}.foto-info{font-size:12px;color:var(--muted);line-height:1.3}.foto-voorbeeld{position:relative;display:inline-flex}.foto-voorbeeld:empty{display:none}.foto-voorbeeld img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-wis{position:absolute;top:-7px;right:-7px;width:20px;height:20px;padding:0;border-radius:50%;font-size:13px;line-height:1;background:#e53935!important;color:#fff!important}.report-foto{display:block;margin-top:9px}.report-foto img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-icoon{vertical-align:-3px;margin-right:2px}.meerijden{display:flex;gap:10px;align-items:flex-start;margin:4px 0 12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);cursor:pointer;line-height:1.35}.meerijden input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:#e53935}.meerijden small{color:var(--muted)}.tag-meerijden{background:rgba(229,57,53,.14);color:#c62828;font-weight:700}.tag-betrouwbaar{letter-spacing:.5px}.volg-lijnen{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}.volg-lijn{display:inline-flex;align-items:center;gap:2px}.volg-lijn button{padding:0 6px;min-height:0;background:transparent!important;color:var(--muted)!important;font-size:18px;line-height:1;border:0}.lijn-kiezer-veld{position:relative}.lijn-kiezer-veld #routeSelect{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.lijn-kiezer{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:7px;text-align:left;font-weight:600;font:inherit;box-shadow:none}.lijn-kiezer-tekst{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lijn-kiezer-pijl{flex:none;opacity:.7}.lijn-kiezer-paneel{position:absolute;left:0;right:0;top:100%;z-index:60;margin-top:4px;max-height:min(60vh,420px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:10px}.lijn-zoek{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input);color:var(--text);font:inherit}.keuze-blad .lijn-zoek{font-size:16px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
 </style>
 </head>
 <body>
@@ -272,7 +272,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
     <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
    </div>
    <div id="map"><div id="mapLoading" style="position:absolute;inset:0;display:grid;place-content:center;gap:10px;text-align:center;color:var(--muted);background:var(--map-bg);z-index:2"><span class="skeleton-line" style="width:180px"></span><span>Kaart wordt geladen…</span></div></div>
-   <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Melding (&lt; 25 min)</span><span><i class="legend-dot legend-grey"></i>25 min – 1 uur</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
+   <div class="map-legend"><span><i class="legend-dot legend-blue"></i>Bus</span><span><i class="legend-dot legend-orange"></i>Tram</span><span><i class="legend-dot legend-red"></i>Melding (&lt; 20 min)</span><span><i class="legend-dot legend-grey"></i>20–30 min</span><span class="muted">Klik op een halte om een lijn te kiezen.</span></div>
    <p class="notice">Kaartgegevens © OpenStreetMap-bijdragers. Een melding is een gebruikerswaarneming, geen onafhankelijke bevestiging.</p>
   </section>
   <aside class="side">
@@ -290,6 +290,14 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
      <button class="full" id="submitReportButton">Verstuur</button>
      <div id="reportMessage" class="error"></div>
     </form>
+   </section>
+   <section class="panel" id="straalPanel">
+    <h3>Waarschuw me</h3>
+    <p class="notice">Krijg een melding als er een controle gemeld wordt in je buurt of op je lijnen. Je kunt meteen antwoorden met "Nog actief" of "Weg".</p>
+    <div class="field"><label for="straalKeuze">Straal rond mijn locatie</label><select id="straalKeuze"><option value="0">Niet, alleen mijn lijnen</option><option value="1000">1 km</option><option value="2000" selected>2 km</option><option value="3000">3 km</option></select></div>
+    <div class="field"><label>Mijn lijnen</label><div id="volgLijnen" class="volg-lijnen"><span class="muted">Nog geen lijnen.</span></div><button type="button" class="secondary full" id="volgLijnKnop" disabled>Volg de gekozen lijn</button></div>
+    <button type="button" class="full" id="straalKnop">Meldingen aanzetten</button>
+    <p id="straalInfo" class="notice"></p>
    </section>
    <section class="panel">
     <h3>Recente platte banden</h3>
@@ -309,7 +317,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script>
-const REPORT_LIFETIME_HOURS=1;
+const REPORT_LIFETIME_HOURS=0.5;
 let mode='login', map;
 let coordinatePickMode=false;
 const CITY_MIN_REPORTERS=20;
@@ -489,7 +497,13 @@ function initMap(){
 function tijdMs(s){if(s==null||s==='')return NaN;if(typeof s==='number')return s;const v=String(s).trim();return Date.parse(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2}(\.\d+)?)?$/.test(v)?v.replace(' ','T')+'Z':v);}
 function formatDate(s){return new Date(tijdMs(s)).toLocaleString('nl-BE',{dateStyle:'medium',timeStyle:'short'});}
 function timeAgo(s){const m=Math.max(0,Math.floor((Date.now()-tijdMs(s))/60000));if(m<1)return 'zojuist';if(m<60)return m+' min geleden';const h=Math.floor(m/60);return h<24?h+' uur geleden':Math.floor(h/24)+' dagen geleden';}
-const MELDING_VERS_MS=25*60000,MELDING_WEG_MS=60*60000;
+// Zonder nieuwe bevestiging: 20 min rood, daarna grijs, na 30 min weg. Een "nog actief" zet de klok terug op nul.
+const MELDING_VERS_MS=20*60000,MELDING_WEG_MS=30*60000;
+// Melden meerdere mensen "weg" (en meer dan "nog actief"), dan verdwijnt de melding meteen.
+function meldingWeggestemd(r){const g=Number(r.gone_count||0),s=Number(r.still_count||0);return g>=2&&g>s;}
+// Betrouwbaarheid: elke bevestiging telt, GPS en goedkeuring tellen extra, "weg" telt tegen.
+function betrouwbaarheid(r){const s=1+Number(r.still_count||0)+(Number(r.gps_confirmed)?1:0)+(r.status==='approved'?2:0)-1.5*Number(r.gone_count||0);return s>=4?3:s>=2?2:1;}
+function betrouwbaarheidTag(r){const n=betrouwbaarheid(r),woord=['','laag','middel','hoog'][n];return '<span class="tag tag-betrouwbaar" title="Betrouwbaarheid: '+woord+'">'+'●'.repeat(n)+'○'.repeat(3-n)+' '+woord+'</span>';}
 // Controle die meerijdt: geschatte positie = vertrekhalte + gemiddelde snelheid x verstreken tijd
 // (bus ±18 km/u, tram ±23 km/u, stops inbegrepen), hoogstens MEERIJ_MAX_MIN minuten of tot het einde van de lijn.
 // Stemmen meer mensen "weg" dan "nog daar", dan stopt het meerijden.
@@ -521,7 +535,7 @@ function reportCard(r,admin=false){
   :'<span class="tag">'+FOTO_ICOON+'Foto · zichtbaar na bevestiging</span>';
  return '<article class="report" style="opacity:'+reportAgeOpacity(tijd)+'">'+
   '<div class="report-head"><span class="report-title">'+esc(stop)+'</span><time class="report-time" title="'+esc(formatDate(r.created_at))+'">'+esc(bevestigd?'bevestigd '+timeAgo(r.last_still_at):timeAgo(r.created_at))+'</time></div>'+
-  '<div class="report-meta">'+route+meerijTag+status+gps+(fotoZichtbaar?'':foto)+'</div>'+(fotoZichtbaar?foto:'')+
+  '<div class="report-meta">'+route+meerijTag+betrouwbaarheidTag(r)+status+gps+(fotoZichtbaar?'':foto)+'</div>'+(fotoZichtbaar?foto:'')+
   actions+adminActions+'</article>';
 }
 let gpsCheck=null,fotoData=null,fotoUrl=null;
@@ -597,9 +611,67 @@ async function openCamera(){
  });
 }
 $('fotoKnop').addEventListener('click',openCamera);
+// ---------- Waarschuw me (straalmelding) ----------
+const straal={aan:false,straal:2000,lijnen:[]};
+try{Object.assign(straal,JSON.parse(localStorage.getItem('degolem_straal')||'{}'));}catch(e){}
+let straalLocatieTimer=0;
+function bewaarStraal(){try{localStorage.setItem('degolem_straal',JSON.stringify(straal));}catch(e){}}
+const pushMogelijk=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+async function pushAbonnement(){if(!pushMogelijk())return null;const reg=await navigator.serviceWorker.getRegistration();return reg?reg.pushManager.getSubscription():null;}
+function huidigePositie(){return new Promise(ok=>{if(!navigator.geolocation)return ok(null);navigator.geolocation.getCurrentPosition(p=>ok({lat:p.coords.latitude,lon:p.coords.longitude}),()=>ok(null),{enableHighAccuracy:false,timeout:10000,maximumAge:120000});});}
+function toonStraal(){
+ $('straalKeuze').value=String(straal.straal);
+ $('straalKnop').textContent=straal.aan?'Meldingen uitzetten':'Meldingen aanzetten';
+ $('straalKnop').classList.toggle('secondary',straal.aan);
+ const sel=gekozenLijnId(),r=sel&&allRoutes.find(x=>x.route_id===sel);
+ $('volgLijnKnop').disabled=!r||lijnBroers(sel).every(x=>straal.lijnen.includes(x));
+ $('volgLijnKnop').textContent=r?'Volg lijn '+r.route_short_name:'Volg de gekozen lijn';
+ const nummers=[...new Map(straal.lijnen.map(id=>{const x=allRoutes.find(y=>y.route_id===id);return x?[x.route_short_name,x]:null;}).filter(Boolean)).values()];
+ $('volgLijnen').innerHTML=nummers.length?nummers.map(x=>'<span class="volg-lijn">'+lijnBadge(x)+'<button type="button" data-nummer="'+esc(x.route_short_name)+'" aria-label="Lijn '+esc(x.route_short_name)+' niet meer volgen">×</button></span>').join(''):'<span class="muted">Nog geen lijnen.</span>';
+ const ios=/iPad|iPhone|iPod/.test(navigator.userAgent),standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+ if(!pushMogelijk())$('straalInfo').textContent=ios&&!standalone?'Op een iPhone: zet De Golem eerst op je beginscherm (Deel → Zet op beginscherm) en open het van daaruit.':'Je browser ondersteunt geen pushmeldingen.';
+}
+async function bewaarAbonnement(){
+ const sub=await pushAbonnement();if(!sub)return false;
+ let pos=null;if(straal.straal>0)pos=await huidigePositie();
+ const j=sub.toJSON();
+ await api('/api/push/abonneer',{method:'POST',body:JSON.stringify({subscription:{endpoint:j.endpoint,keys:j.keys},straal_m:straal.straal,lijnen:straal.lijnen,lat:pos?pos.lat:null,lon:pos?pos.lon:null})});
+ if(straal.straal>0&&!pos)$('straalInfo').textContent='Zonder locatie krijg je alleen meldingen voor je lijnen.';
+ return true;
+}
+async function straalAan(){
+ if(!pushMogelijk()){toonStraal();return;}
+ $('straalInfo').textContent='Even toestemming vragen…';
+ const toestemming=await Notification.requestPermission();
+ if(toestemming!=='granted'){$('straalInfo').textContent='Meldingen zijn geweigerd. Je kunt ze toelaten in de instellingen van je browser.';return;}
+ const reg=await navigator.serviceWorker.ready;
+ let sub=await reg.pushManager.getSubscription();
+ if(!sub){const {publicKey}=await api('/api/push/sleutel');const raw=Uint8Array.from(atob(publicKey.replace(/-/g,'+').replace(/_/g,'/')+'==='.slice((publicKey.length+3)%4)),c=>c.charCodeAt(0));sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:raw});}
+ straal.aan=true;bewaarStraal();await bewaarAbonnement();
+ $('straalInfo').textContent=straal.straal>0?'Aan: je krijgt een melding bij controles binnen '+(straal.straal/1000)+' km'+(straal.lijnen.length?' en op je lijnen.':'.'):'Aan voor je lijnen.';
+ zetStraalLocatie();toonStraal();
+}
+async function straalUit(){
+ const sub=await pushAbonnement().catch(()=>null);
+ if(sub){await api('/api/push/afmelden',{method:'POST',body:JSON.stringify({endpoint:sub.endpoint})}).catch(()=>{});await sub.unsubscribe().catch(()=>{});}
+ straal.aan=false;bewaarStraal();zetStraalLocatie();toonStraal();$('straalInfo').textContent='Meldingen staan uit. Je gegevens voor meldingen zijn gewist.';
+}
+// Zolang de app open is: elke 5 minuten je (afgeronde) locatie bijwerken, zodat de straal klopt.
+function zetStraalLocatie(){
+ clearInterval(straalLocatieTimer);straalLocatieTimer=0;
+ if(!straal.aan||straal.straal<=0)return;
+ const werkBij=async()=>{if(document.hidden)return;const sub=await pushAbonnement().catch(()=>null);const pos=sub&&await huidigePositie();if(pos)api('/api/push/locatie',{method:'POST',body:JSON.stringify({endpoint:sub.endpoint,lat:pos.lat,lon:pos.lon})}).catch(()=>{});};
+ straalLocatieTimer=setInterval(werkBij,300000);
+}
+toonStraal();zetStraalLocatie();
+if(straal.aan&&pushMogelijk())pushAbonnement().then(sub=>{if(sub)bewaarAbonnement().catch(()=>{});else{straal.aan=false;bewaarStraal();toonStraal();}}).catch(()=>{});
+$('straalKnop').addEventListener('click',()=>(straal.aan?straalUit():straalAan()).catch(err=>{$('straalInfo').textContent=err.message||'Dat lukte niet.';}));
+$('straalKeuze').addEventListener('change',()=>{straal.straal=Number($('straalKeuze').value);bewaarStraal();if(straal.aan)bewaarAbonnement().then(()=>zetStraalLocatie()).catch(()=>{});});
+$('volgLijnKnop').addEventListener('click',()=>{const sel=gekozenLijnId();if(!sel)return;for(const b of lijnBroers(sel))if(!straal.lijnen.includes(b))straal.lijnen.push(b);bewaarStraal();toonStraal();if(straal.aan)bewaarAbonnement().catch(()=>{});else $('straalInfo').textContent='Zet meldingen aan om voor deze lijn gewaarschuwd te worden.';});
+$('volgLijnen').addEventListener('click',e=>{const b=e.target.closest('button[data-nummer]');if(!b)return;const weg=new Set(allRoutes.filter(x=>x.route_short_name===b.dataset.nummer).map(x=>x.route_id));straal.lijnen=straal.lijnen.filter(x=>!weg.has(x));bewaarStraal();toonStraal();if(straal.aan)bewaarAbonnement().catch(()=>{});});
 async function loadRoutes(){
  const select=$('routeSelect');select.classList.add('is-loading');select.disabled=true;
- try{const data=await api('/api/routes'+(selectedCity?'?city='+encodeURIComponent(selectedCity):''));allRoutes=data.routes||[];select.innerHTML='<option value="">Kies een lijn</option><option value="all">— Geen specifieke lijn / alle lijnen</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');toonRouteBadge();addRouteLinesToMap();}
+ try{const data=await api('/api/routes'+(selectedCity?'?city='+encodeURIComponent(selectedCity):''));allRoutes=data.routes||[];select.innerHTML='<option value="">Kies een lijn</option><option value="all">— Geen specifieke lijn / alle lijnen</option>'+allRoutes.map(r=>'<option value="'+esc(r.route_id)+'">Lijn '+esc(r.route_short_name)+' · '+esc(r.route_long_name)+'</option>').join('');toonRouteBadge();addRouteLinesToMap();toonStraal();}
  catch(error){select.innerHTML='<option value="">Lijnen konden niet laden</option>';throw error;}
  finally{select.classList.remove('is-loading');select.disabled=false;}
 }
@@ -696,8 +768,6 @@ function focusRoutes(){
  const f=new Map();
  for(const rid of tijdelijkeFocus)for(const b of lijnBroers(rid))f.set(b,'tijdelijk');
  const sel=gekozenLijnId();if(sel)for(const b of lijnBroers(sel))f.set(b,'kies');
- // Een lijn met een melding krijgt haar eigen kleur; het rode en gele stuk liggen erbovenop.
- for(const m of actieveMeldingen)if(m.route_id&&m.route_id!=='all'&&meldingStatus(meldingTijd(m))!=='weg')for(const b of lijnBroers(m.route_id))if(!f.has(b))f.set(b,'melding');
  return f;
 }
 // Traject van één lijn (richting) met de plaats van elke halte erop; alleen geladen als er een melding op die lijn is.
@@ -778,6 +848,13 @@ async function tekenVoertuigen(){
   }
  }
  if(map.getSource('golem-voertuigen'))map.getSource('golem-voertuigen').setData({type:'FeatureCollection',features});
+}
+// Geopend via een pushmelding (?melding=…): naar die halte gaan.
+let gevraagdeMeldingGetoond=false;
+function toonGevraagdeMelding(){
+ if(gevraagdeMeldingGetoond||!map)return;const id=new URLSearchParams(location.search).get('melding');if(!id)return;
+ const m=actieveMeldingen.find(x=>String(x.id)===id);if(!m||m.stop_lon==null)return;
+ gevraagdeMeldingGetoond=true;map.flyTo({center:[Number(m.stop_lon),Number(m.stop_lat)],zoom:16});
 }
 function toonVoertuigBijKlik(e){
  if(!map.getLayer('golem-voertuigen'))return false;
@@ -1147,7 +1224,7 @@ async function loadStops(routeId){
  $('stopSelect').innerHTML='<option value="">Kies een halte</option>'+localStops.map(s=>'<option value="'+esc(s.stop_id)+'">'+esc(s.stop_name)+'</option>').join('');
  $('stopSelect').disabled=false;
 }
-$('routeSelect').addEventListener('change',()=>{toonRouteBadge();addRouteLinesToMap();zetLivePeiling();tekenVoertuigen();});
+$('routeSelect').addEventListener('change',()=>{toonRouteBadge();addRouteLinesToMap();zetLivePeiling();tekenVoertuigen();toonStraal();});
 $('lijnKiezer').addEventListener('click',openLijnKiezer);
 $('routeSelect').addEventListener('change',e=>loadStops(e.target.value).catch(err=>{$('stopSelect').innerHTML='<option value="">Haltes konden niet laden</option>';$('reportMessage').textContent=err.message;}));
 $('gpsButton').addEventListener('click',()=>{
@@ -1172,9 +1249,9 @@ async function loadReports(){
  const [data]=await Promise.all([api('/api/reports'),laadLijnIndex()]);
  reportMarkers.forEach(marker=>marker.remove());
  reportMarkers.length=0;
- const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude)&&meldingStatus(meldingTijd(r))!=='weg');
+ const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude)&&meldingStatus(meldingTijd(r))!=='weg'&&!meldingWeggestemd(r));
  activeReportStopIds=new Set(reports.map(r=>String(r.stop_id||'')).filter(Boolean));
- actieveMeldingen=reports;tekenMeldingStukken();addRouteLinesToMap();zetLivePeiling();
+ actieveMeldingen=reports;tekenMeldingStukken();toonGevraagdeMelding();addRouteLinesToMap();zetLivePeiling();
  activeReportCreatedAt.clear();reports.forEach(r=>{if(!r.stop_id)return;const k=String(r.stop_id),t=meldingTijd(r),v=activeReportCreatedAt.get(k);if(!v||t>new Date(v).getTime())activeReportCreatedAt.set(k,new Date(t).toISOString());});zetHaltePuls();drawStopDots();
  $('countActive').textContent=reports.length;
  const today=new Date().toLocaleDateString('en-CA');
@@ -1188,7 +1265,7 @@ $('newReport').addEventListener('submit',async e=>{
   if(!$('routeSelect').value || !$('stopSelect').value) throw new Error('Kies eerst een lijn en halte.');
   await api('/api/reports',{method:'POST',body:JSON.stringify({
    route_id:$('routeSelect').value,stop_id:$('stopSelect').value,
-   gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,foto:fotoData,meegestapt:$('meegestapt').checked,
+   gps_latitude:gpsCheck?.latitude ?? null,gps_longitude:gpsCheck?.longitude ?? null,foto:fotoData,meegestapt:$('meegestapt').checked,eigen_endpoint:(await pushAbonnement().catch(()=>null))?.endpoint||null,
    observed_at:($('observed').value?new Date($('observed').value):new Date()).toISOString()
   })});
   $('reportMessage').textContent='Je melding staat meteen op de kaart als niet bevestigd.'+(fotoData?' Je foto wordt zichtbaar zodra de melding bevestigd is.':'');$('reportMessage').className='success';wisFoto();
@@ -1272,7 +1349,7 @@ const json = (data, status = 200, extra = {}) =>
     }
   });
 
-const REPORT_LIFETIME_HOURS=1;
+const REPORT_LIFETIME_HOURS=0.5;
 const randomId = () => crypto.randomUUID();
 
 async function hashText(value) {
@@ -1342,6 +1419,8 @@ async function ensureCommunityTables(env) {
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_votes (report_id TEXT NOT NULL,voter_key TEXT NOT NULL,vote TEXT NOT NULL CHECK(vote IN ('still','gone')),created_at TEXT NOT NULL,PRIMARY KEY(report_id,voter_key))`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS community_rate_limits (rate_key TEXT NOT NULL,created_at TEXT NOT NULL)`).run();
   if(!meegestaptKolomKlaar){try{await env.DB.prepare("ALTER TABLE reports ADD COLUMN meegestapt INTEGER NOT NULL DEFAULT 0").run();}catch(e){}meegestaptKolomKlaar=true;}
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS push_abonnementen (endpoint TEXT PRIMARY KEY,p256dh TEXT NOT NULL,auth TEXT NOT NULL,lat REAL,lon REAL,straal_m INTEGER NOT NULL DEFAULT 0,lijnen TEXT,aangemaakt TEXT NOT NULL,laatst_gezien TEXT NOT NULL,laatst_verstuurd TEXT)`).run();
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS instellingen (sleutel TEXT PRIMARY KEY,waarde TEXT NOT NULL)`).run();
   await env.DB.prepare(`CREATE TABLE IF NOT EXISTS report_photos (report_id TEXT PRIMARY KEY,mime TEXT NOT NULL,data BLOB NOT NULL,created_at TEXT NOT NULL)`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_community_rate_key_time ON community_rate_limits(rate_key,created_at)").run();
 }
@@ -1353,11 +1432,11 @@ async function rateLimitCommunity(env,key,limit,windowMs) {
   await env.DB.prepare("INSERT INTO community_rate_limits(rate_key,created_at) VALUES(?,?)").bind(key,now).run();
   return true;
 }
-async function handleApi(request, env) {
+async function handleApi(request, env, ctx) {
   const url = new URL(request.url);
   const path = url.pathname;
   const method = request.method;
-  if(path.startsWith("/api/reports")||path.startsWith("/api/admin")) await ensureCommunityTables(env);
+  if(path.startsWith("/api/reports")||path.startsWith("/api/admin")||path.startsWith("/api/push")) await ensureCommunityTables(env);
   if(path.startsWith("/api/cities")) await ensureCityTables(env);
 
   if (method !== "GET") {
@@ -1414,7 +1493,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v17";
+      const CACHE = "degolem-shell-v18";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
@@ -1428,6 +1507,33 @@ async function handleApi(request, env) {
           )
         );
         self.clients.claim();
+      });
+
+      // Straalmelding: tonen met de knoppen "Nog actief" en "Weg" (beantwoorden zonder de app te openen).
+      self.addEventListener("push", event => {
+        let d = {};
+        try { d = event.data ? event.data.json() : {}; } catch (e) {}
+        event.waitUntil(self.registration.showNotification(d.titel || "De Golem", {
+          body: d.tekst || "Nieuwe melding in de buurt.",
+          icon: "/app-icon.png",
+          badge: "/icon.svg",
+          tag: "melding-" + (d.id || "algemeen"),
+          renotify: true,
+          data: { id: d.id || null, url: d.url || "/" },
+          actions: d.id ? [{ action: "still", title: "Nog actief" }, { action: "gone", title: "Weg" }] : []
+        }));
+      });
+      self.addEventListener("notificationclick", event => {
+        const n = event.notification, d = n.data || {};
+        n.close();
+        if ((event.action === "still" || event.action === "gone") && d.id) {
+          event.waitUntil(fetch("/api/reports/vote", { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: d.id, vote: event.action }) }).catch(() => {}));
+          return;
+        }
+        event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(lijst => {
+          for (const c of lijst) { if ("focus" in c) { if ("navigate" in c) c.navigate(d.url || "/").catch(() => {}); return c.focus(); } }
+          return self.clients.openWindow(d.url || "/");
+        }));
       });
 
       self.addEventListener("fetch", event => {
@@ -1802,6 +1908,10 @@ async function handleApi(request, env) {
       b.meegestapt===true?1:0
     ).run();
 
+    // Straalmelding: in de achtergrond, zodat het melden zelf niet trager wordt.
+    const routeRij=b.route_id!=="all"?await env.DB.prepare("SELECT route_short_name FROM transit_routes WHERE route_id=?").bind(b.route_id).first():null;
+    const push=straalmelding(env,{id:reportId,lat:Number(stop.stop_lat),lon:Number(stop.stop_lon),halte:stop.stop_name,route:b.route_id!=="all"?b.route_id:"",lijn:routeRij?.route_short_name||"",eigen:typeof b.eigen_endpoint==="string"?b.eigen_endpoint:""}).catch(()=>0);
+    if(ctx&&ctx.waitUntil)ctx.waitUntil(push);else await push;
     if(foto) await env.DB.prepare("INSERT INTO report_photos(report_id,mime,data,created_at) VALUES(?,?,?,?)").bind(reportId,foto.mime,foto.bytes,new Date().toISOString()).run();
     // Bewaartermijn foto's: 30 dagen (zie /privacy).
     await env.DB.prepare("DELETE FROM report_photos WHERE created_at < ?").bind(new Date(Date.now()-30*86400000).toISOString()).run();
@@ -1849,6 +1959,37 @@ async function handleApi(request, env) {
     return json(uit);
   }
 
+  // Pushmeldingen: publieke sleutel, aanmelden, locatie bijwerken, afmelden.
+  if(path === "/api/push/sleutel" && method === "GET") {
+    return json({publicKey:(await vapid(env)).publiek});
+  }
+  if(path === "/api/push/abonneer" && method === "POST") {
+    const b=await request.json().catch(()=>null),s=b&&b.subscription;
+    if(!s||typeof s.endpoint!=="string"||!PUSH_HOSTS.test(s.endpoint)||s.endpoint.length>800||!s.keys||typeof s.keys.p256dh!=="string"||typeof s.keys.auth!=="string")return json({error:"Ongeldig abonnement."},400);
+    const ip=request.headers.get("CF-Connecting-IP")||"unknown";
+    if(!await rateLimitCommunity(env,"push:"+await hashText(ip),30,3600000))return json({error:"Te veel aanvragen. Probeer later opnieuw."},429);
+    const straal=[0,1000,2000,3000].includes(Number(b.straal_m))?Number(b.straal_m):0;
+    const lat=Number.isFinite(b.lat)?Math.round(b.lat*1000)/1000:null,lon=Number.isFinite(b.lon)?Math.round(b.lon*1000)/1000:null;
+    const lijnen=Array.isArray(b.lijnen)?b.lijnen.filter(x=>typeof x==="string"&&/^[A-Za-z0-9:_-]{3,40}$/.test(x)).slice(0,20).join(","):"";
+    const nu=new Date().toISOString();
+    await env.DB.prepare(`INSERT INTO push_abonnementen(endpoint,p256dh,auth,lat,lon,straal_m,lijnen,aangemaakt,laatst_gezien) VALUES(?,?,?,?,?,?,?,?,?)
+      ON CONFLICT(endpoint) DO UPDATE SET p256dh=excluded.p256dh,auth=excluded.auth,lat=COALESCE(excluded.lat,lat),lon=COALESCE(excluded.lon,lon),straal_m=excluded.straal_m,lijnen=excluded.lijnen,laatst_gezien=excluded.laatst_gezien`)
+      .bind(s.endpoint,s.keys.p256dh,s.keys.auth,lat,lon,straal,lijnen,nu,nu).run();
+    return json({success:true});
+  }
+  if(path === "/api/push/locatie" && method === "POST") {
+    const b=await request.json().catch(()=>null);
+    if(!b||typeof b.endpoint!=="string"||!Number.isFinite(b.lat)||!Number.isFinite(b.lon))return json({error:"Ongeldig."},400);
+    await env.DB.prepare("UPDATE push_abonnementen SET lat=?,lon=?,laatst_gezien=? WHERE endpoint=?").bind(Math.round(b.lat*1000)/1000,Math.round(b.lon*1000)/1000,new Date().toISOString(),b.endpoint).run();
+    return json({success:true});
+  }
+  if(path === "/api/push/afmelden" && method === "POST") {
+    const b=await request.json().catch(()=>null);
+    if(!b||typeof b.endpoint!=="string")return json({error:"Ongeldig."},400);
+    await env.DB.prepare("DELETE FROM push_abonnementen WHERE endpoint=?").bind(b.endpoint).run();
+    return json({success:true});
+  }
+
   if(path === "/api/reports/vote" && method === "POST") {
     const b=await request.json().catch(()=>null);
     if(!b || typeof b.id!=="string" || !["still","gone"].includes(b.vote))return json({error:"Ongeldige bevestiging."},400);
@@ -1859,8 +2000,8 @@ async function handleApi(request, env) {
     if(!await rateLimitCommunity(env,"vote:"+voterKey,60,3600000))return json({error:"Je bevestigt te vaak. Probeer later opnieuw."},429);
     try{await env.DB.prepare("INSERT INTO community_votes(report_id,voter_key,vote,created_at) VALUES(?,?,?,?)").bind(b.id,voterKey,b.vote,new Date().toISOString()).run();}
     catch(e){return json({error:"Je hebt deze melding al beoordeeld."},409);}
-    // Een herbevestiging ("nog daar") houdt de melding minstens nog een uur zichtbaar.
-    if(b.vote==="still"){const tot=new Date(Date.now()+3600000).toISOString();await env.DB.prepare("UPDATE reports SET expires_at=? WHERE id=? AND expires_at<?").bind(tot,b.id,tot).run();}
+    // Een herbevestiging ("nog actief") houdt de melding nog minstens 30 minuten zichtbaar.
+    if(b.vote==="still"){const tot=new Date(Date.now()+30*60000).toISOString();await env.DB.prepare("UPDATE reports SET expires_at=? WHERE id=? AND expires_at<?").bind(tot,b.id,tot).run();}
     const c=await env.DB.prepare("SELECT SUM(CASE WHEN vote='still' THEN 1 ELSE 0 END) AS still_count,SUM(CASE WHEN vote='gone' THEN 1 ELSE 0 END) AS gone_count FROM community_votes WHERE report_id=?").bind(b.id).first();
     const still=Number(c?.still_count||0),gone=Number(c?.gone_count||0);
     if(gone>=3 && gone>=still+2)await env.DB.prepare("UPDATE reports SET status='rejected' WHERE id=? AND status='pending'").bind(b.id).run();
@@ -2001,6 +2142,82 @@ async function liveVoorRoute(env,routeId){
   return uit;
 }
 
+// ---------- Straalmelding: pushmeldingen naar wie in de buurt is of de lijn volgt ----------
+const PUSH_HOSTS=/^https:\/\/(fcm\.googleapis\.com|android\.googleapis\.com|[a-z0-9.-]*push\.services\.mozilla\.com|web\.push\.apple\.com|[a-z0-9.-]*\.notify\.windows\.com)\//;
+const b64u={
+  naar:buf=>{let s="";for(const x of new Uint8Array(buf))s+=String.fromCharCode(x);return btoa(s).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");},
+  van:str=>{const s=atob(String(str).replace(/-/g,"+").replace(/_/g,"/")+"===".slice((String(str).length+3)%4));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u;}
+};
+const plak=(...delen)=>{const n=delen.reduce((a,d)=>a+d.length,0),u=new Uint8Array(n);let o=0;for(const d of delen){u.set(d,o);o+=d.length;}return u;};
+const tekst=s=>new TextEncoder().encode(s);
+let vapidCache=null;
+// VAPID-sleutel: uit Cloudflare (VAPID_PRIVATE_JWK) of eenmalig aangemaakt en bewaard in de databank.
+async function vapid(env){
+  if(vapidCache)return vapidCache;
+  let jwk=null;
+  if(env.VAPID_PRIVATE_JWK){try{jwk=JSON.parse(env.VAPID_PRIVATE_JWK);}catch(e){}}
+  if(!jwk){
+    const rij=await env.DB.prepare("SELECT waarde FROM instellingen WHERE sleutel='vapid'").first();
+    if(rij)jwk=JSON.parse(rij.waarde);
+    else{
+      const paar=await crypto.subtle.generateKey({name:"ECDSA",namedCurve:"P-256"},true,["sign","verify"]);
+      jwk=await crypto.subtle.exportKey("jwk",paar.privateKey);
+      await env.DB.prepare("INSERT OR IGNORE INTO instellingen(sleutel,waarde) VALUES('vapid',?)").bind(JSON.stringify(jwk)).run();
+      const opnieuw=await env.DB.prepare("SELECT waarde FROM instellingen WHERE sleutel='vapid'").first();jwk=JSON.parse(opnieuw.waarde);
+    }
+  }
+  const sleutel=await crypto.subtle.importKey("jwk",{kty:"EC",crv:"P-256",x:jwk.x,y:jwk.y,d:jwk.d,ext:true},{name:"ECDSA",namedCurve:"P-256"},false,["sign"]);
+  vapidCache={sleutel,publiek:b64u.naar(plak(new Uint8Array([4]),b64u.van(jwk.x),b64u.van(jwk.y)))};
+  return vapidCache;
+}
+async function hkdf(salt,ikm,info,lengte){
+  const k=await crypto.subtle.importKey("raw",ikm,"HKDF",false,["deriveBits"]);
+  return new Uint8Array(await crypto.subtle.deriveBits({name:"HKDF",hash:"SHA-256",salt,info},k,lengte*8));
+}
+// Versleutel de inhoud voor één abonnement (aes128gcm, RFC 8291).
+async function versleutelPush(abonnement,inhoud){
+  const uaPubliek=b64u.van(abonnement.p256dh),auth=b64u.van(abonnement.auth);
+  const ua=await crypto.subtle.importKey("raw",uaPubliek,{name:"ECDH",namedCurve:"P-256"},false,[]);
+  const eigen=await crypto.subtle.generateKey({name:"ECDH",namedCurve:"P-256"},true,["deriveBits"]);
+  const asPubliek=new Uint8Array(await crypto.subtle.exportKey("raw",eigen.publicKey));
+  const gedeeld=new Uint8Array(await crypto.subtle.deriveBits({name:"ECDH",public:ua},eigen.privateKey,256));
+  const ikm=await hkdf(auth,gedeeld,plak(tekst("WebPush: info\0"),uaPubliek,asPubliek),32);
+  const zout=crypto.getRandomValues(new Uint8Array(16));
+  const cek=await hkdf(zout,ikm,tekst("Content-Encoding: aes128gcm\0"),16),nonce=await hkdf(zout,ikm,tekst("Content-Encoding: nonce\0"),12);
+  const aes=await crypto.subtle.importKey("raw",cek,"AES-GCM",false,["encrypt"]);
+  const geheim=new Uint8Array(await crypto.subtle.encrypt({name:"AES-GCM",iv:nonce},aes,plak(tekst(inhoud),new Uint8Array([2]))));
+  const rs=new Uint8Array([0,0,16,0]);
+  return plak(zout,rs,new Uint8Array([asPubliek.length]),asPubliek,geheim);
+}
+async function vapidToken(env,endpoint){
+  const v=await vapid(env),aud=new URL(endpoint).origin;
+  const kop=b64u.naar(tekst(JSON.stringify({typ:"JWT",alg:"ES256"}))),claims=b64u.naar(tekst(JSON.stringify({aud,exp:Math.floor(Date.now()/1000)+12*3600,sub:CONTACT_EMAIL?"mailto:"+CONTACT_EMAIL:"https://eclipseglasses.eu"})));
+  const handtekening=await crypto.subtle.sign({name:"ECDSA",hash:"SHA-256"},v.sleutel,tekst(kop+"."+claims));
+  return "vapid t="+kop+"."+claims+"."+b64u.naar(handtekening)+", k="+v.publiek;
+}
+async function stuurPush(env,abonnement,inhoud){
+  const body=await versleutelPush(abonnement,inhoud);
+  const res=await fetch(abonnement.endpoint,{method:"POST",headers:{"Authorization":await vapidToken(env,abonnement.endpoint),"Content-Encoding":"aes128gcm","Content-Type":"application/octet-stream","TTL":"900","Urgency":"high"},body});
+  if(res.status===404||res.status===410)await env.DB.prepare("DELETE FROM push_abonnementen WHERE endpoint=?").bind(abonnement.endpoint).run();
+  return res.status;
+}
+// Nieuwe melding: wie binnen zijn straal is (locatie de laatste 3 uur bijgewerkt) of de lijn volgt, krijgt een push.
+async function straalmelding(env,melding){
+  const nu=Date.now(),dLat=5/111,dLon=5/(111*Math.cos(melding.lat*Math.PI/180));
+  const rijen=(await env.DB.prepare(`SELECT * FROM push_abonnementen
+    WHERE endpoint<>? AND (laatst_verstuurd IS NULL OR laatst_verstuurd<?)
+      AND ((straal_m>0 AND lat BETWEEN ? AND ? AND lon BETWEEN ? AND ? AND laatst_gezien>?)
+        OR (?<>'' AND instr(','||COALESCE(lijnen,'')||',', ','||?||',')>0))
+    LIMIT 500`).bind(melding.eigen||"",new Date(nu-120000).toISOString(),melding.lat-dLat,melding.lat+dLat,melding.lon-dLon,melding.lon+dLon,new Date(nu-3*3600000).toISOString(),melding.route||"",melding.route||"").all()).results||[];
+  const afstand=(a,b,c,d)=>{const r=x=>x*Math.PI/180,h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 2*6371000*Math.asin(Math.sqrt(h));};
+  const doel=rijen.filter(a=>(melding.route&&(","+(a.lijnen||"")+",").includes(","+melding.route+","))||(a.straal_m>0&&a.lat!=null&&afstand(a.lat,a.lon,melding.lat,melding.lon)<=a.straal_m));
+  const inhoud=JSON.stringify({id:melding.id,titel:"Controle gemeld",tekst:"Halte "+melding.halte+(melding.lijn?" · lijn "+melding.lijn:"")+" (zojuist). Nog actief?",url:"/?melding="+encodeURIComponent(melding.id)});
+  for(let i=0;i<doel.length;i+=50)await Promise.allSettled(doel.slice(i,i+50).map(a=>stuurPush(env,a,inhoud).catch(()=>0)));
+  if(doel.length)await env.DB.prepare("UPDATE push_abonnementen SET laatst_verstuurd=? WHERE endpoint IN (SELECT value FROM json_each(?))").bind(new Date(nu).toISOString(),JSON.stringify(doel.map(a=>a.endpoint))).run();
+  await env.DB.prepare("DELETE FROM push_abonnementen WHERE laatst_gezien<?").bind(new Date(nu-30*86400000).toISOString()).run();
+  return doel.length;
+}
+
 const KAARTDATA_BRON = "https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/kaartdata/";
 async function kaartdata(request,pathname){
   if(request.method!=="GET"&&request.method!=="HEAD") return new Response("Method not allowed",{status:405});
@@ -2020,12 +2237,12 @@ async function kaartdata(request,pathname){
 }
 
 export default {
-  async fetch(request,env) {
+  async fetch(request,env,ctx) {
     try {
       const url = new URL(request.url);
 
       if (["/manifest.webmanifest","/icon.svg","/app-icon.png","/sw.js"].includes(url.pathname)) {
-        return await handleApi(request,env);
+        return await handleApi(request,env,ctx);
       }
 
       if (url.pathname.startsWith("/kaartdata/")) {
@@ -2039,7 +2256,7 @@ export default {
           },500);
         }
 
-        return await handleApi(request,env);
+        return await handleApi(request,env,ctx);
       }
 
       if (request.method !== "GET") {
@@ -2079,8 +2296,9 @@ export default {
           '<li><strong>Een gehashte code van je internetverbinding</strong> (geen leesbaar IP-adres), om misbruik te voorkomen en het aantal meldingen te beperken. Deze limietgegevens worden na 24 uur gewist.</li>'+
           '<li><strong>Je locatie (optioneel)</strong>: alleen als je zelf op "Ik sta hier nu" of de locatieknop tikt. We vergelijken je positie met de halte en bewaren je coördinaten niet.</li>'+
           '<li><strong>Een foto (optioneel)</strong>: in je toestel verkleind, waarbij verborgen gegevens zoals de GPS-locatie van de foto verwijderd worden. Foto\'s worden na 30 dagen gewist.</li>'+
-          '<li><strong>Een account (optioneel)</strong>: e-mailadres en een versleuteld wachtwoord, plus een sessiecookie zodat je ingelogd blijft.</li></ul>'+
-          '<h2>Hoe lang?</h2><p>Een melding is hoogstens 1 uur zichtbaar op de kaart. Daarna bewaren we ze enkel voor statistiek en misbruikpreventie, zonder je naam. Foto\'s worden na 30 dagen gewist en limietgegevens na 24 uur.</p>'+
+          '<li><strong>Een account (optioneel)</strong>: e-mailadres en een versleuteld wachtwoord, plus een sessiecookie zodat je ingelogd blijft.</li>'+
+          '<li><strong>Waarschuw me (optioneel)</strong>: als je meldingen aanzet, bewaren we het technische push-adres van je browser, je gekozen straal en lijnen en, als je een straal kiest, je locatie afgerond op ±100 m. Die locatie werken we bij zolang de app open is. Zet je meldingen uit, dan wissen we dit meteen; gebruik je ze 30 dagen niet, dan ook.</li></ul>'+
+          '<h2>Hoe lang?</h2><p>Een melding verdwijnt van de kaart als ze 30 minuten niet opnieuw bevestigd wordt, of als meerdere mensen "weg" melden. Daarna bewaren we ze enkel voor statistiek en misbruikpreventie, zonder je naam. Foto\'s worden na 30 dagen gewist en limietgegevens na 24 uur.</p>'+
           '<h2>Met wie delen we gegevens?</h2><p>We verkopen niets en gebruiken geen advertentie- of volgcookies. De site draait bij Cloudflare. Je browser laadt kaarttegels bij OpenFreeMap, dat daarbij je IP-adres ziet.</p>'+
           '<h2>Op je toestel</h2><p>In de lokale opslag van je browser bewaren we je gekozen stad, je thema (licht/donker) en dat je de melding bij het openen gelezen hebt. Als je inlogt, gebruiken we één sessiecookie.</p>'+
           '<h2>Je rechten</h2><p>Je kunt inzage, verbetering of verwijdering van je gegevens vragen en je verzetten tegen de verwerking, via '+contact+'. Je kunt ook klacht indienen bij de <a href="https://www.gegevensbeschermingsautoriteit.be/" rel="noopener">Gegevensbeschermingsautoriteit</a>.</p>'],

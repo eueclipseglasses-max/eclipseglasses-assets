@@ -27,7 +27,8 @@ De Golem is **louter informatief**: reizigers melden waar ze een controle ("plat
 
 | Gegeven | Waarom | Bewaartermijn |
 |---|---|---|
-| Melding (lijn, halte, tijdstip, "rijdt mee") | De dienst laten werken | 1 uur zichtbaar, daarna alleen voor statistiek (zonder naam) |
+| Melding (lijn, halte, tijdstip, "rijdt mee") | De dienst laten werken | Zichtbaar tot 30 min na de laatste bevestiging, daarna alleen voor statistiek (zonder naam) |
+| Push-abonnement, straal, lijnen, locatie (±100 m) | "Waarschuw me" | Gewist bij uitzetten of na 30 dagen niet gebruikt |
 | Gehashte code van de internetverbinding | Misbruik voorkomen en meldlimiet | 24 uur (automatisch gewist) |
 | GPS (optioneel, alleen na tikken) | Vergelijken met de halte | Niet bewaard |
 | Foto (optioneel) | Melding staven | 30 dagen (automatisch gewist); EXIF/GPS van de foto wordt in de app verwijderd |
