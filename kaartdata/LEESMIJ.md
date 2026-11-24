@@ -5,9 +5,9 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
 
 ## Hoe het werkt
 
-1. Elke **maandagnacht** draait de GitHub Action *Kaartdata lijntrajecten* (`.github/workflows/kaartdata.yml`).
+1. Elke **nacht** controleert de GitHub Action *Kaartdata lijntrajecten* (`.github/workflows/kaartdata.yml`) of er iets veranderd is: een nieuw netwerk in de app (`/api/netwerk`), of kaartdata die een week oud is. Alleen dan bouwt ze opnieuw. Loopt de import van het netwerk nog, dan wacht ze.
 2. Die downloadt OpenStreetMap voor België en houdt alleen de bus- en tramtrajecten van De Lijn over.
-3. `bouw_lijnen.py` haalt alle lijnen en haltes op uit de app (`/api/routes` en `/api/stops`) en zoekt per lijn (per richting) het traject dat echt langs die haltes rijdt:
+3. `bouw_lijnen.py` haalt alle lijnen en haltes van heel Vlaanderen op uit de app (`/api/routes` en `/api/stops`, in pagina's) en zoekt per lijn (per richting) het traject dat echt langs die haltes rijdt:
    - zelfde lijnnummer;
    - haltes binnen 50 m van het traject;
    - bij voorkeur dezelfde haltenummers (zo kiest het script ook de juiste rijrichting).
@@ -39,11 +39,11 @@ De trajecten komen uit **OpenStreetMap** (dezelfde bron als de achtergrondkaart 
 - **Gsm:** tik je op een halte of lijn, dan verschijnen de keuzes onderaan in een blad met grote knoppen. Dat blad kun je scrollen en sluiten met ×.
 - **Badges overal:** het lijnbadge (kleur en cijferkleur zoals het lijnbord) staat in de popups van lijnen en haltes, naast de lijnkeuze in het formulier, bij elke melding en bij de controles in de haltepopup.
 
-De kleur komt uit OpenStreetMap (tag `colour` van het traject of de lijn). Ontbreekt die, dan krijgt een buslijn blauw en een tramlijn oranje, zoals de haltes.
+De kleur is de officiële kleur van De Lijn (uit de app). Ontbreekt die, dan de kleur uit OpenStreetMap (tag `colour`), en anders de standaardkleur voor bus of tram.
 
 ## Wat moet je zelf doen?
 
-Niets. Komen er nieuwe lijnen of steden bij in de databank, dan neemt de volgende run ze automatisch mee. Dat werkt voor heel Vlaanderen.
+Niets. De app laadt zelf het netwerk van heel Vlaanderen in (zie DEPLOY.md, "Netwerk van heel Vlaanderen"). Is dat klaar, dan bouwt de volgende nacht de kaartdata opnieuw.
 
 - **Meteen bijwerken:** tabblad *Actions* → *Kaartdata lijntrajecten* → *Run workflow*.
 - **Rapport bekijken:** open de laatste run in *Actions* (het rapport staat onderaan de samenvatting), of `RAPPORT.md` op de branch `kaartdata`. Daar staan lijnen die niet gekoppeld konden worden en haltes die meer dan 40 m van hun plaats in OpenStreetMap liggen.
@@ -58,7 +58,7 @@ Gaten die open blijven, staan in het rapport onder "Onderbrekingen", met een lin
 
 ## Een lijn ontbreekt of loopt verkeerd
 
-Bijna altijd ontbreekt het traject in OpenStreetMap, of heeft het daar een ander lijnnummer. Je kunt het zelf verbeteren op openstreetmap.org (zoek het trajectnummer uit het rapport). De volgende maandag neemt het script de verbetering over.
+Bijna altijd ontbreekt het traject in OpenStreetMap, of heeft het daar een ander lijnnummer. Je kunt het zelf verbeteren op openstreetmap.org (zoek het trajectnummer uit het rapport). Binnen een week neemt het script de verbetering over (of meteen met *Run workflow*).
 
 ## Instellingen
 
