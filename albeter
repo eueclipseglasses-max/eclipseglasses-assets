@@ -67,6 +67,7 @@ h2,h3{margin-top:0}
 #map .maplibregl-popup{z-index:1000!important}
 .map-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
 .map-tools input{flex:1;min-width:190px;padding:9px 11px}
+.map-tools #stopSearchGo{flex:none;white-space:nowrap}
 .map-tools button{padding:9px 12px;font-size:12px}.map-tools button.filter-active{border-color:#f5c400;background:rgba(245,196,0,.18);color:var(--text)}.map-tools button.filter-tram.filter-active{border-color:#8b5cf6;background:rgba(139,92,246,.18)}
 .map-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:9px 4px 2px;color:var(--muted);font-size:11px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
@@ -164,7 +165,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .panel-title .muted{font-size:10px}
  .panel-title .tag{font-size:9px;padding:5px 6px;white-space:nowrap}
  .map-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:9px}
- .map-tools input{grid-column:1/-1;min-width:0;width:100%;padding:11px;font-size:16px}
+ .map-tools input{grid-column:1;min-width:0;width:100%;padding:11px;font-size:16px}
+  #stopSearchGo{grid-column:2;width:100%;min-width:0;min-height:40px;padding:9px 7px;font-size:11px;white-space:normal}
  .map-tools button{width:100%;min-width:0;min-height:40px;padding:9px 7px;font-size:11px;line-height:1.2;white-space:normal}
  #toggleReportedButton{grid-column:1/-1}
  #map{height:min(58vh,470px);min-height:330px;border-radius:8px}
@@ -267,6 +269,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    <div class="panel-title"><div><h3>Kaart</h3><span class="muted">Meldingen op het De Lijn-netwerk</span></div></div>
    <div class="map-tools">
     <input id="stopSearch" type="search" placeholder="Zoek een halte..." list="stopSearchOptions" autocomplete="off" aria-label="Zoek een halte">
+    <button type="button" class="secondary" id="stopSearchGo">Ga naar halte</button>
     <datalist id="stopSearchOptions"></datalist>
         <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
     <button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button>
@@ -447,7 +450,8 @@ class MijnLocatieKnop{
 }
 function initMap(){
  if(map)return;
- const city=CITY_DATA.find(c=>c.id===selectedCity);const isOostende=selectedCity==='oostende';map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:city?[city.lon,city.lat]:[4.45,51.05],zoom:city?11:8,minZoom:isOostende?10.5:undefined,maxBounds:isOostende?[[2.80,51.13],[3.10,51.29]]:undefined,attributionControl:true});
+ const city=CITY_DATA.find(c=>c.id===selectedCity);const isOostende=selectedCity==='oostende';map=new maplibregl.Map({container:'map',style:document.documentElement.dataset.theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark',center:city?[city.lon,city.lat]:[4.45,51.05],zoom:city?11:8,minZoom:isOostende?10.5:undefined,maxBounds:isOostende?[[2.80,51.13],[3.10,51.29]]:undefined,attributionControl:true,dragRotate:false,touchPitch:false,pitchWithRotate:false});
+ map.dragRotate.disable();map.touchZoomRotate.disableRotation();map.touchPitch.disable();map.setBearing(0);map.setPitch(0);
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
  map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;kaartKleuren();addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
@@ -466,7 +470,8 @@ function initMap(){
  $('filterBusButton').addEventListener('click',()=>{showBusStops=!showBusStops;updateTransportFilterButtons();drawStopDots();});
  $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();drawStopDots();});
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
- $('stopSearch').addEventListener('input',updateStopSearchOptions);
+ $('stopSearchGo').addEventListener('click',searchMapStop);
+ $('stopSearch').addEventListener('input',()=>{$('stopSearch').setCustomValidity('');updateStopSearchOptions();});
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  locatieToegestaan().then(ok=>{if(!ok)return;
   navigator.geolocation.getCurrentPosition(pos=>{
