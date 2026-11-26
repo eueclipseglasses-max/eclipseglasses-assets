@@ -1187,6 +1187,8 @@ function drawStopDot(ctx,x,y,r,color,opacity=1,puls=false){
  ctx.save();ctx.globalAlpha=opacity;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.lineWidth=r<3?1:1.3;ctx.strokeStyle=(color==='#f5c400'||color==='#8b5cf6')?(donker?'#45413D':'#77716A'):(donker?'#080a0d':'rgba(30,30,30,.7)');ctx.stroke();ctx.restore();
 }
 async function handleStopDotClick(e){
+ const labelFeature=map&&map.getLayer('golem-halte-namen')?map.queryRenderedFeatures(e.point,{layers:['golem-halte-namen']})[0]:null;
+ if(labelFeature&&labelFeature.properties&&labelFeature.properties.id){const labelStop=mapStops.find(stop=>String(stop.stop_id)===String(labelFeature.properties.id));if(labelStop)e={...e,point:map.project([Number(labelStop.stop_lon),Number(labelStop.stop_lat)])};}
  let hit=null,best=20;for(const dot of screenStopDots){const d=Math.hypot(dot.x-e.point.x,dot.y-e.point.y);if(d<best){best=d;hit=dot;}}if((!hit||best>8)&&toonVoertuigBijKlik(e))return;if(!hit){toonLijnenBijKlik(e);return;}
  if(hit.cluster){const coords=hit.cluster.map(d=>[Number(d.stop.stop_lon),Number(d.stop.stop_lat)]);const b=coords.reduce((acc,coord)=>acc.extend(coord),new maplibregl.LngLatBounds(coords[0],coords[0]));map.fitBounds(b,{padding:65,maxZoom:13});return;}
  const stop=hit.stop;
