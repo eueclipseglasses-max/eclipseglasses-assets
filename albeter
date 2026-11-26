@@ -404,7 +404,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  </div>
  <div id="mapLeftControls">
   <button id="settingsToggle" class="map-icon-button" type="button" aria-expanded="false" aria-label="Instellingen" title="Instellingen">⚙</button>
-  <button id="mapLoginButton" class="map-login-button" type="button" onclick="authAction()">Inloggen</button>
+  <button id="mapLoginButton" class="map-login-button" type="button">Inloggen</button>
   <div id="settingsPanel" class="map-settings-panel hidden">
    <div class="settings-heading">Instellingen</div>
    <button id="themeButton" class="secondary full" type="button" onclick="toggleTheme()">Weergave wisselen</button>
