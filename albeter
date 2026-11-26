@@ -2496,8 +2496,7 @@ export default {
       if(infoPages[url.pathname]){
         const [title,body]=infoPages[url.pathname];
         const analytics=await recordPageView(request,env,url.pathname).catch(()=>({}));
-        return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FBEED8"><title>'+title+' · De Golem</title><style>body{margin:0;background:#f1e2c6;color:#3c2c20;font:17px Georgia,serif;line-height:1.6}main{max-width:720px;margin:0 auto;padding:32px 22px 56px}h2{font-size:20px;margin:26px 0 6px}a{color:#925b35}li{margin:6px 0}
-</style><body><main><p style="letter-spacing:2px;color:#925b35">DE GOLEM</p><h1>'+title+'</h1>'+body+'<p style="margin-top:32px"><a href="/">← Terug naar de kaart</a></p></main></body></html>',{headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff",...(analytics["Set-Cookie"]?{"Set-Cookie":analytics["Set-Cookie"]}:{})}});
+        return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FBEED8"><title>'+title+' · De Golem</title><style>body{margin:0;background:#f1e2c6;color:#3c2c20;font:17px Georgia,serif;line-height:1.6}main{max-width:720px;margin:0 auto;padding:32px 22px 56px}h2{font-size:20px;margin:26px 0 6px}a{color:#925b35}li{margin:6px 0}</style><body><main><p style="letter-spacing:2px;color:#925b35">DE GOLEM</p><h1>'+title+'</h1>'+body+'<p style="margin-top:32px"><a href="/">← Terug naar de kaart</a></p></main></body></html>',{headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff",...(analytics["Set-Cookie"]?{"Set-Cookie":analytics["Set-Cookie"]}:{})}});
       }
       const analytics=await recordPageView(request,env,url.pathname).catch(()=>({}));
       let page=HTML;
