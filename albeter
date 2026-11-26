@@ -454,8 +454,8 @@ function initMap(){
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
  map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;kaartKleuren();addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
- map.on('move',drawStopDots);map.on('resize',drawStopDots);
- map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
+ map.on('move',()=>{drawStopDots();updateStopSearchOptions();});map.on('resize',()=>{drawStopDots();updateStopSearchOptions();});
+ map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();updateStopSearchOptions();});
  map.on('click',e=>{
    handleStopDotClick(e);
   });
@@ -1028,18 +1028,24 @@ function toonLijnenBijKlik(e){
  kiesLijnKnoppen(node,popup,null);
  zetTijdelijkeFocus(routes.map(r=>r.route_id),popup);
 }
+function stopIsCurrentlyVisible(s){
+ if(!map||!map.loaded())return false;
+ const lng=Number(s.stop_lon),lat=Number(s.stop_lat);
+ if(!Number.isFinite(lng)||!Number.isFinite(lat)||!map.getBounds().contains([lng,lat]))return false;
+ const p=map.project([lng,lat]),box=$('map').getBoundingClientRect();
+ return p.x>=0&&p.y>=0&&p.x<=box.width&&p.y<=box.height;
+}
 function updateStopSearchOptions(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');
- const matches=q?mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30):[];
+ const matches=q?mapStops.filter(s=>stopIsCurrentlyVisible(s)&&stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30):[];
  $('stopSearchOptions').innerHTML=matches.map(s=>'<option value="'+esc(s.stop_name)+'"></option>').join('');
 }
 function searchMapStop(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');if(!q)return;
- const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q&&stopMatchesTransportFilter(x)&&(!onlyReportedStops||activeReportStopIds.has(String(x.stop_id))));
+ const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q&&stopIsCurrentlyVisible(x)&&stopMatchesTransportFilter(x)&&(!onlyReportedStops||activeReportStopIds.has(String(x.stop_id))));
  if(!s){$('stopSearchMessage').textContent='Deze halte staat niet op de kaart.';return;}
  $('stopSearchMessage').textContent='';
- map.once('moveend',()=>{const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});});
- map.flyTo({center:[Number(s.stop_lon),Number(s.stop_lat)],zoom:15});
+ const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});
 }
 function transportSoort(stop){
  let soort=transportByStop.get(stop);if(soort)return soort;
@@ -1464,7 +1470,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v21";
+      const CACHE = "degolem-shell-v22";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
