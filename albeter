@@ -368,7 +368,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  <p class="vooraf-klein">Door verder te gaan, ga je akkoord met de <a href="/voorwaarden" target="_blank" rel="noopener">voorwaarden</a> en het <a href="/privacy" target="_blank" rel="noopener">privacybeleid</a>.</p>
  <button type="button" id="voorafAkkoord" class="full">Ik begrijp het</button>
 </div></div>
-<section id="cityGate" class="city-gate"><div class="eyebrow">DE GOLEM / JOUW REGIO</div><h1>Waar ben je?</h1><p class="muted">We zoeken automatisch je stad. Je bevestigt zelf voordat we de lokale kaart openen.</p><div id="cityDetection" class="city-confirm"><strong>Je locatie wordt bepaald…</strong><p class="muted">Even geduld.</p></div><div class="city-top"><h3 style="margin:0">Andere steden</h3><span class="muted" style="font-size:11px">Binnenkort beschikbaar</span></div><div id="cityOptions" class="city-grid"></div><button id="cityInterestButton" class="secondary city-request" type="button" onclick="requestCityInterest()" disabled>Zet mijn stad vooruit</button><div id="cityStatus" class="city-status" aria-live="polite"></div><p class="notice">Oostende is geopend als testregio. Andere steden worden geopend zodra minstens 20 verschillende melders er in de afgelopen 30 dagen actief waren. Locatiegegevens worden alleen gebruikt om een stad voor te stellen.</p></section>
+<!-- Stadselectie verwijderd: De Golem is momenteel uitsluitend beschikbaar voor Oostende. -->
 <section id="authScreen" class="auth-wrap hidden">
  <div class="eyebrow">DE GOLEM / ACCOUNT</div>
  <h1 id="authTitle">Welkom terug</h1>
@@ -565,10 +565,9 @@ function renderCityGate(){const detected=cityById(detectedCityId),active=detecte
 // Alleen als de gebruiker eerder al toestemming gaf, gebruiken we ze (zonder pop-up).
 async function locatieToegestaan(){try{return !!(navigator.geolocation&&navigator.permissions&&(await navigator.permissions.query({name:'geolocation'})).state==='granted');}catch(e){return false;}}
 async function initCityGate(){
- // Tijdelijk staat de app zonder regiokeuze rechtstreeks op Oostende.
- const data=await api('/api/cities');cityStats=data.cities||[];selectedCity='oostende';
+ // De Golem is momenteel uitsluitend beschikbaar voor Oostende.
+ selectedCity='oostende';
  try{localStorage.setItem('degolem_city','oostende');}catch(e){}
- $('cityGate').classList.add('hidden');
  await startPublicApp();
  const existing=await api('/api/me').catch(()=>null);
  if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}
@@ -576,7 +575,7 @@ async function initCityGate(){
 function selectInterestCity(id){selectedInterestCity=id;const c=cityById(id);$('cityInterestButton').disabled=!c;$('cityInterestButton').textContent='Zet '+(c?.name||'mijn stad')+' vooruit';}
 async function requestCityInterest(){if(!selectedInterestCity)return;$('cityInterestButton').disabled=true;$('cityStatus').textContent='Je interesse wordt geregistreerd…';try{const result=await api('/api/cities/interest',{method:'POST',body:JSON.stringify({city_id:selectedInterestCity})});$('cityStatus').textContent='Bedankt! '+result.interestCount+' mensen willen deze stad erbij.';$('cityInterestButton').textContent='Interesse geregistreerd';}catch(e){$('cityStatus').textContent=e.message;$('cityInterestButton').disabled=false;}}
 async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate').classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
-function changeCity(){$('appScreen').classList.add('hidden');$('authScreen').classList.add('hidden');$('cityGate').classList.remove('hidden');$('cityChangeButton').classList.add('hidden');renderCityGate();}
+function changeCity(){selectedCity='oostende';startPublicApp();}
 
 // Eigen locatie als blauw bolletje. Zonder toestemming gebeurt er niets tot je op de knop tikt;
 // was toestemming al gegeven, dan verschijnt het bolletje meteen (zonder de kaart te verschuiven).
