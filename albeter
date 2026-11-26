@@ -1035,9 +1035,8 @@ function updateStopSearchOptions(){
 }
 function searchMapStop(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');if(!q)return;
- const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q);
- const staatOpKaart=s&&stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)));
- if(!staatOpKaart){$('stopSearchMessage').textContent='Deze halte staat niet op de kaart.';return;}
+ const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q&&stopMatchesTransportFilter(x)&&(!onlyReportedStops||activeReportStopIds.has(String(x.stop_id))));
+ if(!s){$('stopSearchMessage').textContent='Deze halte staat niet op de kaart.';return;}
  $('stopSearchMessage').textContent='';
  map.once('moveend',()=>{const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});});
  map.flyTo({center:[Number(s.stop_lon),Number(s.stop_lat)],zoom:15});
