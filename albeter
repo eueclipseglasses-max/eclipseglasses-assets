@@ -43,7 +43,7 @@ header{height:72px;padding:0 5%;display:flex;align-items:center;justify-content:
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
 .logo{width:60px;height:60px;object-fit:contain;display:block;border-radius:0;flex:0 0 60px}.logo[role="button"]{cursor:pointer}.logo[role="button"]:focus-visible{outline:2px solid var(--orange);outline-offset:4px;border-radius:4px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
 .brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.8px;margin-top:5px;font-weight:700}
-.header-right{display:flex;align-items:center;gap:10px}.theme-toggle{width:42px;height:42px;padding:0;display:inline-grid;place-items:center;background:var(--panel2);color:var(--text);border:1px solid var(--border);font-size:18px}.theme-toggle:hover:not(:disabled){box-shadow:none;border-color:var(--orange)}
+.header-right{display:flex;align-items:center;gap:10px}.theme-toggle{width:42px;height:42px;padding:0;display:inline-grid;place-items:center;background:var(--panel2);color:var(--text);border:1px solid var(--border);font-size:18px}.theme-toggle:hover:not(:disabled){box-shadow:none;border-color:var(--orange)}\n@media(max-width:600px){.header-right .theme-toggle{width:38px;min-width:38px;height:38px;padding:0;font-size:17px}}
 .status{font-size:11px;color:var(--green)}
 button{border:0;border-radius:8px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:700;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}button:hover:not(:disabled){filter:brightness(1.06);box-shadow:0 5px 16px rgba(190,40,52,.18)}button:active:not(:disabled){transform:translateY(1px)}
 button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
@@ -357,24 +357,21 @@ function applyMapTone(){
   :'none';
 }
 function applyTheme(theme){
- // Tijdelijk is uitsluitend de lichte weergave beschikbaar.
- theme='light';
+ theme=theme==='dark'?'dark':'light';
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
  const logo=$('brandLogo');
- if(logo)logo.src=theme==='dark'?'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMDONKER.png':'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT-Photoroom.png';\n  const themeButton=$('themeButton');if(themeButton){themeButton.textContent=theme==='dark'?'☀':'☾';themeButton.title=theme==='dark'?'Lichte modus':'Donkere modus';themeButton.setAttribute('aria-label',theme==='dark'?'Schakel naar lichte modus':'Schakel naar donkere modus');}
+ if(logo)logo.src=theme==='dark'?'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMDONKER.png':'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT-Photoroom.png';
+ const themeButton=$('themeButton');if(themeButton){themeButton.textContent=theme==='dark'?'☀':'☾';themeButton.title=theme==='dark'?'Lichte modus':'Donkere modus';themeButton.setAttribute('aria-label',theme==='dark'?'Schakel naar lichte modus':'Schakel naar donkere modus');}
  if(map){
   const styleUrl=theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark';
-  if(map.getStyle()?.sprite!==styleUrl){
-   stijlKlaar=false;map.setStyle(styleUrl);
-   map.once('style.load',()=>{applyMapTone();drawStopDots();});
-  }else applyMapTone();
+  stijlKlaar=false;map.setStyle(styleUrl);
  }
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
-function toggleTheme(){applyTheme('light');}
-let savedTheme='dark';
+function toggleTheme(){applyTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');}
+let savedTheme='light';
 try{savedTheme=localStorage.getItem('radar-theme')==='light'?'light':'dark';}catch(e){}
 applyTheme(savedTheme);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -2160,7 +2157,7 @@ export default {
           '<p><em>Laatst bijgewerkt: 21 november 2026.</em></p>'+
           '<h2>1. Louter informatief</h2><p>De Golem toont meldingen die reizigers zelf insturen. Het is informatie, geen advies en geen garantie. Je gebruikt De Golem op eigen verantwoordelijkheid.</p>'+
           '<h2>2. Een geldig vervoerbewijs blijft verplicht</h2><p>Wie de bus of tram van De Lijn neemt, moet altijd een geldig vervoerbewijs hebben. Zonder geldig vervoerbewijs riskeer je een boete van De Lijn, tot € 474 (zie <a href="https://www.delijn.be/" rel="noopener">delijn.be</a>). De Golem is niet bedoeld om controles te ontwijken en moedigt zwartrijden niet aan.</p>'+
-          '<h2>3. Geen garantie, geen aansprakelijkheid</h2><p>Meldingen kunnen fout, onvolledig, verouderd of zelfs misleidend zijn. Een melding betekent niet dat er een controle is, en geen melding betekent niet dat er geen controle is. De geschatte positie van een controle die "meerijdt" is een ruwe schatting. Voor zover de wet het toelaat, zijn de makers van De Golem niet aansprakelijk voor schade door het gebruik van De Golem, zoals een boete, een gemiste rit of een verkeerde beslissing op basis van een melding.</p>'+
+          '<h2>3. Geen garantie, geen aansprakelijkheid</h2><p>Meldingen kunnen fout, onvolledig, verouderd of zelfs misleidend zijn. Een melding betekent niet dat er een controle is, en geen melding betekent niet dat er geen controle is. De geschatte positie van een controle die "meerijdt" is een ruwe schatting. Voor zover de wet het toelaat, is de verantwoordelijke voor De Golem niet aansprakelijk voor schade door het gebruik van De Golem, zoals een boete, een gemiste rit of een verkeerde beslissing op basis van een melding.</p>'+
           '<h2>4. Wat je mag melden</h2><ul><li>Alleen wat je zelf eerlijk hebt waargenomen.</li><li>Geen persoonsgegevens, namen, beledigingen, bedreigingen of bewust foute meldingen.</li><li>Hinder of bedreig nooit controleurs, chauffeurs of andere reizigers, en volg altijd hun aanwijzingen.</li></ul>'+
           '<h2>5. Foto\'s</h2><p>Een foto is optioneel. Fotografeer <strong>geen gezichten of andere herkenbare personen</strong>: voor het nemen en publiceren van een herkenbare afbeelding van iemand is in principe diens toestemming nodig (portretrecht en GDPR). Je bevestigt dat je de foto zelf nam en mag delen. Foto\'s worden pas openbaar na bevestiging door andere reizigers of een beheerder. Een beheerder kan elke foto weigeren of verwijderen.</p>'+
           '<h2>6. Moderatie</h2><p>Beheerders kunnen meldingen en foto\'s zonder opgave van reden weigeren of verwijderen, en misbruik blokkeren.</p>'+
@@ -2170,7 +2167,7 @@ export default {
           '<h2>10. Contact</h2><p>Via '+contact+'.</p>'],
         "/privacy":["Privacy",
           '<p><em>Laatst bijgewerkt: 21 november 2026.</em></p>'+
-          '<h2>Wie is verantwoordelijk?</h2><p>De makers van De Golem. Contact: '+contact+'.</p>'+
+          '<h2>Wie is verantwoordelijk?</h2><p>De verantwoordelijke voor De Golem. Contact: '+contact+'.</p>'+
           '<h2>Welke gegevens en waarom?</h2><ul>'+
           '<li><strong>Je melding</strong>: lijn, halte, tijdstip en of de controle meerijdt. Om de dienst te laten werken (gerechtvaardigd belang).</li>'+
           '<li><strong>Een gehashte code van je internetverbinding</strong> (geen leesbaar IP-adres), om misbruik te voorkomen en het aantal meldingen te beperken. Deze limietgegevens worden na 24 uur gewist.</li>'+
