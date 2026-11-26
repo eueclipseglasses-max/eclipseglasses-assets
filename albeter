@@ -212,8 +212,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 </head>
 <body>
 <header>
- <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true" alt="De Golem-logo" role="button" tabindex="0" aria-label="Schakel tussen licht en donker" title="Schakel licht/donker" onclick="toggleTheme()" onkeydown="if(event.keyCode===13||event.keyCode===32){event.preventDefault();toggleTheme()}"><div><div class="brand-name">De Golem</div><small>OOSTENDE</small></div></div>
- <div class="header-right"><button id="cityChangeButton" class="secondary hidden" type="button" onclick="changeCity()">Stad wijzigen</button><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>OOSTENDE</small></div></div>
+ <div class="header-right"><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <div class="vooraf hidden" id="vooraf" role="dialog" aria-modal="true" aria-labelledby="voorafTitel"><div class="vooraf-kaart">
@@ -354,7 +354,8 @@ function applyMapTone(){
   :'none';
 }
 function applyTheme(theme){
- theme=theme==='light'?'light':'dark';
+ // Tijdelijk is uitsluitend de lichte weergave beschikbaar.
+ theme='light';
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
@@ -369,10 +370,7 @@ function applyTheme(theme){
  }
  try{localStorage.setItem('radar-theme',theme);}catch(e){}
 }
-function toggleTheme(){
- const next=document.documentElement.dataset.theme==='light'?'dark':'light';
- applyTheme(next);
-}
+function toggleTheme(){applyTheme('light');}
 let savedTheme='dark';
 try{savedTheme=localStorage.getItem('radar-theme')==='light'?'light':'dark';}catch(e){}
 applyTheme(savedTheme);
@@ -413,7 +411,15 @@ function renderCityGate(){const detected=cityById(detectedCityId),active=detecte
 // Locatie is nergens verplicht: we vragen er nooit zelf om bij het opstarten.
 // Alleen als de gebruiker eerder al toestemming gaf, gebruiken we ze (zonder pop-up).
 async function locatieToegestaan(){try{return !!(navigator.geolocation&&navigator.permissions&&(await navigator.permissions.query({name:'geolocation'})).state==='granted');}catch(e){return false;}}
-async function initCityGate(){const data=await api('/api/cities');cityStats=data.cities||[];detectedCityId=data.detectedCity||null;let stored=null;try{stored=localStorage.getItem('degolem_city');}catch{}if(stored&&cityById(stored)?.available){await enterCity(stored,false);return;}if(stored){try{localStorage.removeItem('degolem_city');}catch{}}if(await locatieToegestaan()){const gps=await new Promise(resolve=>navigator.geolocation.getCurrentPosition(p=>resolve({lat:p.coords.latitude,lon:p.coords.longitude}),()=>resolve(null),{enableHighAccuracy:false,timeout:7000,maximumAge:300000}));if(gps){const id=cityForCoordinates(gps.lat,gps.lon);if(id)detectedCityId=id;}}renderCityGate();}
+async function initCityGate(){
+ // Tijdelijk staat de app zonder regiokeuze rechtstreeks op Oostende.
+ const data=await api('/api/cities');cityStats=data.cities||[];selectedCity='oostende';
+ try{localStorage.setItem('degolem_city','oostende');}catch(e){}
+ $('cityGate').classList.add('hidden');
+ await startPublicApp();
+ const existing=await api('/api/me').catch(()=>null);
+ if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}
+ }
 function selectInterestCity(id){selectedInterestCity=id;const c=cityById(id);$('cityInterestButton').disabled=!c;$('cityInterestButton').textContent='Zet '+(c?.name||'mijn stad')+' vooruit';}
 async function requestCityInterest(){if(!selectedInterestCity)return;$('cityInterestButton').disabled=true;$('cityStatus').textContent='Je interesse wordt geregistreerd…';try{const result=await api('/api/cities/interest',{method:'POST',body:JSON.stringify({city_id:selectedInterestCity})});$('cityStatus').textContent='Bedankt! '+result.interestCount+' mensen willen deze stad erbij.';$('cityInterestButton').textContent='Interesse geregistreerd';}catch(e){$('cityStatus').textContent=e.message;$('cityInterestButton').disabled=false;}}
 async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate').classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
@@ -1232,7 +1238,7 @@ async function startApp(){
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
- $('cityGate').classList.add('hidden');$('cityChangeButton').classList.remove('hidden');$('rankingButton').classList.remove('hidden');
+ $('cityGate').classList.add('hidden');$('rankingButton').classList.remove('hidden');
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').textContent='Platte band gezien? Meld het';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
