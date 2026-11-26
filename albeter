@@ -23,13 +23,13 @@ const HTML = String.raw`<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
-:root{color-scheme:dark;--bg:#211d19;--panel:#2b2520;--panel2:#362d26;--border:#514235;--muted:#c2a98b;--text:#f5d5a8;--input:#211b17;--orange:#c58a52;--green:#a4a878;--soft-red:#49302b;--soft-red-text:#f0b59a;--map-bg:#2c2721;--shadow:0 8px 24px rgba(0,0,0,.22)}
-:root[data-theme="light"]{color-scheme:light;--bg:#f1e2c6;--panel:#fff8e9;--panel2:#ead9bb;--border:#d6bd96;--muted:#806b55;--text:#3c2c20;--input:#fffaf0;--orange:#a96f43;--green:#68794e;--soft-red:#f3e3d8;--soft-red-text:#92563a;--map-bg:#ead9bb;--shadow:0 8px 24px rgba(83,57,32,.09)}
-:root[data-theme="light"] body{font-family:"Cormorant Garamond",Georgia,serif;font-size:16px}
+:root{color-scheme:dark;--bg:#211d19;--panel:#2b2520;--panel2:#362d26;--border:#514235;--muted:#c2a98b;--text:#f5d5a8;--input:#211b17;--orange:#e34b55;--green:#8eaa83;--soft-red:#442629;--soft-red-text:#ffb8bc;--map-bg:#2c2721;--shadow:0 8px 24px rgba(0,0,0,.22)}
+:root[data-theme="light"]{color-scheme:light;--bg:#f1e2c6;--panel:#fff8e9;--panel2:#ead9bb;--border:#d6bd96;--muted:#806b55;--text:#3c2c20;--input:#fffaf0;--orange:#c93643;--green:#59764f;--soft-red:#f8e5e6;--soft-red-text:#9b2934;--map-bg:#ead9bb;--shadow:0 8px 24px rgba(83,57,32,.09)}
+:root[data-theme="light"] body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}
 :root[data-theme="light"] .map-cluster-label{font-family:"Cormorant Garamond",Georgia,serif}
 :root[data-theme="light"] h1,:root[data-theme="light"] h2,:root[data-theme="light"] h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--text)}
 :root[data-theme="light"] footer{color:var(--muted)}
-:root[data-theme="dark"] body{font-family:"Cormorant Garamond",Georgia,serif;font-size:16px}
+:root[data-theme="dark"] body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}
 :root[data-theme="dark"] .map-cluster-label{font-family:"Cormorant Garamond",Georgia,serif}
 :root[data-theme="dark"] h1,:root[data-theme="dark"] h2,:root[data-theme="dark"] h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--text)}
 :root[data-theme="dark"] footer{color:var(--muted)}
@@ -37,15 +37,15 @@ const HTML = String.raw`<!DOCTYPE html>
 body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif;transition:background .2s,color .2s}
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
-header{height:70px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel);}
+header{height:72px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel);box-shadow:0 4px 18px rgba(0,0,0,.08);position:relative;z-index:5}
 :root[data-theme="dark"] header{background:#1B1715;}
 :root[data-theme="light"] header{background:#FBEED8;}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
 .logo{width:60px;height:60px;object-fit:contain;display:block;border-radius:0;flex:0 0 60px}.logo[role="button"]{cursor:pointer}.logo[role="button"]:focus-visible{outline:2px solid var(--orange);outline-offset:4px;border-radius:4px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
 .brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.8px;margin-top:5px;font-weight:700}
-.header-right{display:flex;align-items:center;gap:12px}
+.header-right{display:flex;align-items:center;gap:10px}.theme-toggle{width:42px;height:42px;padding:0;display:inline-grid;place-items:center;background:var(--panel2);color:var(--text);border:1px solid var(--border);font-size:18px}.theme-toggle:hover:not(:disabled){box-shadow:none;border-color:var(--orange)}
 .status{font-size:11px;color:var(--green)}
-button{border:0;border-radius:7px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:700}
+button{border:0;border-radius:8px;padding:11px 15px;background:var(--orange);color:#fff;font-weight:700;transition:transform .16s ease,filter .16s ease,box-shadow .16s ease}button:hover:not(:disabled){filter:brightness(1.06);box-shadow:0 5px 16px rgba(190,40,52,.18)}button:active:not(:disabled){transform:translateY(1px)}
 button.secondary{background:var(--panel2);color:var(--text);border:1px solid var(--border)}
 
 button.danger{background:var(--soft-red);color:var(--soft-red-text);border:1px solid var(--border)}
@@ -58,7 +58,7 @@ h1{font-size:30px;margin:9px 0}
 h2,h3{margin-top:0}
 .muted{color:var(--muted)}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.stat,.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+.stat,.panel{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
 .stat span{color:var(--muted);font-size:12px}
 .stat strong{display:block;font-size:27px;margin-top:10px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}
@@ -218,7 +218,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <body>
 <header>
  <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>OOSTENDE</small></div></div>
- <div class="header-right"><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
+ <div class="header-right"><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="themeButton" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Schakel naar donkere modus" title="Donkere modus">☾</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
 </header>
 
 <div class="vooraf hidden" id="vooraf" role="dialog" aria-modal="true" aria-labelledby="voorafTitel"><div class="vooraf-kaart">
@@ -254,8 +254,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 
 <main id="appScreen" class="hidden">
  <div class="heading">
-  <div><div class="eyebrow">MONITORING / VLAANDEREN</div><h1>controles op de kaart</h1><p class="muted">Meldingen van controles op het De Lijn-netwerk.</p></div>
-  <button id="reportCta" onclick="openReportForm()">controle gezien? Meld het</button>
+  <div><div class="eyebrow">DE GOLEM / LIVE NETWERK</div><h1>Controlebeeld</h1><p class="muted">Actuele reizigersmeldingen op het De Lijn-netwerk.</p></div>
+  <button id="reportCta" onclick="openReportForm()">＋ Melding toevoegen</button>
  </div>
  <div class="stats">
   <div class="stat"><span>Actieve meldingen</span><strong id="countActive">0</strong></div>
@@ -363,7 +363,7 @@ function applyTheme(theme){
  const themeColor=document.querySelector('meta[name="theme-color"]');
  if(themeColor)themeColor.content=theme==='light'?'#FBEED8':'#1B1715';
  const logo=$('brandLogo');
- if(logo)logo.src='https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true';
+ if(logo)logo.src=theme==='dark'?'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMDONKER.png':'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT-Photoroom.png';\n  const themeButton=$('themeButton');if(themeButton){themeButton.textContent=theme==='dark'?'☀':'☾';themeButton.title=theme==='dark'?'Lichte modus':'Donkere modus';themeButton.setAttribute('aria-label',theme==='dark'?'Schakel naar lichte modus':'Schakel naar donkere modus');}
  if(map){
   const styleUrl=theme==='light'?'https://tiles.openfreemap.org/styles/positron':'https://tiles.openfreemap.org/styles/dark';
   if(map.getStyle()?.sprite!==styleUrl){
