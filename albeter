@@ -23,13 +23,13 @@ const HTML = String.raw`<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css">
 <style>
-:root{color-scheme:dark;--bg:#10151b;--panel:#171f28;--panel2:#202b36;--border:#2e3a47;--muted:#9baaba;--text:#edf2f7;--input:#111a23;--orange:#ed4b56;--green:#83b78c;--soft-red:#3a2228;--soft-red-text:#ffb9c0;--map-bg:#1a2530;--shadow:0 10px 28px rgba(0,0,0,.24)}
-:root[data-theme="light"]{color-scheme:light;--bg:#f2f4f7;--panel:#ffffff;--panel2:#f4f6f8;--border:#dce2e8;--muted:#667482;--text:#19232d;--input:#ffffff;--orange:#c83240;--green:#477b50;--soft-red:#fae9eb;--soft-red-text:#a52836;--map-bg:#e9eef2;--shadow:0 8px 24px rgba(25,39,52,.07)}
-:root[data-theme="light"] body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}
+:root{color-scheme:dark;--bg:#211d19;--panel:#2b2520;--panel2:#362d26;--border:#514235;--muted:#c2a98b;--text:#f5d5a8;--input:#211b17;--orange:#c58a52;--green:#a4a878;--soft-red:#49302b;--soft-red-text:#f0b59a;--map-bg:#2c2721;--shadow:0 10px 28px rgba(0,0,0,.28)}
+:root[data-theme="light"]{color-scheme:light;--bg:#f1e2c6;--panel:#fff8e9;--panel2:#ead9bb;--border:#d6bd96;--muted:#806b55;--text:#3c2c20;--input:#fffaf0;--orange:#a96f43;--green:#68794e;--soft-red:#f3e3d8;--soft-red-text:#92563a;--map-bg:#ead9bb;--shadow:0 8px 24px rgba(83,57,32,.10)}
+:root[data-theme="light"] body{font-family:Georgia,serif;font-size:15px}
 :root[data-theme="light"] .map-cluster-label{font-family:"Cormorant Garamond",Georgia,serif}
 :root[data-theme="light"] h1,:root[data-theme="light"] h2,:root[data-theme="light"] h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--text)}
 :root[data-theme="light"] footer{color:var(--muted)}
-:root[data-theme="dark"] body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px}
+:root[data-theme="dark"] body{font-family:Georgia,serif;font-size:15px}
 :root[data-theme="dark"] .map-cluster-label{font-family:"Cormorant Garamond",Georgia,serif}
 :root[data-theme="dark"] h1,:root[data-theme="dark"] h2,:root[data-theme="dark"] h3{font-family:"Cormorant Garamond",Georgia,serif;color:var(--text)}
 :root[data-theme="dark"] footer{color:var(--muted)}
@@ -38,8 +38,8 @@ body{margin:0;background:var(--bg);color:var(--text);font:14px Arial,sans-serif;
 button,input,textarea,select{font:inherit}
 button{cursor:pointer}
 header{height:72px;padding:0 5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--panel);box-shadow:0 4px 18px rgba(0,0,0,.08);position:relative;z-index:5}
-:root[data-theme="dark"] header{background:#111820;}
-:root[data-theme="light"] header{background:#ffffff;}
+:root[data-theme="dark"] header{background:rgba(43,37,32,.94);}
+:root[data-theme="light"] header{background:rgba(255,248,233,.94);}
 .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:2px}
 .logo{width:60px;height:60px;object-fit:contain;display:block;border-radius:0;flex:0 0 60px}.logo[role="button"]{cursor:pointer}.logo[role="button"]:focus-visible{outline:2px solid var(--orange);outline-offset:4px;border-radius:4px}.brand-name{font-family:"Cormorant Garamond",Georgia,serif;font-size:27px;font-weight:700;letter-spacing:.4px;line-height:1;color:var(--text)}
 .brand small{display:block;color:var(--muted);font-size:9px;letter-spacing:1.8px;margin-top:5px;font-weight:700}
@@ -215,6 +215,54 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 .lijn-keuze{display:flex;align-items:center;gap:8px;width:100%;margin-top:6px;padding:7px 8px;text-align:left;font-weight:600;line-height:1.25;background:var(--panel2);color:var(--text);border:1px solid var(--border)}
 .lijn-badge{flex:none;min-width:32px;padding:3px 6px;border-radius:6px;font-weight:700;text-align:center;font-family:system-ui,sans-serif}.lijn-alle{font-weight:500;color:var(--muted)}.lijn-alle .lijn-badge{background:var(--border);color:var(--text)}.lijn-badge-alle{background:var(--border);color:var(--text);font-size:11px}.foto-veld{display:flex;align-items:center;gap:10px}.foto-knop{flex:none;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--panel2)!important;color:var(--text)!important;border:1px solid var(--border)}.foto-knop.heeft-foto{border-color:var(--orange);color:var(--orange)!important}.foto-info{font-size:12px;color:var(--muted);line-height:1.3}.foto-voorbeeld{position:relative;display:inline-flex}.foto-voorbeeld:empty{display:none}.foto-voorbeeld img{width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-wis{position:absolute;top:-7px;right:-7px;width:20px;height:20px;padding:0;border-radius:50%;font-size:13px;line-height:1;background:#e53935!important;color:#fff!important}.report-foto{display:block;margin-top:9px}.report-foto img{width:100%;max-height:220px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}.foto-icoon{vertical-align:-3px;margin-right:2px}.meerijden{display:flex;gap:10px;align-items:flex-start;margin:4px 0 12px;padding:10px 12px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);cursor:pointer;line-height:1.35}.meerijden input{width:20px;height:20px;margin-top:1px;flex:none;accent-color:#e53935}.meerijden small{color:var(--muted)}.tag-meerijden{background:rgba(229,57,53,.14);color:#c62828;font-weight:700}.lijn-kiezer-veld{position:relative}.lijn-kiezer-veld #routeSelect{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}.lijn-kiezer{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px 10px;background:var(--input);color:var(--text);border:1px solid var(--border);border-radius:7px;text-align:left;font-weight:600;font:inherit;box-shadow:none}.lijn-kiezer-tekst{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.lijn-kiezer-pijl{flex:none;opacity:.7}.lijn-kiezer-paneel{position:absolute;left:0;right:0;top:100%;z-index:60;margin-top:4px;max-height:min(60vh,420px);overflow:auto;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);padding:10px}.lijn-zoek{width:100%;box-sizing:border-box;margin:8px 0 2px;padding:9px 10px;border-radius:7px;border:1px solid var(--border);background:var(--input);color:var(--text);font:inherit}.keuze-blad .lijn-zoek{font-size:16px}.halte-melding-oud{background:rgba(146,146,146,.18)}.keuze-popup .maplibregl-popup-content{max-height:min(60vh,430px);overflow:auto}.keuze-blad{position:fixed;left:0;right:0;bottom:0;z-index:3000;max-height:62vh;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;background:var(--panel);color:var(--text);border-radius:16px 16px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.35);padding:8px 14px calc(16px + env(safe-area-inset-bottom));animation:bladIn .18s ease-out}@keyframes bladIn{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}.keuze-blad-greep{width:40px;height:4px;border-radius:2px;background:var(--border);margin:0 auto 10px}.keuze-blad-sluit{position:absolute;top:4px;right:6px;background:transparent!important;color:var(--text)!important;font-size:26px;line-height:1;padding:6px 12px;border:0}.keuze-blad>div>strong{display:block;font-size:16px;padding-right:40px}.keuze-blad .lijn-keuze{min-height:50px;font-size:14px;margin-top:8px}.keuze-blad .lijn-badge{min-width:38px;padding:5px 8px;font-size:14px}.keuze-blad .halte-melding{font-size:13px;padding:9px 10px}.mijn-locatie{width:16px;height:16px;border-radius:50%;background:#1a73e8;border:2.5px solid #fff;box-shadow:0 0 0 0 rgba(26,115,232,.5);animation:mijnLocatie 2s infinite}@keyframes mijnLocatie{0%{box-shadow:0 0 0 0 rgba(26,115,232,.45)}70%{box-shadow:0 0 0 14px rgba(26,115,232,0)}100%{box-shadow:0 0 0 0 rgba(26,115,232,0)}}.mijn-locatie-knop{display:flex!important;align-items:center;justify-content:center}.mijn-locatie-knop span{width:12px;height:12px;border-radius:50%;background:#1a73e8;box-shadow:0 0 0 2px #fff,0 0 0 3.5px #1a73e8}.halte-melding{display:flex;align-items:center;gap:8px;margin-top:7px;padding:7px 8px;border-radius:7px;background:rgba(229,57,53,.14);color:var(--text);font-size:12px;font-weight:600}.report-lijn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--text)}.route-badge{display:inline-flex;vertical-align:middle;margin-left:6px}.route-badge .lijn-badge{font-size:11px;padding:2px 6px;min-width:26px}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+/* DE GOLEM — kaartgerichte hoofdinterface */
+body{font-family:Georgia,serif}
+#appScreen{position:fixed;inset:0;z-index:2;max-width:none;width:100%;height:100dvh;margin:0;padding:0;overflow:hidden;background:var(--map-bg)}
+#appScreen .heading{display:contents}#appScreen .heading>div{display:none}
+#appScreen .heading #reportCta{position:fixed;z-index:40;left:20px;bottom:20px;min-height:48px;padding:13px 20px;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.28);font-family:"Cormorant Garamond",Georgia,serif;font-size:18px;letter-spacing:.2px}
+#appScreen .stats,#appScreen .latest-status,#appScreen .how-it-works,#appScreen>footer{display:none!important}
+header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;padding:5px 16px;border:1px solid var(--border);border-radius:13px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 8px 28px rgba(0,0,0,.16)}
+.brand{gap:9px}.logo{width:50px;height:50px;flex-basis:50px}.brand-name{font-size:26px}.brand small{font-size:8px;letter-spacing:2px}
+#appScreen .layout{position:absolute;inset:0;display:block;margin:0;padding:0}
+#appScreen .map-panel{position:absolute;inset:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;pointer-events:none}
+#appScreen .map-panel>.panel-title,#appScreen .map-panel>.notice{display:none}
+#appScreen #map{position:absolute;inset:0;width:100%;height:100%;min-height:0;border:0;border-radius:0;pointer-events:auto}
+#appScreen .map-tools{position:absolute;z-index:30;top:92px;left:18px;width:min(390px,calc(100vw - 36px));margin:0;padding:10px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;background:var(--panel);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);pointer-events:auto}
+#appScreen .halte-zoek{grid-column:1/-1;width:100%;min-width:0}#appScreen .halte-zoek input{height:43px;padding:10px 40px 10px 12px;border-radius:8px;font-size:14px}
+#appScreen .map-tools button{min-height:38px;padding:8px 9px;font-size:12px}
+#appScreen .map-legend{position:absolute;z-index:20;left:18px;bottom:20px;max-width:min(620px,calc(100vw - 36px));padding:10px 13px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);pointer-events:auto;color:var(--text)}
+#appScreen .side{position:absolute;z-index:25;top:92px;right:18px;bottom:76px;width:min(360px,calc(100vw - 36px));display:flex;flex-direction:column;gap:10px;overflow:auto;overscroll-behavior:contain;padding:0 3px 4px 0;pointer-events:auto}
+#appScreen .side>.panel{background:var(--panel);background:color-mix(in srgb,var(--panel) 96%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:12px;padding:15px;box-shadow:var(--shadow)}
+#appScreen #reportForm h3,#appScreen .side>.panel h3{font-size:21px;margin:0 0 6px}
+#appScreen .side .notice{font-size:12px;line-height:1.45}#appScreen .side .field{margin:10px 0}
+#appScreen .side input,#appScreen .side select,#appScreen .side textarea{font-size:14px;padding:10px}
+#appScreen .side .report{padding:11px;margin:0 0 8px}#appScreen .side .report-actions button{font-size:11px;padding:8px}
+#appScreen .maplibregl-ctrl-top-right{top:auto;right:18px;bottom:20px}
+#appScreen .maplibregl-ctrl-bottom-right{right:auto;left:10px;bottom:6px}
+#appScreen .maplibregl-ctrl-group{border-radius:9px;overflow:hidden;box-shadow:var(--shadow)}
+#appScreen .maplibregl-ctrl-group button{width:36px;height:36px}
+#appScreen .maplibregl-ctrl-attrib{font-family:Arial,sans-serif;font-size:10px}
+#appScreen .maplibregl-popup-content{font-family:Georgia,serif}
+#appScreen .report-highlight{outline:2px solid var(--orange);outline-offset:2px}
+#rankingScreen{position:fixed!important;z-index:60;inset:84px 18px 18px!important;max-width:900px!important;margin:auto!important;overflow:auto;background:var(--bg);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+@media(max-width:700px){
+ header{top:7px;left:7px;right:7px;height:58px;padding:4px 9px;border-radius:11px}
+ .logo{width:43px;height:43px;flex-basis:43px}.brand-name{font-size:23px}.brand small{font-size:7px}
+ .header-right{gap:5px}.header-right button{padding:8px 9px;font-size:10px}
+ #appScreen .map-tools{top:73px;left:8px;width:calc(100vw - 16px);padding:8px;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ #appScreen .halte-zoek{grid-column:1/-1}#appScreen .halte-zoek input{height:41px;font-size:16px}
+ #appScreen .map-tools button{min-height:35px;font-size:11px;padding:7px 5px}
+ #appScreen .side{top:auto;left:8px;right:8px;bottom:74px;width:auto;max-height:42dvh;gap:7px;padding:0 0 3px}
+ #appScreen .side>.panel{padding:12px;border-radius:11px}
+ #appScreen .side #reportForm h3,#appScreen .side>.panel h3{font-size:19px}
+ #appScreen .map-legend{display:none}
+ #appScreen .heading #reportCta{left:10px;bottom:calc(10px + env(safe-area-inset-bottom));right:10px;width:calc(100% - 20px);min-height:49px;font-size:17px}
+ #appScreen .maplibregl-ctrl-top-right{right:9px;bottom:calc(43dvh + 84px)}
+ #appScreen .maplibregl-ctrl-bottom-right{left:4px;bottom:4px}
+ #rankingScreen{inset:72px 8px 8px!important;padding:14px 10px!important}
+}
+@media(prefers-reduced-motion:reduce){#appScreen *,#appScreen *::before,#appScreen *::after{scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
 </style>
 </head>
 <body>
@@ -362,7 +410,7 @@ function applyTheme(theme){
  theme=theme==='dark'?'dark':'light';
  document.documentElement.dataset.theme=theme;
  const themeColor=document.querySelector('meta[name="theme-color"]');
- if(themeColor)themeColor.content=theme==='light'?'#ffffff':'#10151b';
+ if(themeColor)themeColor.content=theme==='light'?'#f1e2c6':'#211d19';
  const logo=$('brandLogo');
  if(logo)logo.src=theme==='dark'?'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMDONKER.png':'https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/DEGOLEMLICHT-Photoroom.png';
  const themeButton=$('themeButton');if(themeButton){themeButton.textContent=theme==='dark'?'☀':'☾';themeButton.title=theme==='dark'?'Lichte modus':'Donkere modus';themeButton.setAttribute('aria-label',theme==='dark'?'Schakel naar lichte modus':'Schakel naar donkere modus');}
@@ -493,7 +541,7 @@ function meldingStatus(tijd){const age=Date.now()-tijdMs(tijd);return age<MELDIN
 function reportAgeOpacity(s){return meldingStatus(s)==='vers'?1:.55;}
 function reportMarkerColor(stopId,stop){const t=activeReportCreatedAt.get(String(stopId));return t&&meldingStatus(t)!=='vers'?'#929292':stopDotColor(stop,true);}
 function halteIsVers(stopId){const t=activeReportCreatedAt.get(String(stopId));return !!t&&meldingStatus(t)==='vers';}
-function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton').classList.remove('hidden');$('reportForm').scrollIntoView({behavior:'smooth',block:'start'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
+function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton').classList.remove('hidden');const side=document.querySelector('#appScreen .side');if(side)side.scrollTo({top:0,behavior:'smooth'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
 const FOTO_ICOON='<svg class="foto-icoon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>';
 function isBeheerder(){return ($('userRole')&&$('userRole').textContent)==='Beheerder';}
 function reportCard(r,admin=false){
