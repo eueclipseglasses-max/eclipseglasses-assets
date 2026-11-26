@@ -686,8 +686,7 @@ function focusRoutes(){
  const f=new Map();
  for(const rid of tijdelijkeFocus)for(const b of lijnBroers(rid))f.set(b,'tijdelijk');
  const sel=gekozenLijnId();if(sel)for(const b of lijnBroers(sel))f.set(b,'kies');
- // Een lijn met een melding krijgt haar eigen kleur; het rode en gele stuk liggen erbovenop.
- for(const m of actieveMeldingen)if(m.route_id&&m.route_id!=='all'&&meldingStatus(meldingTijd(m))!=='weg')for(const b of lijnBroers(m.route_id))if(!f.has(b))f.set(b,'melding');
+ // Meldingen kleuren nooit de volledige lijn; alleen de rode en gele trajectstukken worden apart getekend.
  return f;
 }
 // Traject van één lijn (richting) met de plaats van elke halte erop; alleen geladen als er een melding op die lijn is.
