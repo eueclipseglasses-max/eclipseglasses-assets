@@ -1235,8 +1235,8 @@ async function loadReports(){
  reportMarkers.length=0;
  const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude)&&meldingStatus(meldingTijd(r))!=='weg');
  activeReportStopIds=new Set(reports.map(r=>String(r.stop_id||'')).filter(Boolean));
- syncStopNameLayer();actieveMeldingen=reports;tekenMeldingStukken();addRouteLinesToMap();zetLivePeiling();
- activeReportCreatedAt.clear();reports.forEach(r=>{if(!r.stop_id)return;const k=String(r.stop_id),t=meldingTijd(r),v=activeReportCreatedAt.get(k);if(!v||t>new Date(v).getTime())activeReportCreatedAt.set(k,new Date(t).toISOString());});zetHaltePuls();drawStopDots();
+ actieveMeldingen=reports;tekenMeldingStukken();addRouteLinesToMap();zetLivePeiling();
+ activeReportCreatedAt.clear();reports.forEach(r=>{if(!r.stop_id)return;const k=String(r.stop_id),t=meldingTijd(r),v=activeReportCreatedAt.get(k);if(!v||t>new Date(v).getTime())activeReportCreatedAt.set(k,new Date(t).toISOString());});zetHaltePuls();syncStopNameLayer();drawStopDots();
  $('countActive').textContent=reports.length;
  const today=new Date().toLocaleDateString('en-CA');
  $('countToday').textContent=reports.filter(r=>r.created_at.slice(0,10)===today).length;
