@@ -1931,10 +1931,10 @@ async function handleApi(request, env) {
     const since=days?new Date(Date.now()-days*86400000).toISOString():"1970-01-01T00:00:00.000Z";
     const where="created_at>=?";
     const bind=since;
-    const summary=await env.DB.prepare(`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE \${where}`).bind(bind).first();
-    const returning=await env.DB.prepare(`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE \${where} GROUP BY visitor_key HAVING COUNT(DISTINCT session_key)>1)`).bind(bind).first();
-    const daily=await env.DB.prepare(`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY day ORDER BY day`).bind(bind).all();
-    const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(`SELECT \${column} AS name,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY \${column} ORDER BY count DESC LIMIT 10`).bind(bind).all();return result.results||[];};
+    const summary=await env.DB.prepare(`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE ${where}`).bind(bind).first();
+    const returning=await env.DB.prepare(`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE ${where} GROUP BY visitor_key HAVING COUNT(DISTINCT session_key)>1)`).bind(bind).first();
+    const daily=await env.DB.prepare(`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE ${where} GROUP BY day ORDER BY day`).bind(bind).all();
+    const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(`SELECT ${column} AS name,COUNT(*) AS count FROM analytics_events WHERE ${where} GROUP BY ${column} ORDER BY count DESC LIMIT 10`).bind(bind).all();return result.results||[];};
     const countries=await group("country"),cities=await group("city"),sources=await group("referrer"),pages=await group("path"),devices=await group("device");
     const [browsers,systems]=await Promise.all([group("browser"),group("os")]);
     return json({summary:{pageviews:Number(summary?.pageviews||0),visitors:Number(summary?.visitors||0),sessions:Number(summary?.sessions||0),returning:Number(returning?.n||0),active:Number(active?.n||0),today:Number(today?.n||0)},daily:daily.results||[],countries,cities,sources,pages,devices,browsers:[...browsers,...systems.map(x=>({...x,name:"OS: "+x.name}))]});
