@@ -1350,6 +1350,67 @@ async function rateLimitCommunity(env,key,limit,windowMs) {
   await env.DB.prepare("INSERT INTO community_rate_limits(rate_key,created_at) VALUES(?,?)").bind(key,now).run();
   return true;
 }
+
+
+async function ensureAnalyticsTables(env){
+  await env.DB.prepare(\`CREATE TABLE IF NOT EXISTS analytics_events (
+    id TEXT PRIMARY KEY, visitor_key TEXT NOT NULL, session_key TEXT NOT NULL,
+    created_at TEXT NOT NULL, path TEXT NOT NULL, country TEXT, region TEXT, city TEXT,
+    referrer TEXT, device TEXT, browser TEXT, os TEXT
+  )\`).run();
+  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_analytics_time ON analytics_events(created_at)").run();
+  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_analytics_visitor_time ON analytics_events(visitor_key,created_at)").run();
+}
+function analyticsCookieValue(request,name){
+  return (request.headers.get("Cookie")||"").split(";").map(x=>x.trim()).find(x=>x.startsWith(name+"="))?.slice(name.length+1)||"";
+}
+function analyticsAgent(ua){
+  ua=String(ua||"");
+  const device=/ipad|tablet/i.test(ua)?"Tablet":/mobile|iphone|android/i.test(ua)?"Mobiel":"Desktop";
+  const browser=/Edg\//.test(ua)?"Edge":/Firefox\//.test(ua)?"Firefox":/CriOS|Chrome\//.test(ua)?"Chrome":/Safari\//.test(ua)?"Safari":"Andere";
+  const os=/Windows/.test(ua)?"Windows":/Android/.test(ua)?"Android":/iPhone|iPad|iOS/.test(ua)?"iOS":/Mac OS/.test(ua)?"macOS":/Linux/.test(ua)?"Linux":"Andere";
+  return {device,browser,os};
+}
+async function recordPageView(request,env,path){
+  if(!env.DB)return {};
+  await ensureAnalyticsTables(env);
+  let visitor=analyticsCookieValue(request,"golem_visitor");
+  let session=analyticsCookieValue(request,"golem_session");
+  const newVisitor=!/^[a-f0-9-]{36}$/i.test(visitor);
+  const newSession=!/^[a-f0-9-]{36}$/i.test(session);
+  if(newVisitor)visitor=crypto.randomUUID();
+  if(newSession)session=crypto.randomUUID();
+  const ua=request.headers.get("User-Agent")||"";
+  const agent=analyticsAgent(ua);
+  let referrer="";
+  try{const ref=request.headers.get("Referer");if(ref){const host=new URL(ref).hostname.toLowerCase();if(host&&!host.endsWith("degolem.be"))referrer=host;}}catch(e){}
+  const cf=request.cf||{};
+  await env.DB.prepare(\`INSERT INTO analytics_events
+    (id,visitor_key,session_key,created_at,path,country,region,city,referrer,device,browser,os)
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)\`).bind(
+      randomId(),await hashText(visitor),await hashText(session),new Date().toISOString(),
+      String(path||"/").slice(0,180),String(cf.country||"Onbekend").slice(0,80),
+      String(cf.region||"").slice(0,100),String(cf.city||"Onbekend").slice(0,100),
+      referrer.slice(0,160),agent.device,agent.browser,agent.os
+    ).run();
+  await env.DB.prepare("DELETE FROM analytics_events WHERE created_at < ?").bind(new Date(Date.now()-400*86400000).toISOString()).run();
+  return {
+    "Set-Cookie":[
+      ...(newVisitor?[cookie("golem_visitor",visitor,365*86400)]:[]),
+      cookie("golem_session",session,1800)
+    ].join(", ")
+  };
+}
+function adminAnalyticsHTML(){
+ return \`<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#FBEED8"><title>Beheer · De Golem</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f1e2c6;color:#3c2c20;font:15px Arial,sans-serif}header{background:#211d19;color:#f5d5a8;padding:22px max(20px,calc((100vw - 1300px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}header a{color:#f5d5a8}main{max-width:1300px;margin:auto;padding:28px 20px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:20px}h1{font:700 30px Georgia,serif;margin:0 0 6px}.muted{color:#806b55}.controls{display:flex;gap:8px;align-items:center}select,button{padding:10px 13px;border:1px solid #d6bd96;border-radius:7px;background:#fff8e9;color:#3c2c20;font:inherit}button{background:#a96f43;color:white;border:0;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}.card,.panel{background:#fff8e9;border:1px solid #d6bd96;border-radius:11px;padding:17px;min-width:0}.card span{font-size:12px;color:#806b55}.card strong{display:block;font-size:29px;margin-top:8px}.panel{margin:14px 0}.panel h2{font:700 19px Georgia,serif;margin:0 0 15px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart{height:240px;width:100%;display:block}.bars{display:flex;align-items:end;gap:5px;height:190px;padding:8px 0 22px;border-bottom:1px solid #d6bd96}.barwrap{height:100%;flex:1;display:flex;align-items:end;position:relative;min-width:0}.bar{width:100%;background:#a96f43;border-radius:4px 4px 0 0;min-height:2px}.barwrap small{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:#806b55;white-space:nowrap}.rows{display:flex;flex-direction:column;gap:10px}.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;font-size:13px}.track{height:6px;background:#ead9bb;border-radius:9px;overflow:hidden;margin-top:5px}.track i{display:block;height:100%;background:#a96f43}.empty{color:#806b55;font-size:13px}.error{color:#a22}.small{font-size:11px;color:#806b55}@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.twocol{grid-template-columns:1fr}}@media(max-width:420px){main{padding:18px 11px}.grid{gap:7px}.card{padding:12px}.card strong{font-size:23px}.card span{font-size:10px}header{padding:16px}.controls{width:100%}.controls select{flex:1}}
+</style></head><body><header><strong>DE GOLEM / BEHEER</strong><a href="/">← Naar de website</a></header><main><div class="top"><div><h1>Website-statistieken</h1><div class="muted">Privé-dashboard · alleen toegankelijk voor beheerders</div></div><div class="controls"><select id="range"><option value="7">Laatste 7 dagen</option><option value="30" selected>Laatste 30 dagen</option><option value="90">Laatste 90 dagen</option><option value="365">Laatste 12 maanden</option><option value="all">Alles</option></select><button id="refresh">Vernieuwen</button></div></div><div id="status" class="muted">Statistieken laden…</div><section class="grid" id="kpis"></section><section class="panel"><h2>Bezoeken doorheen de tijd</h2><div id="daily" class="bars"></div></section><div class="twocol"><section class="panel"><h2>Herkomst per land</h2><div id="countries" class="rows"></div></section><section class="panel"><h2>Steden / regio’s</h2><div id="cities" class="rows"></div></section><section class="panel"><h2>Verkeersbronnen</h2><div id="sources" class="rows"></div></section><section class="panel"><h2>Populairste pagina’s</h2><div id="pages" class="rows"></div></section><section class="panel"><h2>Toestellen</h2><div id="devices" class="rows"></div></section><section class="panel"><h2 browsers>Browsers en besturingssystemen</h2><div id="browsers" class="rows"></div></section></div><p class="small">Locatie is een benadering op basis van het netwerkadres dat Cloudflare ziet; geen GPS. Unieke bezoekers worden via een willekeurige, gehashte cookie geteld. Ruwe IP-adressen worden niet opgeslagen. Bewaartermijn: maximaal 400 dagen.</p></main><script>
+const $=id=>document.getElementById(id);const fmt=n=>Number(n||0).toLocaleString('nl-BE');function rows(id,data){const el=$(id);if(!data?.length){el.innerHTML='<div class="empty">Nog geen gegevens.</div>';return;}const max=Math.max(1,...data.map(x=>Number(x.count)));el.innerHTML=data.map(x=>'<div><div class="item"><span>'+esc(x.name||'Onbekend')+'</span><strong>'+fmt(x.count)+'</strong></div><div class="track"><i style="width:'+Math.max(1,Number(x.count)/max*100)+'%"></i></div></div>').join('');}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function render(d){const k=d.summary||{};$('kpis').innerHTML=[['Paginaweergaven',k.pageviews],['Unieke bezoekers',k.visitors],['Bezoeken / sessies',k.sessions],['Terugkerende bezoekers',k.returning]].map(x=>'<div class="card"><span>'+x[0]+'</span><strong>'+fmt(x[1])+'</strong></div>').join('');const daily=d.daily||[];const max=Math.max(1,...daily.map(x=>x.count));$('daily').innerHTML=daily.length?daily.map(x=>'<div class="barwrap" title="'+esc(x.day)+': '+fmt(x.count)+'"><div class="bar" style="height:'+Math.max(2,x.count/max*100)+'%"></div><small>'+esc(x.day.slice(5))+'</small></div>').join(''):'<div class="empty">Nog geen gegevens.</div>';rows('countries',d.countries);rows('cities',d.cities);rows('sources',d.sources);rows('pages',d.pages);rows('devices',d.devices);rows('browsers',d.browsers);$('status').textContent='Laatst bijgewerkt: '+new Date().toLocaleString('nl-BE')+' · '+fmt(k.pageviews)+' paginaweergaven in deze periode.';}
+async function load(){ $('status').textContent='Statistieken laden…';try{const r=await fetch('/api/admin/analytics?range='+encodeURIComponent($('range').value),{credentials:'same-origin',cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'Geen toegang');render(d);}catch(e){$('status').innerHTML='<span class="error">'+esc(e.message)+'</span> · <a href="/">Log in op De Golem</a>';}}$('refresh').onclick=load;$('range').onchange=load;load();
+</script></body></html>\`;
+}
+
 async function handleApi(request, env) {
   const url = new URL(request.url);
   const path = url.pathname;
@@ -1411,7 +1472,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v17";
+      const CACHE = "degolem-shell-v18";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
@@ -1865,6 +1926,25 @@ async function handleApi(request, env) {
     return json({success:true,still,gone});
   }
 
+
+  if(path==="/api/admin/analytics"&&method==="GET"){
+    const user=await currentUser(request,env);
+    if(!user||user.role!=="admin")return json({error:"Geen beheerdersrechten"},403);
+    await ensureAnalyticsTables(env);
+    const range=url.searchParams.get("range")||"30";
+    const days=range==="all"?null:Math.max(1,Math.min(365,Number(range)||30));
+    const since=days?new Date(Date.now()-days*86400000).toISOString():"1970-01-01T00:00:00.000Z";
+    const where="created_at>=?";
+    const bind=since;
+    const summary=await env.DB.prepare(\`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE \${where}\`).bind(bind).first();
+    const returning=await env.DB.prepare(\`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE \${where} GROUP BY visitor_key HAVING COUNT(*)>1)\`).bind(bind).first();
+    const daily=await env.DB.prepare(\`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY day ORDER BY day\`).bind(bind).all();
+    const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(\`SELECT \${column} AS name,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY \${column} ORDER BY count DESC LIMIT 10\`).bind(bind).all();return result.results||[];};
+    const countries=await group("country"),cities=await group("city"),sources=await group("referrer"),pages=await group("path"),devices=await group("device");
+    const [browsers,systems]=await Promise.all([group("browser"),group("os")]);
+    return json({summary:{pageviews:Number(summary?.pageviews||0),visitors:Number(summary?.visitors||0),sessions:Number(summary?.sessions||0),returning:Number(returning?.n||0)},daily:daily.results||[],countries,cities,sources,pages,devices,browsers:[...browsers,...systems.map(x=>({...x,name:"OS: "+x.name}))]});
+  }
+
   if (path === "/api/admin/pending" && method === "GET") {
     const user = await currentUser(request,env);
 
@@ -2044,6 +2124,12 @@ export default {
       }
 
       if (request.method !== "GET") return new Response("Method not allowed",{status:405});
+      if(url.pathname==="/admin"){
+        const admin=await currentUser(request,env).catch(()=>null);
+        if(!admin||admin.role!=="admin")return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Geen toegang · De Golem</title><body style="font:16px Georgia;background:#f1e2c6;color:#3c2c20;min-height:100vh;display:grid;place-items:center;text-align:center"><main><h1>Beheerderslogin vereist</h1><p>Log eerst in met je beheerdersaccount.</p><a href="/">Naar De Golem en inloggen</a><p><a href="/admin">Daarna terug naar het beheerpaneel</a></p></main></body></html>',{status:403,headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}});
+        return new Response(adminAnalyticsHTML(),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow","Referrer-Policy":"same-origin","Set-Cookie":analytics["Set-Cookie"]||"",
+          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"}});
+      }
       if (!["/","/index.html","/over","/contact","/privacy","/voorwaarden","/misbruik"].includes(url.pathname)) {
         return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pagina niet gevonden · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:16px Georgia,serif;min-height:100vh;display:grid;place-items:center;text-align:center"><main style="padding:32px"><h1>Deze pagina bestaat niet.</h1><p>Misschien is de link verouderd.</p><a href="/" style="color:#925b35">Terug naar De Golem</a></main></body></html>',{status:404,headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
       }
@@ -2078,15 +2164,17 @@ export default {
           '<li><strong>Een foto (optioneel)</strong>: in je toestel verkleind, waarbij verborgen gegevens zoals de GPS-locatie van de foto verwijderd worden. Foto\'s worden na 30 dagen gewist.</li>'+
           '<li><strong>Een account (optioneel)</strong>: e-mailadres en een versleuteld wachtwoord, plus een sessiecookie zodat je ingelogd blijft.</li></ul>'+
           '<h2>Hoe lang?</h2><p>Een melding is hoogstens 1 uur zichtbaar op de kaart. Daarna bewaren we ze enkel voor statistiek en misbruikpreventie, zonder je naam. Foto\'s worden na 30 dagen gewist en limietgegevens na 24 uur.</p>'+
-          '<h2>Met wie delen we gegevens?</h2><p>We verkopen niets en gebruiken geen advertentie- of volgcookies. De site draait bij Cloudflare. Je browser laadt kaarttegels bij OpenFreeMap, dat daarbij je IP-adres ziet.</p>'+
+          '<h2>Websitebezoek en statistieken</h2><p>We registreren paginaweergaven, een willekeurige bezoekerscode, sessies, bezochte pagina’s, verwijzende website, type toestel, browser en besturingssysteem. Cloudflare levert een globale locatie op basis van je internetverbinding (zoals land en stad); we vragen hiervoor geen GPS-locatie. We slaan geen IP-adressen op. De bezoekerscode is gehasht opgeslagen en wordt via een eerste-partijcookie maximaal 1 jaar gebruikt om unieke en terugkerende bezoekers te tellen. Statistische gebeurtenissen worden maximaal 400 dagen bewaard. Deze gegevens worden uitsluitend gebruikt om het gebruik en de werking van De Golem te begrijpen en te verbeteren.</p><h2>Met wie delen we gegevens?</h2><p>We verkopen niets en gebruiken geen advertentiecookies. De site draait bij Cloudflare. Je browser laadt kaarttegels bij OpenFreeMap, dat daarbij je IP-adres ziet.</p>'+
           '<h2>Op je toestel</h2><p>In de lokale opslag van je browser bewaren we je gekozen stad, je thema (licht/donker) en dat je de melding bij het openen gelezen hebt. Als je inlogt, gebruiken we één sessiecookie.</p>'+
           '<h2>Je rechten</h2><p>Je kunt inzage, verbetering of verwijdering van je gegevens vragen en je verzetten tegen de verwerking, via '+contact+'. Je kunt ook klacht indienen bij de <a href="https://www.gegevensbeschermingsautoriteit.be/" rel="noopener">Gegevensbeschermingsautoriteit</a>.</p>'],
         "/misbruik":["Misbruik melden",'<p>Zie je een foute, dubbele of kwetsende melding, of een foto met een herkenbare persoon? Laat het ons weten via '+contact+', met de halte, het tijdstip en wat er mis is. Een beheerder bekijkt het zo snel mogelijk en verwijdert wat niet mag.</p>']
       };
       if(infoPages[url.pathname]){
         const [title,body]=infoPages[url.pathname];
-        return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FBEED8"><title>'+title+' · De Golem</title><style>body{margin:0;background:#f1e2c6;color:#3c2c20;font:17px Georgia,serif;line-height:1.6}main{max-width:720px;margin:0 auto;padding:32px 22px 56px}h2{font-size:20px;margin:26px 0 6px}a{color:#925b35}li{margin:6px 0}</style><body><main><p style="letter-spacing:2px;color:#925b35">DE GOLEM</p><h1>'+title+'</h1>'+body+'<p style="margin-top:32px"><a href="/">← Terug naar de kaart</a></p></main></body></html>',{headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
+        const analytics=await recordPageView(request,env,url.pathname).catch(()=>({}));
+        return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#FBEED8"><title>'+title+' · De Golem</title><style>body{margin:0;background:#f1e2c6;color:#3c2c20;font:17px Georgia,serif;line-height:1.6}main{max-width:720px;margin:0 auto;padding:32px 22px 56px}h2{font-size:20px;margin:26px 0 6px}a{color:#925b35}li{margin:6px 0}</style><body><main><p style="letter-spacing:2px;color:#925b35">DE GOLEM</p><h1>'+title+'</h1>'+body+'<p style="margin-top:32px"><a href="/">← Terug naar de kaart</a></p></main></body></html>',{headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff",...(analytics["Set-Cookie"]?{"Set-Cookie":analytics["Set-Cookie"]}:{})}});
       }
+      const analytics=await recordPageView(request,env,url.pathname).catch(()=>({}));
       let page=HTML;
       let viewer=null;
       if(env.DB){try{viewer=await currentUser(request,env);}catch(e){viewer=null;}}
