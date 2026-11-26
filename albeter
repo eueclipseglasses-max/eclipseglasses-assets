@@ -315,9 +315,9 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
 .map-icon-button,.map-login-button{height:48px;min-width:48px;padding:0 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);box-shadow:0 8px 25px rgba(0,0,0,.22);font:15px Georgia,serif;cursor:pointer}
 .map-icon-button{font-size:23px}
 .map-login-button{width:48px;min-width:48px;padding:0;display:grid;place-items:center}\n .map-login-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.settings-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:0;background:rgba(38,31,24,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.settings-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:0;background:rgba(38,31,24,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:auto;touch-action:pan-y}
 .settings-overlay.hidden{display:none}
-.settings-sheet{width:min(560px,100%);max-height:92vh;overflow:auto;padding:21px 22px 18px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 -12px 45px rgba(45,31,17,.18);text-align:left}
+.settings-sheet{position:relative;z-index:1;pointer-events:auto;width:min(560px,100%);max-height:92vh;overflow:auto;padding:21px 22px 18px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 -12px 45px rgba(45,31,17,.18);text-align:left;overscroll-behavior:contain}
 .settings-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:15px}
 .settings-sheet h2{margin:0;font:700 25px "Cormorant Garamond",Georgia,serif}
 .settings-close{width:34px;height:34px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:23px;line-height:1;box-shadow:none}
@@ -685,6 +685,7 @@ function initMap(){
  $('settingsClose').onclick=closeSettings;
  $('settingsClose').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeSettings();});
  $('settingsOverlay').addEventListener('click',e=>{if(e.target===$('settingsOverlay'))closeSettings();});
+ $('settingsPanel').addEventListener('click',e=>e.stopPropagation());
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('settingsOverlay').classList.contains('hidden'))closeSettings();});
  $('linesModeButton').addEventListener('click',()=>setMapDisplayMode('lines'));
  $('riskModeButton').addEventListener('click',()=>setMapDisplayMode('risk'));
