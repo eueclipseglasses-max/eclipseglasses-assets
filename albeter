@@ -409,7 +409,7 @@ let selectedInterestCity=null;
 function cityById(id){return cityStats.find(c=>c.id===id)||CITY_DATA.find(c=>c.id===id);}
 function cityDistanceKm(lat,lon,c){const rad=x=>x*Math.PI/180,dLat=rad(lat-c.lat),dLon=rad(lon-c.lon),a=Math.sin(dLat/2)**2+Math.cos(rad(lat))*Math.cos(rad(c.lat))*Math.sin(dLon/2)**2;return 6371*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
 function cityForCoordinates(lat,lon){let best=null,distance=Infinity;for(const c of CITY_DATA){const d=cityDistanceKm(lat,lon,c);if(d<distance){best=c;distance=d;}}return best&&distance<=best.radius?best.id:null;}
-function isInSelectedCity(lat,lon){if(!selectedCity)return true;const c=cityById(selectedCity);if(!c||lat==null||lon==null)return false;return cityDistanceKm(Number(lat),Number(lon),c)<=c.radius;}
+function isInSelectedCity(lat,lon){if(!selectedCity)return true;if(lat==null||lon==null)return false;const y=Number(lat),x=Number(lon);if(!Number.isFinite(x)||!Number.isFinite(y))return false;if(selectedCity==='oostende')return x>=2.80&&x<=3.10&&y>=51.13&&y<=51.29;const c=cityById(selectedCity);return !!c&&cityDistanceKm(y,x,c)<=c.radius;}
 function renderCityGate(){const detected=cityById(detectedCityId),active=detected&&detected.available;$('cityDetection').innerHTML=detected?'<strong>Klopt het dat je in '+esc(detected.name)+' bent?</strong><p class="muted">'+(active?Number(detected.activeReporters)+' verschillende melders actief in de afgelopen 30 dagen.':'Nog '+Math.max(0,CITY_MIN_REPORTERS-Number(detected.activeReporters||0))+' melders nodig om deze stad te openen.')+'</p>'+(active?'<button type="button" onclick="enterCity(\''+detected.id+'\')">Ja, toon '+esc(detected.name)+'</button>':'<span class="tag orange">Binnenkort beschikbaar</span>'):'<strong>We konden je stad niet automatisch bepalen.</strong><p class="muted">Bekijk hieronder welke regio’s al beschikbaar zijn.</p>';$('cityOptions').innerHTML=cityStats.map(c=>'<button type="button" class="city-option" onclick="'+(c.available?'enterCity(\''+c.id+'\')':'selectInterestCity(\''+c.id+'\')')+'"><span>'+esc(c.name)+'<small>'+(c.available?'Nu beschikbaar':'Binnenkort')+'</small></span><span class="city-count">'+Number(c.activeReporters)+' / '+CITY_MIN_REPORTERS+'</span></button>').join('');if(detectedCityId&&!active)selectedInterestCity=detectedCityId;if(!selectedInterestCity)selectedInterestCity=(cityStats.find(c=>!c.available)||cityStats[0]||{}).id||null;$('cityInterestButton').disabled=!selectedInterestCity;$('cityInterestButton').textContent=selectedInterestCity?'Zet '+(cityById(selectedInterestCity)?.name||'mijn stad')+' vooruit':'Zet mijn stad vooruit';}
 // Locatie is nergens verplicht: we vragen er nooit zelf om bij het opstarten.
 // Alleen als de gebruiker eerder al toestemming gaf, gebruiken we ze (zonder pop-up).
@@ -1028,21 +1028,14 @@ function toonLijnenBijKlik(e){
  kiesLijnKnoppen(node,popup,null);
  zetTijdelijkeFocus(routes.map(r=>r.route_id),popup);
 }
-function stopIsCurrentlyVisible(s){
- if(!map||!map.loaded())return false;
- const lng=Number(s.stop_lon),lat=Number(s.stop_lat);
- if(!Number.isFinite(lng)||!Number.isFinite(lat)||!map.getBounds().contains([lng,lat]))return false;
- const p=map.project([lng,lat]),box=$('map').getBoundingClientRect();
- return p.x>=0&&p.y>=0&&p.x<=box.width&&p.y<=box.height;
-}
 function updateStopSearchOptions(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');
- const matches=q?mapStops.filter(s=>stopIsCurrentlyVisible(s)&&stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30):[];
+ const matches=q?mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30):[];
  $('stopSearchOptions').innerHTML=matches.map(s=>'<option value="'+esc(s.stop_name)+'"></option>').join('');
 }
 function searchMapStop(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');if(!q)return;
- const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q&&stopIsCurrentlyVisible(x)&&stopMatchesTransportFilter(x)&&(!onlyReportedStops||activeReportStopIds.has(String(x.stop_id))));
+ const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q&&stopMatchesTransportFilter(x)&&(!onlyReportedStops||activeReportStopIds.has(String(x.stop_id))));
  if(!s){$('stopSearchMessage').textContent='Deze halte staat niet op de kaart.';return;}
  $('stopSearchMessage').textContent='';
  const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});
@@ -1470,7 +1463,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v22";
+      const CACHE = "degolem-shell-v23";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
