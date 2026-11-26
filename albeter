@@ -316,7 +316,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 const REPORT_LIFETIME_HOURS=1;
 let mode='login', map;
 const CITY_MIN_REPORTERS=20;
-const CITY_DATA=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:22},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
+const CITY_DATA=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:12},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
 let cityStats=[],selectedCity=null,detectedCityId=null;
 const reportMarkers=[];
 const activeReportCreatedAt=new Map();
