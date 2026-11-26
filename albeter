@@ -1050,6 +1050,7 @@ function zorgVoorLijnLagen(){
  if(!map.getLayer('golem-melding-positie'))map.addLayer({id:'golem-melding-positie',type:'circle',source:'golem-meldingen',filter:['==',['geometry-type'],'Point'],paint:{'circle-color':['case',['==',['get','vers'],1],MELDING_ROOD,'#9097a0'],'circle-radius':['interpolate',['linear'],['zoom'],11,4,15,6.5,18,8],'circle-stroke-width':0}});
  if(!map.getLayer('golem-voertuigen'))map.addLayer({id:'golem-voertuigen',type:'circle',source:'golem-voertuigen',paint:{'circle-color':['get','kleur'],'circle-radius':['interpolate',['linear'],['zoom'],11,5,15,8,18,10],'circle-stroke-color':'#ffffff','circle-stroke-width':2.5}});
  pasLijnStijlToe();
+ if(typeof setMapDisplayMode==='function')setMapDisplayMode(mapDisplayMode);
 }
 // Lijnen met kleur liggen naast elkaar, één strook per kleur (zelfde kleur = één strook).
 // Per zoomniveau: [zoom, breedte van één strook, maximale breedte van de hele bundel] in pixels.
@@ -1431,20 +1432,20 @@ $('pendingList').addEventListener('click',async e=>{
 async function startApp(){
  if(!selectedCity){changeCity();return;}
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
- $('authButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').textContent='controle gezien? Meld het';$('reportCta').onclick=openReportForm;
+ $('authButton').textContent='Uitloggen';$('mapLoginButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
  $('cityGate').classList.add('hidden');$('rankingButton').classList.remove('hidden');
- $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';
- $('reportForm').classList.remove('hidden');$('reportCta').textContent='controle gezien? Meld het';$('reportCta').onclick=openReportForm;
+ $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';$('mapLoginButton').textContent='Inloggen';
+ $('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
  const results=await Promise.allSettled([loadRoutes(),loadReports()]);
  if(results[0].status==='rejected')$('reportMessage').textContent='De lijnen konden niet laden. Probeer het opnieuw.';
  if(results[1].status==='rejected')$('reportsList').innerHTML='<div class="empty-state"><strong>Meldingen konden niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="loadReports().catch(()=>{})">Opnieuw proberen</button></div>';
 }
-$('authButton').classList.add('hidden');
+$('authButton').classList.add('hidden');$('mapLoginButton').textContent='Inloggen';
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 // Melding bij het openen: één keer per versie van de tekst tonen (en opnieuw als de tekst wijzigt).
 const VOORAF_VERSIE='2026-11-26';
