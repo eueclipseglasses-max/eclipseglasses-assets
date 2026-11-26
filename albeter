@@ -295,6 +295,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    </section>
    <section class="panel hidden" id="adminPanel">
     <h3>Beheer</h3>
+    <a href="/admin" style="display:inline-block;padding:10px 14px;border-radius:7px;background:var(--orange);color:#fff;text-decoration:none;font-weight:700">Website-statistieken openen →</a>
     <p class="notice">Nieuwe meldingen verschijnen meteen als niet bevestigd. Beheer kan ze achteraf controleren.</p>
     <div id="pendingList"></div>
    </section>
