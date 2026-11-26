@@ -387,7 +387,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  <p class="notice">Je accountgegevens worden beveiligd opgeslagen. Deel nooit je wachtwoord met anderen.</p>
 </section>
 
-<main id="appScreen" class="hidden">
+<main id="appScreen">
  <div class="heading">
   <div><div class="eyebrow">DE GOLEM / LIVE NETWERK</div><h1>Controlebeeld</h1><p class="muted">Actuele reizigersmeldingen op het De Lijn-netwerk.</p></div>
   <button id="reportCta" onclick="openReportForm()">CONTROLE <span aria-hidden="true">＋</span></button>
@@ -1454,7 +1454,7 @@ const VOORAF_VERSIE='2026-11-26';
  const v=$('vooraf');v.classList.remove('hidden');setTimeout(()=>$('voorafAkkoord').focus(),50);
  $('voorafAkkoord').addEventListener('click',()=>{try{localStorage.setItem('degolem_vooraf',VOORAF_VERSIE);}catch(e){}v.classList.add('hidden');});
 })();
-initCityGate().catch(err=>{console.error('De Golem opstarten:',err);const app=$('appScreen');if(app)app.classList.remove('hidden');});
+initCityGate().catch(err=>{console.error('De Golem opstarten:',err);const app=$('appScreen');if(app)app.classList.remove('hidden');const loading=$('mapLoading');if(loading)loading.textContent='De kaart kon niet laden. Vernieuw de pagina.';});
 setInterval(()=>{if(!$('appScreen').classList.contains('hidden'))loadReports().catch(err=>console.error('Meldingen vernieuwen:',err));},60000);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
