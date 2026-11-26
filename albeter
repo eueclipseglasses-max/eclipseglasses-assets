@@ -315,10 +315,24 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
 .map-icon-button,.map-login-button{height:48px;min-width:48px;padding:0 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);box-shadow:0 8px 25px rgba(0,0,0,.22);font:15px Georgia,serif;cursor:pointer}
 .map-icon-button{font-size:23px}
 .map-login-button{width:48px;min-width:48px;padding:0;display:grid;place-items:center}\n .map-login-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.map-settings-panel{width:220px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:0 12px 35px rgba(0,0,0,.3);display:grid;gap:9px}
-.map-settings-panel.hidden{display:none}
-.settings-heading{font-size:15px;font-weight:700;color:var(--text)}
-.settings-filters{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.settings-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:24px 16px;background:rgba(35,31,27,.34);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.settings-overlay.hidden{display:none}
+.settings-sheet{width:min(560px,100%);max-height:min(78vh,720px);overflow:auto;padding:25px 28px calc(22px + env(safe-area-inset-bottom));background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:17px;box-shadow:0 18px 55px rgba(35,25,15,.24);text-align:left}
+.settings-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:12px}
+.settings-sheet h2{margin:0;font:700 27px "Cormorant Garamond",Georgia,serif}
+.settings-close{width:36px;height:36px;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--panel2);color:var(--text);font-size:21px;line-height:1}
+.settings-disclaimer{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.55}
+.settings-detail-list{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:21px}
+.settings-detail{padding:12px 13px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
+.settings-detail span{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
+.settings-detail strong{font-size:14px;font-weight:600}
+.settings-links{display:flex;flex-wrap:wrap;gap:9px 18px;padding:2px 0 19px}
+.settings-links a{color:var(--text);font-size:13px;text-decoration:none}
+.settings-links a:hover{text-decoration:underline;color:var(--orange)}
+.settings-section-title{margin:2px 0 10px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase}
+.settings-bottom-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border)}
+.settings-bottom-actions button{flex:1;min-width:130px}
+@media(max-width:600px){.settings-overlay{padding:12px 10px calc(10px + env(safe-area-inset-bottom))}.settings-sheet{padding:21px 18px calc(17px + env(safe-area-inset-bottom));border-radius:15px}.settings-sheet h2{font-size:25px}.settings-detail-list{gap:7px}.settings-detail{padding:10px}.settings-links{gap:12px 16px}}
 #mapModeDock{position:absolute;top:18px;right:18px;pointer-events:auto}
 .map-mode-toggle{display:flex;padding:4px;gap:3px;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:0 8px 25px rgba(0,0,0,.22)}
 .map-mode-toggle button{min-width:86px;padding:11px 15px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:600 14px Georgia,serif;cursor:pointer}
@@ -405,13 +419,24 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  <div id="mapLeftControls">
   <button id="settingsToggle" class="map-icon-button" type="button" aria-expanded="false" aria-label="Instellingen" title="Instellingen">⚙</button>
   <button id="mapLoginButton" class="map-login-button" type="button" aria-label="Inloggen" title="Inloggen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></button>
-  <div id="settingsPanel" class="map-settings-panel hidden">
-   <div class="settings-heading">Instellingen</div>
-   <button id="themeButton" class="secondary full" type="button" onclick="toggleTheme()">Weergave wisselen</button>
-   <div class="settings-filters"><button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button><button type="button" class="secondary filter-active" id="filterTramButton" aria-pressed="true">Tram</button></div>
-   <button type="button" class="secondary full" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
-   <button id="rankingButton" class="secondary full hidden" type="button" onclick="openRanking()">Ranglijst</button>
-  </div>
+  <button id="rankingButton" class="hidden" type="button" onclick="openRanking()">Ranglijst</button>
+ </div>
+ <div id="settingsOverlay" class="settings-overlay hidden">
+  <section id="settingsPanel" class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+   <div class="settings-sheet-head"><h2 id="settingsTitle">Instellingen</h2><button id="settingsClose" class="settings-close" type="button" aria-label="Sluiten">×</button></div>
+   <p class="settings-disclaimer">De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.</p>
+   <div class="settings-detail-list">
+    <div class="settings-detail"><span>Taal</span><strong>Automatisch · Nederlands</strong></div>
+    <div class="settings-detail"><span>Stad</span><strong>Oostende</strong></div>
+   </div>
+   <div class="settings-section-title">De Golem</div>
+   <div class="settings-links"><a href="/over">Missie</a><a href="/contact">Contact</a><a href="/contact">Feedback sturen</a></div>
+   <div class="settings-section-title">Volgen & informatie</div>
+   <div class="settings-links"><a href="/over">Over De Golem</a><a href="/privacy">Privacy</a><a href="/voorwaarden">Gebruiksvoorwaarden</a><a href="/admin">Analytics</a></div>
+   <div class="settings-bottom-actions">
+    <button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">Weergave wisselen</button>
+   </div>
+  </section>
  </div>
  <div id="mapModeDock"><div class="map-mode-toggle" role="group" aria-label="Kaartweergave"><button id="linesModeButton" type="button" class="active" aria-pressed="true">Lijnen</button><button id="riskModeButton" type="button" aria-pressed="false">Risico</button></div></div>
 </div>
@@ -621,7 +646,11 @@ function initMap(){
  $('mapSearchMirror').addEventListener('input',()=>{$('stopSearch').value=$('mapSearchMirror').value;updateStopSearchOptions();$('mapSearchResults').innerHTML=$('stopSearchResults').innerHTML;$('mapSearchResults').classList.toggle('hidden',$('stopSearchResults').classList.contains('hidden'));});
  $('mapSearchMirror').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('stopSearch').value=$('mapSearchMirror').value;searchMapStop();}});
  $('mapSearchResults').addEventListener('click',e=>{const b=e.target.closest('[data-stop-id],[data-route-id]');if(!b)return;const original=$('stopSearchResults').querySelector('[data-stop-id="'+b.dataset.stopId+'"],[data-route-id="'+b.dataset.routeId+'"]');if(original)original.click();$('mapSearchResults').classList.add('hidden');});
- $('settingsToggle').addEventListener('click',()=>{const p=$('settingsPanel'),open=p.classList.toggle('hidden')===false;$('settingsToggle').setAttribute('aria-expanded',String(open));});
+ function closeSettings(){ $('settingsOverlay').classList.add('hidden');$('settingsToggle').setAttribute('aria-expanded','false'); }
+ $('settingsToggle').addEventListener('click',()=>{ $('settingsOverlay').classList.remove('hidden');$('settingsToggle').setAttribute('aria-expanded','true');$('settingsClose').focus(); });
+ $('settingsClose').addEventListener('click',closeSettings);
+ $('settingsOverlay').addEventListener('click',e=>{if(e.target===$('settingsOverlay'))closeSettings();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('settingsOverlay').classList.contains('hidden'))closeSettings();});
  $('linesModeButton').addEventListener('click',()=>setMapDisplayMode('lines'));
  $('riskModeButton').addEventListener('click',()=>setMapDisplayMode('risk'));
  $('mapLoginButton').addEventListener('click',()=>authAction());
