@@ -317,7 +317,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
   <section class="panel map-panel">
    <div class="panel-title"><div><h3>Kaart</h3><span class="muted">Meldingen op het De Lijn-netwerk</span></div></div>
    <div class="map-tools">
-    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek halte of lijn…" autocomplete="off" aria-label="Zoek een halte"><div id="stopSearchResults" class="halte-zoek-resultaten hidden" role="listbox" aria-label="Zoekresultaten"></div></div>
+    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek een halte…" autocomplete="off" aria-label="Zoek een halte"><div id="stopSearchResults" class="halte-zoek-resultaten hidden" role="listbox" aria-label="Zoekresultaten"></div></div>
     <datalist id="stopSearchOptions"></datalist>
     <div id="stopSearchMessage" class="halte-zoek-melding" role="status" aria-live="polite"></div>
         <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
@@ -1108,7 +1108,7 @@ function selectStopFromSearch(stopId){
  const stop=mapStops.find(s=>String(s.stop_id)===String(stopId));if(!stop)return;
  const coords=[Number(stop.stop_lon),Number(stop.stop_lat)];
  $('stopSearch').value=stop.stop_name;$('stopSearchResults').classList.add('hidden');$('stopSearchMessage').textContent='';
- const openStop=()=>{drawStopDots();handleStopDotClick({point:map.project(coords)});};
+ const openStop=()=>{renderStopDots();handleStopDotClick({point:map.project(coords)});};
  map.once('moveend',openStop);map.flyTo({center:coords,zoom:Math.max(map.getZoom(),14),duration:450});
 }
 function searchMapStop(){
