@@ -570,11 +570,11 @@ async function initCityGate(){
  try{localStorage.setItem('degolem_city','oostende');}catch(e){}
  await startPublicApp();
  const existing=await api('/api/me').catch(()=>null);
- if(existing?.user){$('authButton')?.classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}
+ if(existing?.user){$('authButton')?.classList.remove('hidden');if($('authButton'))$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}
  }
 function selectInterestCity(id){selectedInterestCity=id;const c=cityById(id);$('cityInterestButton').disabled=!c;$('cityInterestButton').textContent='Zet '+(c?.name||'mijn stad')+' vooruit';}
 async function requestCityInterest(){if(!selectedInterestCity)return;$('cityInterestButton').disabled=true;$('cityStatus').textContent='Je interesse wordt geregistreerd…';try{const result=await api('/api/cities/interest',{method:'POST',body:JSON.stringify({city_id:selectedInterestCity})});$('cityStatus').textContent='Bedankt! '+result.interestCount+' mensen willen deze stad erbij.';$('cityInterestButton').textContent='Interesse geregistreerd';}catch(e){$('cityStatus').textContent=e.message;$('cityInterestButton').disabled=false;}}
-async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate')?.classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton')?.classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
+async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate')?.classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton')?.classList.remove('hidden');if($('authButton'))$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
 function changeCity(){selectedCity='oostende';startPublicApp();}
 
 // Eigen locatie als blauw bolletje. Zonder toestemming gebeurt er niets tot je op de knop tikt;
@@ -1431,13 +1431,13 @@ $('pendingList').addEventListener('click',async e=>{
 async function startApp(){
  if(!selectedCity){changeCity();return;}
  const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton')?.classList.remove('hidden');
- $('authButton').textContent='Uitloggen';$('mapLoginButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
+ if($('authButton'))$('authButton').textContent='Uitloggen';$('mapLoginButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
  $('rankingButton').classList.remove('hidden');
- $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton')?.classList.remove('hidden');$('authButton').textContent='Inloggen';$('mapLoginButton').textContent='Inloggen';
+ $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton')?.classList.remove('hidden');if($('authButton'))$('authButton').textContent='Inloggen';$('mapLoginButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
  const results=await Promise.allSettled([loadRoutes(),loadReports()]);
