@@ -1529,6 +1529,9 @@ async function handleApi(request, env) {
 
   if (path === "/api/auth/login" && method === "POST") {
     const body = await request.json().catch(() => null);
+    if (!body || String(body.email || "").trim().toLowerCase() !== "achilles.vandycke@telenet.be") {
+      return json({error:"Alleen de beheerder kan tijdens het onderhoud inloggen."},403);
+    }
 
     if (!body || !validEmail(body.email) ||
         typeof body.password !== "string") {
@@ -2093,6 +2096,25 @@ export default {
   async fetch(request,env) {
     try {
       const url = new URL(request.url);
+
+      // TIJDELIJKE COMING-SOON-MODUS: alleen het beheerdersaccount krijgt de volledige site.
+      const adminUser = env.DB ? await currentUser(request,env).catch(()=>null) : null;
+      const isAdmin = !!adminUser && adminUser.role === "admin";
+      if (!isAdmin) {
+        if (url.pathname === "/admin/login" && request.method === "GET") {
+          const loginPage = `<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Admin login</title><body style="margin:0;min-height:100vh;display:grid;place-items:center;background:#211d19;color:#f5d5a8;font:16px Georgia,serif"><main style="width:min(360px,calc(100% - 40px));padding:28px;background:#2b2520;border:1px solid #514235;border-radius:12px"><h1 style="font-size:25px">Beheerder</h1><form id="f"><label style="display:block;margin:14px 0 6px">E-mailadres</label><input id="email" type="email" autocomplete="username" required style="box-sizing:border-box;width:100%;padding:12px;background:#211b17;color:#f5d5a8;border:1px solid #514235;border-radius:7px"><label style="display:block;margin:14px 0 6px">Wachtwoord</label><input id="password" type="password" autocomplete="current-password" required style="box-sizing:border-box;width:100%;padding:12px;background:#211b17;color:#f5d5a8;border:1px solid #514235;border-radius:7px"><button style="margin-top:18px;width:100%;padding:12px;background:#c58a52;color:white;border:0;border-radius:7px;font-weight:bold">Inloggen</button><p id="msg" role="status"></p></form></main><script>document.getElementById('f').addEventListener('submit',async e=>{e.preventDefault();const m=document.getElementById('msg');m.textContent='Even geduld…';try{const r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({email:document.getElementById('email').value,password:document.getElementById('password').value})});const d=await r.json();if(!r.ok)throw Error(d.error||'Inloggen mislukt');location.href='/';}catch(x){m.textContent=x.message;}});</script></body></html>`;
+          return new Response(loginPage,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}});
+        }
+        if (url.pathname.startsWith("/api/") && url.pathname === "/api/auth/login" && request.method === "POST") {
+          if (!env.DB) return json({error:"Database niet beschikbaar"},500);
+          return await handleApi(request,env);
+        }
+        if (url.pathname.startsWith("/api/")) {
+          return json({error:"Coming soon"},403,{"Cache-Control":"no-store"});
+        }
+        const comingSoon = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#211d19"><title>Coming soon</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#211d19;color:#f5d5a8;font-family:Georgia,serif}.message{font-size:clamp(34px,7vw,64px);letter-spacing:.02em}</style></head><body><main class="message">Coming soon</main></body></html>';
+        return new Response(comingSoon,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow"}});
+      }
 
       if (["/manifest.webmanifest","/icon.svg","/app-icon.png","/sw.js"].includes(url.pathname)) {
         return await handleApi(request,env);
