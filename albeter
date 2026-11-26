@@ -1436,7 +1436,7 @@ async function startApp(){
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
- $('cityGate').classList.add('hidden');$('rankingButton').classList.remove('hidden');
+ $('rankingButton').classList.remove('hidden');
  $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';$('mapLoginButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
@@ -1454,7 +1454,7 @@ const VOORAF_VERSIE='2026-11-26';
  const v=$('vooraf');v.classList.remove('hidden');setTimeout(()=>$('voorafAkkoord').focus(),50);
  $('voorafAkkoord').addEventListener('click',()=>{try{localStorage.setItem('degolem_vooraf',VOORAF_VERSIE);}catch(e){}v.classList.add('hidden');});
 })();
-initCityGate().catch(err=>{console.error('Stadselectie:',err);$('cityDetection').innerHTML='<strong>Je stad kon niet automatisch worden bepaald.</strong><p class="muted">Kies een beschikbare stad zodra die actief is.</p>';});
+initCityGate().catch(err=>{console.error('De Golem opstarten:',err);const app=$('appScreen');if(app)app.classList.remove('hidden');});
 setInterval(()=>{if(!$('appScreen').classList.contains('hidden'))loadReports().catch(err=>console.error('Meldingen vernieuwen:',err));},60000);
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
