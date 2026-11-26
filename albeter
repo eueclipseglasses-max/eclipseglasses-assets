@@ -552,7 +552,7 @@ $('authForm').addEventListener('submit',async e=>{
 });
 async function logout(){try{await api('/api/auth/logout',{method:'POST',body:'{}'});}catch{} await startPublicApp();}
 function authAction(){if($('authButton').textContent.trim()==='Uitloggen'||$('mapLoginButton').textContent.trim()==='Uitloggen')logout();else openAuth();}
-function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton').classList.add('hidden');setMode('login');}
+function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton')?.classList.add('hidden');setMode('login');}
 function showPublicDashboard(){startPublicApp();}
 function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-error'))return;el.insertAdjacentHTML('beforeend','<div class="map-error" style="position:absolute;inset:0;z-index:20;display:grid;place-content:center;text-align:center;padding:24px;background:var(--panel);color:var(--text)"><strong>Kon de kaart niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="location.reload()">Opnieuw proberen</button></div>');console.error('Kaart:',error);}
 let selectedInterestCity=null;
@@ -570,11 +570,11 @@ async function initCityGate(){
  try{localStorage.setItem('degolem_city','oostende');}catch(e){}
  await startPublicApp();
  const existing=await api('/api/me').catch(()=>null);
- if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}
+ if(existing?.user){$('authButton')?.classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}
  }
 function selectInterestCity(id){selectedInterestCity=id;const c=cityById(id);$('cityInterestButton').disabled=!c;$('cityInterestButton').textContent='Zet '+(c?.name||'mijn stad')+' vooruit';}
 async function requestCityInterest(){if(!selectedInterestCity)return;$('cityInterestButton').disabled=true;$('cityStatus').textContent='Je interesse wordt geregistreerd…';try{const result=await api('/api/cities/interest',{method:'POST',body:JSON.stringify({city_id:selectedInterestCity})});$('cityStatus').textContent='Bedankt! '+result.interestCount+' mensen willen deze stad erbij.';$('cityInterestButton').textContent='Interesse geregistreerd';}catch(e){$('cityStatus').textContent=e.message;$('cityInterestButton').disabled=false;}}
-async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate').classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton').classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
+async function enterCity(id,remember=true){const c=cityById(id);if(!c||!c.available){$('cityStatus').textContent='Deze stad is nog niet beschikbaar.';return;}selectedCity=id;if(remember){try{localStorage.setItem('degolem_city',id);}catch{}}$('cityGate')?.classList.add('hidden');await startPublicApp();const existing=await api('/api/me').catch(()=>null);if(existing?.user){$('authButton')?.classList.remove('hidden');$('authButton').textContent='Uitloggen';$('userRole').textContent=existing.user.role==='admin'?'Beheerder':'Gebruiker';if(existing.user.role==='admin'){$('adminPanel')?.classList.remove('hidden');await loadPending().catch(()=>{});}}}
 function changeCity(){selectedCity='oostende';startPublicApp();}
 
 // Eigen locatie als blauw bolletje. Zonder toestemming gebeurt er niets tot je op de knop tikt;
@@ -652,7 +652,7 @@ function meldingStatus(tijd){const age=Date.now()-tijdMs(tijd);return age<MELDIN
 function reportAgeOpacity(s){return meldingStatus(s)==='vers'?1:.55;}
 function reportMarkerColor(stopId,stop){const t=activeReportCreatedAt.get(String(stopId));return t&&meldingStatus(t)!=='vers'?'#929292':stopDotColor(stop,true);}
 function halteIsVers(stopId){const t=activeReportCreatedAt.get(String(stopId));return !!t&&meldingStatus(t)==='vers';}
-function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton').classList.remove('hidden');$('appScreen').classList.add('report-open');const heading=$('reportForm').querySelector('h3');if(heading&&!$('closeReportPanel')){heading.style.display='flex';heading.style.alignItems='center';heading.style.justifyContent='space-between';const close=document.createElement('button');close.id='closeReportPanel';close.type='button';close.className='secondary';close.textContent='×';close.setAttribute('aria-label','Sluiten');close.style.cssText='padding:4px 11px;font-size:23px;line-height:1';close.addEventListener('click',closeReportForm);heading.appendChild(close);}const side=document.querySelector('#appScreen .side');if(side)side.scrollTo({top:0,behavior:'smooth'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
+function openReportForm(){$('reportForm').classList.remove('hidden');$('authButton')?.classList.remove('hidden');$('appScreen').classList.add('report-open');const heading=$('reportForm').querySelector('h3');if(heading&&!$('closeReportPanel')){heading.style.display='flex';heading.style.alignItems='center';heading.style.justifyContent='space-between';const close=document.createElement('button');close.id='closeReportPanel';close.type='button';close.className='secondary';close.textContent='×';close.setAttribute('aria-label','Sluiten');close.style.cssText='padding:4px 11px;font-size:23px;line-height:1';close.addEventListener('click',closeReportForm);heading.appendChild(close);}const side=document.querySelector('#appScreen .side');if(side)side.scrollTo({top:0,behavior:'smooth'});$('reportForm').classList.add('report-highlight');setTimeout(()=>$('reportForm').classList.remove('report-highlight'),900);}
 function closeReportForm(){$('appScreen').classList.remove('report-open');}
 const FOTO_ICOON='<svg class="foto-icoon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M9 3 7.2 5H4a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-3.2L15 3H9Zm3 5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>';
 function isBeheerder(){return ($('userRole')&&$('userRole').textContent)==='Beheerder';}
@@ -1430,21 +1430,21 @@ $('pendingList').addEventListener('click',async e=>{
 });
 async function startApp(){
  if(!selectedCity){changeCity();return;}
- const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');
+ const data=await api('/api/me');$('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton')?.classList.remove('hidden');
  $('authButton').textContent='Uitloggen';$('mapLoginButton').textContent='Uitloggen';$('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent=data.user.role==='admin'?'Beheerder':'Gebruiker';if(data.user.role==='admin')$('adminPanel').classList.remove('hidden');
  initMap();setTimeout(()=>map.resize(),100);await loadRoutes();await loadReports();if(data.user.role==='admin')await loadPending();
 }
 async function startPublicApp(){
  $('rankingButton').classList.remove('hidden');
- $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton').classList.remove('hidden');$('authButton').textContent='Inloggen';$('mapLoginButton').textContent='Inloggen';
+ $('authScreen').classList.add('hidden');$('appScreen').classList.remove('hidden');$('authButton')?.classList.remove('hidden');$('authButton').textContent='Inloggen';$('mapLoginButton').textContent='Inloggen';
  $('reportForm').classList.remove('hidden');$('reportCta').innerHTML='CONTROLE <span aria-hidden="true">＋</span>';$('reportCta').onclick=openReportForm;
  $('userRole').textContent='Openbaar';initMap();setTimeout(()=>map.resize(),100);const city=CITY_DATA.find(c=>c.id===selectedCity);if(city){map.flyTo({center:[city.lon,city.lat],zoom:11,essential:true});if(map.loaded())loadMapStops().catch(()=>{});}
  const results=await Promise.allSettled([loadRoutes(),loadReports()]);
  if(results[0].status==='rejected')$('reportMessage').textContent='De lijnen konden niet laden. Probeer het opnieuw.';
  if(results[1].status==='rejected')$('reportsList').innerHTML='<div class="empty-state"><strong>Meldingen konden niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="loadReports().catch(()=>{})">Opnieuw proberen</button></div>';
 }
-$('authButton').classList.add('hidden');$('mapLoginButton').textContent='Inloggen';
+$('authButton')?.classList.add('hidden');$('mapLoginButton').textContent='Inloggen';
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 // Melding bij het openen: één keer per versie van de tekst tonen (en opnieuw als de tekst wijzigt).
 const VOORAF_VERSIE='2026-11-26';
@@ -2352,7 +2352,7 @@ export default {
       if(url.pathname==="/admin"){
         const admin=await currentUser(request,env).catch(()=>null);
         if(!admin||admin.role!=="admin")return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Geen toegang · De Golem</title><body style="font:16px Georgia;background:#f1e2c6;color:#3c2c20;min-height:100vh;display:grid;place-items:center;text-align:center"><main><h1>Beheerderslogin vereist</h1><p>Log eerst in met je beheerdersaccount.</p><a href="/">Naar De Golem en inloggen</a><p><a href="/admin">Daarna terug naar het beheerpaneel</a></p></main></body></html>',{status:403,headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}});
-        return new Response(adminAnalyticsHTML(),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow","Referrer-Policy":"same-origin","Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"}});
+        return new Response(adminAnalyticsHTML(),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow","Referrer-Policy":"same-origin","Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: blob: https:; connect-src 'self' https://tiles.openfreemap.org https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com; worker-src blob:;"}});
       }
       if (!["/","/index.html","/over","/contact","/privacy","/voorwaarden","/misbruik"].includes(url.pathname)) {
         return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pagina niet gevonden · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:16px Georgia,serif;min-height:100vh;display:grid;place-items:center;text-align:center"><main style="padding:32px"><h1>Deze pagina bestaat niet.</h1><p>Misschien is de link verouderd.</p><a href="/" style="color:#925b35">Terug naar De Golem</a></main></body></html>',{status:404,headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
@@ -2415,7 +2415,7 @@ export default {
           "X-Content-Type-Options":"nosniff",
           "Referrer-Policy":"strict-origin-when-cross-origin",
           "Set-Cookie":analytics["Set-Cookie"]||"",
-          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://tiles.openfreemap.org; font-src 'self' data: https://tiles.openfreemap.org; worker-src blob:;"
+          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: blob: https:; connect-src 'self' https://tiles.openfreemap.org https://cdn.jsdelivr.net; font-src 'self' data: https://tiles.openfreemap.org https://fonts.gstatic.com; worker-src blob:;"
         }
       });
 
