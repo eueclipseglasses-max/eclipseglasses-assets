@@ -2112,7 +2112,7 @@ export default {
         if (url.pathname.startsWith("/api/")) {
           return json({error:"Coming soon"},403,{"Cache-Control":"no-store"});
         }
-        const comingSoon = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#211d19"><title>Coming soon</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#211d19;color:#f5d5a8;font-family:Georgia,serif}.message{font-size:clamp(34px,7vw,64px);letter-spacing:.02em}</style></head><body><main class="message">Coming soon</main></body></html>';
+        const comingSoon = '<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#211d19"><title>Even buiten bereik</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#211d19;color:#f5d5a8;font-family:Georgia,serif}.message{font-size:clamp(34px,7vw,64px);letter-spacing:.02em}</style></head><body><main class="message">Even buiten bereik</main></body></html>';
         return new Response(comingSoon,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow"}});
       }
 
