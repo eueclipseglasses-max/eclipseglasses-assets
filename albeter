@@ -1354,11 +1354,11 @@ async function rateLimitCommunity(env,key,limit,windowMs) {
 
 
 async function ensureAnalyticsTables(env){
-  await env.DB.prepare(\`CREATE TABLE IF NOT EXISTS analytics_events (
+  await env.DB.prepare(`CREATE TABLE IF NOT EXISTS analytics_events (
     id TEXT PRIMARY KEY, visitor_key TEXT NOT NULL, session_key TEXT NOT NULL,
     created_at TEXT NOT NULL, path TEXT NOT NULL, country TEXT, region TEXT, city TEXT,
     referrer TEXT, device TEXT, browser TEXT, os TEXT
-  )\`).run();
+  )`).run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_analytics_time ON analytics_events(created_at)").run();
   await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_analytics_visitor_time ON analytics_events(visitor_key,created_at)").run();
 }
@@ -1385,9 +1385,9 @@ async function recordPageView(request,env,path){
   let referrer="";
   try{const ref=request.headers.get("Referer");if(ref){const host=new URL(ref).hostname.toLowerCase();if(host&&!host.endsWith("degolem.be"))referrer=host;}}catch(e){}
   const cf=request.cf||{};
-  await env.DB.prepare(\`INSERT INTO analytics_events
+  await env.DB.prepare(`INSERT INTO analytics_events
     (id,visitor_key,session_key,created_at,path,country,region,city,referrer,device,browser,os)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)\`).bind(
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?)`).bind(
       crypto.randomUUID(),await hashText(visitor),await hashText(session),new Date().toISOString(),
       String(path||"/").slice(0,180),String(cf.country||"Onbekend").slice(0,80),
       String(cf.region||"").slice(0,100),String(cf.city||"Onbekend").slice(0,100),
@@ -1397,13 +1397,13 @@ async function recordPageView(request,env,path){
   return {"Set-Cookie":cookie("golem_visitor",visitor,365*86400)};
 }
 function adminAnalyticsHTML(){
- return \`<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#FBEED8"><title>Beheer · De Golem</title><style>
+ return `<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#FBEED8"><title>Beheer · De Golem</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f1e2c6;color:#3c2c20;font:15px Arial,sans-serif}header{background:#211d19;color:#f5d5a8;padding:22px max(20px,calc((100vw - 1300px)/2));display:flex;justify-content:space-between;align-items:center;gap:15px}header a{color:#f5d5a8}main{max-width:1300px;margin:auto;padding:28px 20px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:20px}h1{font:700 30px Georgia,serif;margin:0 0 6px}.muted{color:#806b55}.controls{display:flex;gap:8px;align-items:center}select,button{padding:10px 13px;border:1px solid #d6bd96;border-radius:7px;background:#fff8e9;color:#3c2c20;font:inherit}button{background:#a96f43;color:white;border:0;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:18px 0}.card,.panel{background:#fff8e9;border:1px solid #d6bd96;border-radius:11px;padding:17px;min-width:0}.card span{font-size:12px;color:#806b55}.card strong{display:block;font-size:29px;margin-top:8px}.panel{margin:14px 0}.panel h2{font:700 19px Georgia,serif;margin:0 0 15px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px}.chart{height:240px;width:100%;display:block}.bars{display:flex;align-items:end;gap:5px;height:190px;padding:8px 0 22px;border-bottom:1px solid #d6bd96}.barwrap{height:100%;flex:1;display:flex;align-items:end;position:relative;min-width:0}.bar{width:100%;background:#a96f43;border-radius:4px 4px 0 0;min-height:2px}.barwrap small{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:9px;color:#806b55;white-space:nowrap}.rows{display:flex;flex-direction:column;gap:10px}.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;font-size:13px}.track{height:6px;background:#ead9bb;border-radius:9px;overflow:hidden;margin-top:5px}.track i{display:block;height:100%;background:#a96f43}.empty{color:#806b55;font-size:13px}.error{color:#a22}.small{font-size:11px;color:#806b55}@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.twocol{grid-template-columns:1fr}}@media(max-width:420px){main{padding:18px 11px}.grid{gap:7px}.card{padding:12px}.card strong{font-size:23px}.card span{font-size:10px}header{padding:16px}.controls{width:100%}.controls select{flex:1}}
 </style></head><body><header><strong>DE GOLEM / BEHEER</strong><a href="/">← Naar de website</a></header><main><div class="top"><div><h1>Website-statistieken</h1><div class="muted">Privé-dashboard · alleen toegankelijk voor beheerders</div></div><div class="controls"><select id="range"><option value="7">Laatste 7 dagen</option><option value="30" selected>Laatste 30 dagen</option><option value="90">Laatste 90 dagen</option><option value="365">Laatste 12 maanden</option><option value="all">Alles</option></select><button id="refresh">Vernieuwen</button></div></div><div id="status" class="muted">Statistieken laden…</div><section class="grid" id="kpis"></section><section class="panel"><h2>Bezoeken doorheen de tijd</h2><div id="daily" class="bars"></div></section><div class="twocol"><section class="panel"><h2>Herkomst per land</h2><div id="countries" class="rows"></div></section><section class="panel"><h2>Steden / regio’s</h2><div id="cities" class="rows"></div></section><section class="panel"><h2>Verkeersbronnen</h2><div id="sources" class="rows"></div></section><section class="panel"><h2>Populairste pagina’s</h2><div id="pages" class="rows"></div></section><section class="panel"><h2>Toestellen</h2><div id="devices" class="rows"></div></section><section class="panel"><h2>Browsers en besturingssystemen</h2><div id="browsers" class="rows"></div></section></div><p class="small">Locatie is een benadering op basis van het netwerkadres dat Cloudflare ziet; geen GPS. Unieke bezoekers worden via een willekeurige, gehashte cookie geteld. Ruwe IP-adressen worden niet opgeslagen. Bewaartermijn: maximaal 400 dagen.</p></main><script>
 const $=id=>document.getElementById(id);const fmt=n=>Number(n||0).toLocaleString('nl-BE');function rows(id,data){const el=$(id);if(!data?.length){el.innerHTML='<div class="empty">Nog geen gegevens.</div>';return;}const max=Math.max(1,...data.map(x=>Number(x.count)));el.innerHTML=data.map(x=>'<div><div class="item"><span>'+esc(x.name||'Onbekend')+'</span><strong>'+fmt(x.count)+'</strong></div><div class="track"><i style="width:'+Math.max(1,Number(x.count)/max*100)+'%"></i></div></div>').join('');}function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function render(d){const k=d.summary||{};$('kpis').innerHTML=[['Paginaweergaven',k.pageviews],['Unieke bezoekers',k.visitors],['Bezoeken / sessies',k.sessions],['Terugkerende bezoekers',k.returning],['Actief (laatste 5 min.)',k.active],['Paginaweergaven vandaag',k.today]].map(x=>'<div class="card"><span>'+x[0]+'</span><strong>'+fmt(x[1])+'</strong></div>').join('');const daily=d.daily||[];const max=Math.max(1,...daily.map(x=>x.count));$('daily').innerHTML=daily.length?daily.map(x=>'<div class="barwrap" title="'+esc(x.day)+': '+fmt(x.count)+'"><div class="bar" style="height:'+Math.max(2,x.count/max*100)+'%"></div><small>'+esc(x.day.slice(5))+'</small></div>').join(''):'<div class="empty">Nog geen gegevens.</div>';rows('countries',d.countries);rows('cities',d.cities);rows('sources',d.sources);rows('pages',d.pages);rows('devices',d.devices);rows('browsers',d.browsers);$('status').textContent='Laatst bijgewerkt: '+new Date().toLocaleString('nl-BE')+' · '+fmt(k.pageviews)+' paginaweergaven in deze periode.';}
 async function load(){ $('status').textContent='Statistieken laden…';try{const r=await fetch('/api/admin/analytics?range='+encodeURIComponent($('range').value),{credentials:'same-origin',cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.error||'Geen toegang');render(d);}catch(e){$('status').innerHTML='<span class="error">'+esc(e.message)+'</span> · <a href="/">Log in op De Golem</a>';}}$('refresh').onclick=load;$('range').onchange=load;load();
-</script></body></html>\`;
+</script></body></html>`;
 }
 
 async function handleApi(request, env) {
@@ -1931,10 +1931,10 @@ async function handleApi(request, env) {
     const since=days?new Date(Date.now()-days*86400000).toISOString():"1970-01-01T00:00:00.000Z";
     const where="created_at>=?";
     const bind=since;
-    const summary=await env.DB.prepare(\`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE \${where}\`).bind(bind).first();
-    const returning=await env.DB.prepare(\`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE \${where} GROUP BY visitor_key HAVING COUNT(DISTINCT session_key)>1)\`).bind(bind).first();
-    const daily=await env.DB.prepare(\`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY day ORDER BY day\`).bind(bind).all();
-    const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(\`SELECT \${column} AS name,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY \${column} ORDER BY count DESC LIMIT 10\`).bind(bind).all();return result.results||[];};
+    const summary=await env.DB.prepare(`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE \${where}`).bind(bind).first();
+    const returning=await env.DB.prepare(`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE \${where} GROUP BY visitor_key HAVING COUNT(DISTINCT session_key)>1)`).bind(bind).first();
+    const daily=await env.DB.prepare(`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY day ORDER BY day`).bind(bind).all();
+    const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(`SELECT \${column} AS name,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY \${column} ORDER BY count DESC LIMIT 10`).bind(bind).all();return result.results||[];};
     const countries=await group("country"),cities=await group("city"),sources=await group("referrer"),pages=await group("path"),devices=await group("device");
     const [browsers,systems]=await Promise.all([group("browser"),group("os")]);
     return json({summary:{pageviews:Number(summary?.pageviews||0),visitors:Number(summary?.visitors||0),sessions:Number(summary?.sessions||0),returning:Number(returning?.n||0),active:Number(active?.n||0),today:Number(today?.n||0)},daily:daily.results||[],countries,cities,sources,pages,devices,browsers:[...browsers,...systems.map(x=>({...x,name:"OS: "+x.name}))]});
