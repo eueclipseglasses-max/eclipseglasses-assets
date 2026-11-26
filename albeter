@@ -500,7 +500,7 @@ function initMap(){
  map.dragRotate.disable();map.touchZoomRotate.disableRotation();map.touchPitch.disable();map.setBearing(0);map.setPitch(0);
  map.addControl(new maplibregl.NavigationControl({showCompass:false}),'top-right');
  stopDotCanvas=document.createElement('canvas');stopDotCanvas.className='stop-dot-overlay';stopDotCanvas.setAttribute('aria-hidden','true');$('map').appendChild(stopDotCanvas);
- map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;kaartKleuren();addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
+ map.on('load',()=>{$('mapLoading')?.remove();clusterZoomLevel=Math.floor(map.getZoom());loadMapStops().catch(err=>showMapError(err.error||err));});map.on('style.load',()=>{stijlKlaar=true;kaartKleuren();zorgVoorHalteNamen();syncStopNameLayer();addRouteLinesToMap();applyMapTone();drawStopDots();});map.on('error',e=>{if(!map.loaded())showMapError(e.error||e);});
  map.on('move',()=>{drawStopDots();updateStopSearchOptions();});map.on('resize',()=>{drawStopDots();updateStopSearchOptions();});
  map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();updateStopSearchOptions();});
  map.on('click',e=>{
@@ -511,10 +511,10 @@ function initMap(){
  if(navigator.permissions&&navigator.geolocation)navigator.permissions.query({name:'geolocation'}).then(p=>{if(p.state==='granted')volgMijnLocatie(false);}).catch(()=>{});
  $('toggleReportedButton').addEventListener('click',()=>{
   onlyReportedStops=!onlyReportedStops;$('toggleReportedButton').setAttribute('aria-pressed',String(onlyReportedStops));
-  $('toggleReportedButton').textContent=onlyReportedStops?'Alle haltes tonen':'Alleen meldingen';drawStopDots();
+  $('toggleReportedButton').textContent=onlyReportedStops?'Alle haltes tonen':'Alleen meldingen';syncStopNameLayer();drawStopDots();
  });
- $('filterBusButton').addEventListener('click',()=>{showBusStops=!showBusStops;updateTransportFilterButtons();drawStopDots();});
- $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();drawStopDots();});
+ $('filterBusButton').addEventListener('click',()=>{showBusStops=!showBusStops;updateTransportFilterButtons();syncStopNameLayer();drawStopDots();});
+ $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();syncStopNameLayer();drawStopDots();});
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
  $('stopSearch').addEventListener('input',()=>{$('stopSearchMessage').textContent='';updateStopSearchOptions();});
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
@@ -645,7 +645,27 @@ async function loadRoutes(){
 }
 async function loadMapStops(){
  const data=await api('/api/stops');mapStops=(data.stops||[]).filter(s=>Number.isFinite(Number(s.stop_lat))&&Number.isFinite(Number(s.stop_lon))&&isInSelectedCity(s.stop_lat,s.stop_lon));
- updateStopSearchOptions();drawStopDots();addRouteLinesToMap();
+ updateStopSearchOptions();syncStopNameLayer();drawStopDots();addRouteLinesToMap();
+}
+function zorgVoorHalteNamen(){
+ if(!map||!map.isStyleLoaded())return;
+ if(!map.getSource('golem-halte-namen'))map.addSource('golem-halte-namen',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+ if(!map.getLayer('golem-halte-namen')){
+  map.addLayer({id:'golem-halte-namen',type:'symbol',source:'golem-halte-namen',minzoom:12,
+   layout:{'text-field':['get','name'],'text-font':['Open Sans Regular'],'text-size':['interpolate',['linear'],['zoom'],12,10,15,12.5,17,14],'text-max-width':9,'text-line-height':1.1,'text-variable-anchor':['top','bottom','left','right'],'text-radial-offset':0.65,'text-justify':'auto','text-padding':3,'symbol-sort-key':['case',['get','reported'],0,1],'text-allow-overlap':false,'text-ignore-placement':false},
+   paint:{'text-color':['case',['get','reported'],'#e53935',document.documentElement.dataset.theme==='dark'?'#f5d5a8':'#3c2c20'],'text-halo-color':document.documentElement.dataset.theme==='dark'?'#211d19':'#fff8e9','text-halo-width':1.5,'text-opacity':['get','opacity']}
+  });
+ }
+}
+function syncStopNameLayer(){
+ if(!map||!map.isStyleLoaded())return;
+ zorgVoorHalteNamen();
+ const source=map.getSource('golem-halte-namen');if(!source)return;
+ const features=mapStops.filter(stop=>stopMatchesTransportFilter(stop)&&(!onlyReportedStops||activeReportStopIds.has(String(stop.stop_id)))).map(stop=>{
+  const id=String(stop.stop_id),reported=activeReportStopIds.has(id);
+  return {type:'Feature',geometry:{type:'Point',coordinates:[Number(stop.stop_lon),Number(stop.stop_lat)]},properties:{id,name:String(stop.stop_name||''),reported,opacity:reported?stopReportOpacity(id):1}};
+ });
+ source.setData({type:'FeatureCollection',features});
 }
 function hslHex(h,s,l){h=((h%360)+360)%360/360;s/=100;l/=100;const hue=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;return '#'+[hue(p,q,h+1/3),hue(p,q,h),hue(p,q,h-1/3)].map(v=>Math.round(v*255).toString(16).padStart(2,'0')).join('');}
 /* Lijntrajecten uit OpenStreetMap. Gebouwd door kaartdata/bouw_lijnen.py (GitHub Action), geserveerd via /kaartdata/. */
@@ -1215,7 +1235,7 @@ async function loadReports(){
  reportMarkers.length=0;
  const reports=(data.reports||[]).filter(r=>isInSelectedCity(r.stop_lat??r.latitude,r.stop_lon??r.longitude)&&meldingStatus(meldingTijd(r))!=='weg');
  activeReportStopIds=new Set(reports.map(r=>String(r.stop_id||'')).filter(Boolean));
- actieveMeldingen=reports;tekenMeldingStukken();addRouteLinesToMap();zetLivePeiling();
+ syncStopNameLayer();actieveMeldingen=reports;tekenMeldingStukken();addRouteLinesToMap();zetLivePeiling();
  activeReportCreatedAt.clear();reports.forEach(r=>{if(!r.stop_id)return;const k=String(r.stop_id),t=meldingTijd(r),v=activeReportCreatedAt.get(k);if(!v||t>new Date(v).getTime())activeReportCreatedAt.set(k,new Date(t).toISOString());});zetHaltePuls();drawStopDots();
  $('countActive').textContent=reports.length;
  const today=new Date().toLocaleDateString('en-CA');
@@ -2159,7 +2179,7 @@ export default {
         if (url.pathname.startsWith("/api/")) {
           return json({error:"Coming soon"},403,{"Cache-Control":"no-store"});
         }
-        const comingSoon = '<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#211d19"><title>Even buiten bereik</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#211d19;color:#f5d5a8;font-family:Georgia,serif}.message{font-size:clamp(34px,7vw,64px);letter-spacing:.02em}</style></head><body><main class="message">Even buiten bereik</main></body></html>';
+        const comingSoon = '<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#211d19"><title>Tijdelijk offline</title><style>*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:#211d19;color:#f5d5a8;font-family:Georgia,serif}.message{font-size:clamp(34px,7vw,64px);letter-spacing:.02em}</style></head><body><main class="message">Tijdelijk offline</main></body></html>';
         return new Response(comingSoon,{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow"}});
       }
 
