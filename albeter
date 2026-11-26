@@ -264,10 +264,8 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
    <div class="map-tools">
     <input id="stopSearch" type="search" placeholder="Zoek een halte..." list="stopSearchOptions" autocomplete="off" aria-label="Zoek een halte">
     <datalist id="stopSearchOptions"></datalist>
-    <button type="button" class="secondary" id="searchStopButton">Zoeken</button>
     <button type="button" class="secondary" id="toggleStopsButton" aria-pressed="false">Haltes verbergen</button>
     <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
-     <button type="button" class="secondary" id="coordinatePickButton" aria-pressed="false">Coördinaten meten</button>
     <button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button>
     <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
    </div>
@@ -311,7 +309,6 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
 <script>
 const REPORT_LIFETIME_HOURS=1;
 let mode='login', map;
-let coordinatePickMode=false;
 const CITY_MIN_REPORTERS=20;
 const CITY_DATA=[{id:"oostende",name:"Oostende",lat:51.2300,lon:2.9180,radius:22},{id:"brugge",name:"Brugge",lat:51.2093,lon:3.2247,radius:20},{id:"gent",name:"Gent",lat:51.0543,lon:3.7174,radius:23},{id:"antwerpen",name:"Antwerpen",lat:51.2194,lon:4.4025,radius:25}];
 let cityStats=[],selectedCity=null,detectedCityId=null;
@@ -453,12 +450,6 @@ function initMap(){
  map.on('move',drawStopDots);map.on('resize',drawStopDots);
  map.on('zoomend',()=>{clusterZoomLevel=Math.floor(map.getZoom());drawStopDots();});
  map.on('click',e=>{
-   if(coordinatePickMode){
-    const lng=e.lngLat.lng,lat=e.lngLat.lat;
-    new maplibregl.Popup({closeButton:true,closeOnClick:true,offset:8}).setLngLat([lng,lat])
-     .setHTML('<div style="font-family:monospace;font-size:13px;line-height:1.7"><strong>Kaartcoördinaten</strong><br>Lengtegraad: '+lng.toFixed(7)+'<br>Breedtegraad: '+lat.toFixed(7)+'<br>['+lng.toFixed(7)+', '+lat.toFixed(7)+']</div>').addTo(map);
-    return;
-   }
    handleStopDotClick(e);
   });
  map.on('moveend',addRouteLinesToMap);
@@ -468,13 +459,6 @@ function initMap(){
   hideStops=!hideStops;$('toggleStopsButton').setAttribute('aria-pressed',String(hideStops));
   $('toggleStopsButton').textContent=hideStops?'Haltes tonen':'Haltes verbergen';drawStopDots();
  });
- $('searchStopButton').addEventListener('click',searchMapStop);
-  $('coordinatePickButton').addEventListener('click',()=>{
-   coordinatePickMode=!coordinatePickMode;
-   $('coordinatePickButton').setAttribute('aria-pressed',String(coordinatePickMode));
-   $('coordinatePickButton').textContent=coordinatePickMode?'Coördinaten meten: AAN':'Coördinaten meten';
-   $('map').style.cursor=coordinatePickMode?'crosshair':'';
-  });
  $('toggleReportedButton').addEventListener('click',()=>{
   onlyReportedStops=!onlyReportedStops;$('toggleReportedButton').setAttribute('aria-pressed',String(onlyReportedStops));
   $('toggleReportedButton').textContent=onlyReportedStops?'Alle haltes tonen':'Alleen meldingen';drawStopDots();
