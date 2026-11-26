@@ -315,23 +315,29 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
 .map-icon-button,.map-login-button{height:48px;min-width:48px;padding:0 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);box-shadow:0 8px 25px rgba(0,0,0,.22);font:15px Georgia,serif;cursor:pointer}
 .map-icon-button{font-size:23px}
 .map-login-button{width:48px;min-width:48px;padding:0;display:grid;place-items:center}\n .map-login-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-.settings-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:24px 16px;background:rgba(35,31,27,.34);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.settings-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:0;background:rgba(38,31,24,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
 .settings-overlay.hidden{display:none}
-.settings-sheet{width:min(560px,100%);max-height:min(78vh,720px);overflow:auto;padding:25px 28px calc(22px + env(safe-area-inset-bottom));background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:17px;box-shadow:0 18px 55px rgba(35,25,15,.24);text-align:left}
-.settings-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:12px}
-.settings-sheet h2{margin:0;font:700 27px "Cormorant Garamond",Georgia,serif}
-.settings-close{width:36px;height:36px;padding:0;border:1px solid var(--border);border-radius:50%;background:var(--panel2);color:var(--text);font-size:21px;line-height:1}
-.settings-disclaimer{margin:0 0 20px;color:var(--muted);font-size:13px;line-height:1.55}
-.settings-detail-list{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:21px}
-.settings-detail{padding:12px 13px;border:1px solid var(--border);border-radius:10px;background:var(--panel2)}
-.settings-detail span{display:block;color:var(--muted);font-size:11px;margin-bottom:5px}
-.settings-detail strong{font-size:14px;font-weight:600}
-.settings-links{display:flex;flex-wrap:wrap;gap:9px 18px;padding:2px 0 19px}
-.settings-links a{color:var(--text);font-size:13px;text-decoration:none}
-.settings-links a:hover{text-decoration:underline;color:var(--orange)}
-.settings-section-title{margin:2px 0 10px;color:var(--muted);font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase}
-.settings-bottom-actions{display:flex;gap:8px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border)}
-.settings-bottom-actions button{flex:1;min-width:130px}
+.settings-sheet{width:min(560px,100%);max-height:92vh;overflow:auto;padding:21px 22px 18px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 -12px 45px rgba(45,31,17,.18);text-align:left}
+.settings-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:15px}
+.settings-sheet h2{margin:0;font:700 25px "Cormorant Garamond",Georgia,serif}
+.settings-close{width:34px;height:34px;padding:0;border:0;border-radius:50%;background:transparent;color:var(--muted);font-size:23px;line-height:1;box-shadow:none}
+.settings-disclaimer{display:flex;align-items:center;gap:12px;margin:0 0 10px;padding:12px 13px;border-radius:10px;background:var(--panel2);color:var(--muted);font-size:13px;line-height:1.45}
+.settings-disclaimer svg{width:19px;height:19px;flex:0 0 19px;color:var(--orange);fill:none;stroke:currentColor;stroke-width:1.8}
+.settings-row{display:flex;align-items:center;gap:13px;min-height:50px;padding:5px 5px;border-bottom:1px solid color-mix(in srgb,var(--border) 62%,transparent);color:var(--text);text-decoration:none}
+.settings-row-icon{width:23px;height:23px;flex:0 0 23px;color:var(--muted);fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.settings-row-label{flex:1;font-size:14px;font-weight:600}
+.settings-row-value{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:13px}
+.settings-row select{width:auto;max-width:145px;padding:5px 22px 5px 6px;border:0;background:transparent;color:var(--muted);text-align:right;font-size:13px}
+.settings-row select:focus{outline:2px solid var(--orange);outline-offset:2px}
+.settings-chevron{width:16px;height:16px;color:var(--muted);fill:none;stroke:currentColor;stroke-width:1.8}
+.settings-action{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;min-height:48px;margin:13px 0 10px;border-radius:7px;background:var(--orange);color:#fff;font-size:14px;font-weight:700;text-decoration:none}
+.settings-action:hover{filter:brightness(1.05)}
+.settings-follow{margin:0 -22px;padding:15px 22px 10px;border-top:1px solid var(--border)}
+.settings-follow-title{margin:0 0 12px;color:var(--muted);font-size:11px;font-weight:800;letter-spacing:.7px;text-transform:uppercase}
+.settings-social{display:flex;align-items:center;gap:20px;min-height:24px;color:var(--muted);font-size:12px}
+.settings-footer{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 -22px;padding:13px 22px 0;border-top:1px solid var(--border)}
+.settings-footer a{color:var(--muted);font-size:11px;text-decoration:underline;text-underline-offset:2px}
+@media(max-width:600px){.settings-sheet{width:100%;max-height:94vh;padding:18px 16px calc(13px + env(safe-area-inset-bottom));border-radius:12px 12px 0 0}.settings-sheet h2{font-size:24px}.settings-follow,.settings-footer{margin-left:-16px;margin-right:-16px;padding-left:16px;padding-right:16px}.settings-row{min-height:49px}.settings-disclaimer{font-size:12px}}
 @media(max-width:600px){.settings-overlay{padding:12px 10px calc(10px + env(safe-area-inset-bottom))}.settings-sheet{padding:21px 18px calc(17px + env(safe-area-inset-bottom));border-radius:15px}.settings-sheet h2{font-size:25px}.settings-detail-list{gap:7px}.settings-detail{padding:10px}.settings-links{gap:12px 16px}}
 #mapModeDock{position:absolute;top:18px;right:18px;pointer-events:auto}
 .map-mode-toggle{display:flex;padding:4px;gap:3px;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:0 8px 25px rgba(0,0,0,.22)}
@@ -423,19 +429,29 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  </div>
  <div id="settingsOverlay" class="settings-overlay hidden">
   <section id="settingsPanel" class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-   <div class="settings-sheet-head"><h2 id="settingsTitle">Instellingen</h2><button id="settingsClose" class="settings-close" type="button" aria-label="Sluiten">×</button></div>
-   <p class="settings-disclaimer">De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.</p>
-   <div class="settings-detail-list">
-    <div class="settings-detail"><span>Taal</span><strong>Automatisch · Nederlands</strong></div>
-    <div class="settings-detail"><span>Stad</span><strong>Oostende</strong></div>
+   <div class="settings-sheet-head"><h2 id="settingsTitle" data-setting-i18n="title">Instellingen</h2><button id="settingsClose" class="settings-close" type="button" aria-label="Sluiten" title="Sluiten">×</button></div>
+   <p class="settings-disclaimer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4z"/><path d="M7 10l2 2-2 2m10-4-2 2 2 2"/></svg><span data-setting-i18n="disclaimer">De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.</span></p>
+   <div class="settings-row">
+    <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 5 6 6m-2-8 2 8M3 9h8M5 19l4-8 4 8m-6-3h4m4-8h7m-3-3 3 3-3 3m0 4h3m-3-3 3 3-3 3"/></svg>
+    <span class="settings-row-label" data-setting-i18n="language">Taal</span>
+    <span class="settings-row-value"><select id="settingsLanguage" aria-label="Taal"><option value="auto">Auto</option><option value="nl">Nederlands</option><option value="fr">Français</option><option value="en">English</option></select><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
    </div>
-   <div class="settings-section-title">De Golem</div>
-   <div class="settings-links"><a href="/over">Missie</a><a href="/contact">Contact</a><a href="/contact">Feedback sturen</a></div>
-   <div class="settings-section-title">Volgen & informatie</div>
-   <div class="settings-links"><a href="/over">Over De Golem</a><a href="/privacy">Privacy</a><a href="/voorwaarden">Gebruiksvoorwaarden</a><a href="/admin">Analytics</a></div>
-   <div class="settings-bottom-actions">
-    <button id="themeButton" class="secondary" type="button" onclick="toggleTheme()">Weergave wisselen</button>
+   <div class="settings-row">
+    <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
+    <span class="settings-row-label" data-setting-i18n="city">Stad</span><span class="settings-row-value">Oostende</span>
    </div>
+   <a class="settings-row" href="/over">
+    <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2m-4 5h2"/></svg><span class="settings-row-label" data-setting-i18n="mission">Missie</span><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+   </a>
+   <a class="settings-row" href="/contact">
+    <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span class="settings-row-label" data-setting-i18n="contact">Contact</span><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+   </a>
+   <a class="settings-row" href="/contact">
+    <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3H5a2 2 0 0 0-2 2v14l4-3h10a2 2 0 0 0 2-2v-3"/><path d="M16 3v6m-3-3h6"/></svg><span class="settings-row-label" data-setting-i18n="feedback">Feedback sturen</span><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+   </a>
+   <a class="settings-action" href="/contact"><span aria-hidden="true">♡</span><span data-setting-i18n="contribute">Bijdragen</span></a>
+   <div class="settings-follow"><div class="settings-follow-title" data-setting-i18n="follow">VOLGEN</div><div class="settings-social" data-setting-i18n="followNote">De Golem · Oostende</div></div>
+   <nav class="settings-footer" aria-label="Informatie"><a href="/over" data-setting-i18n="mission">Missie</a><a href="/contact" data-setting-i18n="imprint">Colofon</a><a href="/privacy" data-setting-i18n="privacy">Privacy</a><a href="/voorwaarden" data-setting-i18n="terms">Gebruiksvoorwaarden</a><a href="/admin" data-setting-i18n="analytics">Analytics</a></nav>
   </section>
  </div>
  <div id="mapModeDock"><div class="map-mode-toggle" role="group" aria-label="Kaartweergave"><button id="linesModeButton" type="button" class="active" aria-pressed="true">Lijnen</button><button id="riskModeButton" type="button" aria-pressed="false">Risico</button></div></div>
@@ -646,6 +662,23 @@ function initMap(){
  $('mapSearchMirror').addEventListener('input',()=>{$('stopSearch').value=$('mapSearchMirror').value;updateStopSearchOptions();$('mapSearchResults').innerHTML=$('stopSearchResults').innerHTML;$('mapSearchResults').classList.toggle('hidden',$('stopSearchResults').classList.contains('hidden'));});
  $('mapSearchMirror').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('stopSearch').value=$('mapSearchMirror').value;searchMapStop();}});
  $('mapSearchResults').addEventListener('click',e=>{const b=e.target.closest('[data-stop-id],[data-route-id]');if(!b)return;const original=$('stopSearchResults').querySelector('[data-stop-id="'+b.dataset.stopId+'"],[data-route-id="'+b.dataset.routeId+'"]');if(original)original.click();$('mapSearchResults').classList.add('hidden');});
+ const settingsTranslations={
+  nl:{title:'Instellingen',disclaimer:'De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.',language:'Taal',city:'Stad',mission:'Missie',contact:'Contact',feedback:'Feedback sturen',contribute:'Bijdragen',follow:'VOLGEN',followNote:'De Golem · Oostende',imprint:'Colofon',privacy:'Privacy',terms:'Gebruiksvoorwaarden',analytics:'Analytics',close:'Sluiten'},
+  fr:{title:'Paramètres',disclaimer:'De Golem ne remplace pas un titre de transport. Un titre valable reste toujours obligatoire.',language:'Langue',city:'Ville',mission:'Mission',contact:'Contact',feedback:'Envoyer un avis',contribute:'Contribuer',follow:'SUIVRE',followNote:'De Golem · Ostende',imprint:'Mentions légales',privacy:'Vie privée',terms:'Conditions d’utilisation',analytics:'Statistiques',close:'Fermer'},
+  en:{title:'Settings',disclaimer:'De Golem does not replace a ticket. A valid ticket is always required.',language:'Language',city:'City',mission:'Mission',contact:'Contact us',feedback:'Send feedback',contribute:'Contribute',follow:'FOLLOW',followNote:'De Golem · Ostend',imprint:'Imprint',privacy:'Privacy',terms:'Terms of Use',analytics:'Analytics',close:'Close'}
+ };
+ function applySettingsLanguage(choice){
+  let lang=choice;
+  if(lang==='auto'){const browser=(navigator.language||'nl').slice(0,2).toLowerCase();lang=['fr','en'].includes(browser)?browser:'nl';}
+  const t=settingsTranslations[lang]||settingsTranslations.nl;
+  document.querySelectorAll('[data-setting-i18n]').forEach(el=>{const key=el.dataset.settingI18n;if(t[key])el.textContent=t[key];});
+  $('settingsClose').setAttribute('aria-label',t.close);$('settingsClose').title=t.close;
+  $('settingsLanguage').value=choice;
+  try{localStorage.setItem('golem-language',choice);}catch(e){}
+ }
+ let initialSettingsLanguage='auto';try{initialSettingsLanguage=localStorage.getItem('golem-language')||'auto';}catch(e){}
+ $('settingsLanguage').value=initialSettingsLanguage;applySettingsLanguage(initialSettingsLanguage);
+ $('settingsLanguage').addEventListener('change',e=>applySettingsLanguage(e.target.value));
  function closeSettings(){ $('settingsOverlay').classList.add('hidden');$('settingsToggle').setAttribute('aria-expanded','false'); }
  $('settingsToggle').addEventListener('click',()=>{ $('settingsOverlay').classList.remove('hidden');$('settingsToggle').setAttribute('aria-expanded','true');$('settingsClose').focus(); });
  $('settingsClose').addEventListener('click',closeSettings);
