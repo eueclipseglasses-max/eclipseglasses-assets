@@ -179,10 +179,10 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .field{margin:11px 0}
  label{font-size:11px}
  input,textarea,select{font-size:16px;padding:12px;min-width:0}
- input[type="datetime-local"]{display:block;width:100%;max-width:100%;min-width:0;padding:10px 7px;font-size:16px;letter-spacing:-.25px}
- input[type="datetime-local"]::-webkit-date-and-time-value{text-align:left;min-width:0}
- input[type="datetime-local"]::-webkit-calendar-picker-indicator{margin:0 0 0 2px;padding:0;flex:none}
- .field{min-width:0;width:100%}
+ .field{display:block;min-width:0;width:100%;max-width:100%;overflow:hidden}
+ #observed{display:block;box-sizing:border-box;width:100%!important;inline-size:100%;min-width:0!important;min-inline-size:0;max-width:100%;max-inline-size:100%;padding:8px 2px;font-size:14px;letter-spacing:-.5px;white-space:nowrap;overflow:hidden;-webkit-appearance:none;appearance:none}
+ #observed::-webkit-date-and-time-value{min-width:0;text-align:left;white-space:nowrap}
+ #observed::-webkit-calendar-picker-indicator{margin:0;padding:0;flex:0 0 auto}
  .report{padding:12px;gap:9px;margin-bottom:9px}
  .report-head{align-items:flex-start;gap:5px}
  .report-title{font-size:13px;min-width:0;overflow-wrap:anywhere}
@@ -1465,7 +1465,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v19";
+      const CACHE = "degolem-shell-v20";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
