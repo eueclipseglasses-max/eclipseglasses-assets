@@ -1933,6 +1933,8 @@ async function handleApi(request, env) {
     const bind=since;
     const summary=await env.DB.prepare(`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE ${where}`).bind(bind).first();
     const returning=await env.DB.prepare(`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE ${where} GROUP BY visitor_key HAVING COUNT(DISTINCT session_key)>1)`).bind(bind).first();
+    const active=await env.DB.prepare("SELECT COUNT(DISTINCT visitor_key) AS n FROM analytics_events WHERE created_at>=?").bind(new Date(Date.now()-5*60000).toISOString()).first();
+    const today=await env.DB.prepare("SELECT COUNT(*) AS n FROM analytics_events WHERE created_at>=?").bind(new Date(new Date().toISOString().slice(0,10)+"T00:00:00.000Z").toISOString()).first();
     const daily=await env.DB.prepare(`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE ${where} GROUP BY day ORDER BY day`).bind(bind).all();
     const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(`SELECT ${column} AS name,COUNT(*) AS count FROM analytics_events WHERE ${where} GROUP BY ${column} ORDER BY count DESC LIMIT 10`).bind(bind).all();return result.results||[];};
     const countries=await group("country"),cities=await group("city"),sources=await group("referrer"),pages=await group("path"),devices=await group("device");
