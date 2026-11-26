@@ -66,8 +66,7 @@ h2,h3{margin-top:0}
 .stop-dot-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 #map .maplibregl-popup{z-index:1000!important}
 .map-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
-.map-tools input{flex:1;min-width:190px;padding:9px 11px}
-.map-tools #stopSearchGo{flex:none;white-space:nowrap}
+.halte-zoek{position:relative;flex:1;min-width:220px;max-width:100%}.halte-zoek input{width:100%;min-width:0;padding:10px 38px 10px 12px}.halte-zoek-icoon{position:absolute;right:13px;top:50%;transform:translateY(-53%);font-size:25px;line-height:1;color:var(--muted);pointer-events:none}.halte-zoek-melding{flex-basis:100%;min-height:0;font-size:12px;color:var(--soft-red-text);padding:0 2px}.halte-zoek-melding:empty{display:none}
 .map-tools button{padding:9px 12px;font-size:12px}.map-tools button.filter-active{border-color:#f5c400;background:rgba(245,196,0,.18);color:var(--text)}.map-tools button.filter-tram.filter-active{border-color:#8b5cf6;background:rgba(139,92,246,.18)}
 .map-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:9px 4px 2px;color:var(--muted);font-size:11px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
@@ -166,7 +165,7 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
  .panel-title .tag{font-size:9px;padding:5px 6px;white-space:nowrap}
  .map-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-bottom:9px}
  .map-tools input{grid-column:1;min-width:0;width:100%;padding:11px;font-size:16px}
-  #stopSearchGo{grid-column:2;width:100%;min-width:0;min-height:40px;padding:9px 7px;font-size:11px;white-space:normal}
+  .halte-zoek{grid-column:1/-1;width:100%;min-width:0}.halte-zoek input{width:100%;min-width:0;padding:11px 40px 11px 11px;font-size:16px}.halte-zoek-melding{grid-column:1/-1}
  .map-tools button{width:100%;min-width:0;min-height:40px;padding:9px 7px;font-size:11px;line-height:1.2;white-space:normal}
  #toggleReportedButton{grid-column:1/-1}
  #map{height:min(58vh,470px);min-height:330px;border-radius:8px}
@@ -268,9 +267,9 @@ footer{padding:25px 0;color:#626d7b;font-size:10px;letter-spacing:1px}
   <section class="panel map-panel">
    <div class="panel-title"><div><h3>Kaart</h3><span class="muted">Meldingen op het De Lijn-netwerk</span></div></div>
    <div class="map-tools">
-    <input id="stopSearch" type="search" placeholder="Zoek een halte..." list="stopSearchOptions" autocomplete="off" aria-label="Zoek een halte">
-    <button type="button" class="secondary" id="stopSearchGo">Ga naar halte</button>
+    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek halte op de kaart · Enter" list="stopSearchOptions" autocomplete="off" aria-label="Zoek een halte"></div>
     <datalist id="stopSearchOptions"></datalist>
+    <div id="stopSearchMessage" class="halte-zoek-melding" role="status" aria-live="polite"></div>
         <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
     <button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button>
     <button type="button" class="secondary filter-tram filter-active" id="filterTramButton" aria-pressed="true">Tram</button>
@@ -470,8 +469,7 @@ function initMap(){
  $('filterBusButton').addEventListener('click',()=>{showBusStops=!showBusStops;updateTransportFilterButtons();drawStopDots();});
  $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();drawStopDots();});
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
- $('stopSearchGo').addEventListener('click',searchMapStop);
- $('stopSearch').addEventListener('input',()=>{$('stopSearch').setCustomValidity('');updateStopSearchOptions();});
+ $('stopSearch').addEventListener('input',()=>{$('stopSearchMessage').textContent='';updateStopSearchOptions();});
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  locatieToegestaan().then(ok=>{if(!ok)return;
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -1032,18 +1030,15 @@ function toonLijnenBijKlik(e){
 }
 function updateStopSearchOptions(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');
- const matches=mapStops.filter(s=>String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30);
+ const matches=q?mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30):[];
  $('stopSearchOptions').innerHTML=matches.map(s=>'<option value="'+esc(s.stop_name)+'"></option>').join('');
 }
 function searchMapStop(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');if(!q)return;
- const s=mapStops.find(x=>String(x.stop_name).toLocaleLowerCase('nl-BE')===q)||mapStops.find(x=>String(x.stop_name).toLocaleLowerCase('nl-BE').includes(q));
- if(!s){$('stopSearch').setCustomValidity('Geen halte gevonden.');$('stopSearch').reportValidity();return;}
- $('stopSearch').setCustomValidity('');onlyReportedStops=false;
- if(isTramStop(s))showTramStops=true;
- if(stopHasBusRoute(s)||!isTramStop(s))showBusStops=true;
- updateTransportFilterButtons();
- 
+ const s=mapStops.find(x=>String(x.stop_name).trim().toLocaleLowerCase('nl-BE')===q);
+ const staatOpKaart=s&&stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)));
+ if(!staatOpKaart){$('stopSearchMessage').textContent='Deze halte staat niet op de kaart.';return;}
+ $('stopSearchMessage').textContent='';
  map.once('moveend',()=>{const p=map.project([Number(s.stop_lon),Number(s.stop_lat)]);handleStopDotClick({point:p});});
  map.flyTo({center:[Number(s.stop_lon),Number(s.stop_lat)],zoom:15});
 }
@@ -1470,7 +1465,7 @@ async function handleApi(request, env) {
 
   if (path === "/sw.js" && method === "GET") {
     return new Response(`
-      const CACHE = "degolem-shell-v20";
+      const CACHE = "degolem-shell-v21";
 
       self.addEventListener("install", event => {
         event.waitUntil(caches.open(CACHE).then(cache => cache.add("/")));
