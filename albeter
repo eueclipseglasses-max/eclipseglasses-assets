@@ -67,7 +67,7 @@ h2,h3{margin-top:0}
 .stop-dot-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
 #map .maplibregl-popup{z-index:1000!important}
 .map-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}
-.halte-zoek{position:relative;flex:1;min-width:220px;max-width:100%}.halte-zoek input{width:100%;min-width:0;padding:10px 38px 10px 12px}.halte-zoek-icoon{position:absolute;right:13px;top:50%;transform:translateY(-53%);font-size:25px;line-height:1;color:var(--muted);pointer-events:none}.halte-zoek-melding{flex-basis:100%;min-height:0;font-size:12px;color:var(--soft-red-text);padding:0 2px}.halte-zoek-melding:empty{display:none}
+.halte-zoek{position:relative;flex:1;min-width:220px;max-width:100%}.halte-zoek input{width:100%;min-width:0;padding:10px 38px 10px 12px}.halte-zoek-resultaten{position:absolute;z-index:30;top:calc(100% + 6px);left:0;right:0;max-height:min(340px,55vh);overflow:auto;padding:5px;background:var(--panel);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow)}.halte-zoek-resultaat{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border:0;border-radius:7px;background:transparent;color:var(--text);text-align:left;cursor:pointer}.halte-zoek-resultaat:hover,.halte-zoek-resultaat:focus-visible{background:var(--panel2);outline:none}.halte-zoek-resultaat strong{font-size:13px;font-weight:600}.halte-zoek-resultaat span{font-size:11px;color:var(--muted);white-space:nowrap}.halte-zoek-leeg{padding:10px;color:var(--muted);font-size:12px}.halte-zoek-icoon{position:absolute;right:13px;top:50%;transform:translateY(-53%);font-size:25px;line-height:1;color:var(--muted);pointer-events:none}.halte-zoek-melding{flex-basis:100%;min-height:0;font-size:12px;color:var(--soft-red-text);padding:0 2px}.halte-zoek-melding:empty{display:none}
 .map-tools button{padding:9px 12px;font-size:12px}.map-tools button.filter-active{border-color:#f5c400;background:rgba(245,196,0,.18);color:var(--text)}.map-tools button.filter-tram.filter-active{border-color:#8b5cf6;background:rgba(139,92,246,.18)}
 .map-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:9px 4px 2px;color:var(--muted);font-size:11px}
 .legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
@@ -317,7 +317,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
   <section class="panel map-panel">
    <div class="panel-title"><div><h3>Kaart</h3><span class="muted">Meldingen op het De Lijn-netwerk</span></div></div>
    <div class="map-tools">
-    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek halte op de kaart · Enter" list="stopSearchOptions" autocomplete="off" aria-label="Zoek een halte"></div>
+    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek halte of lijn…" autocomplete="off" aria-label="Zoek een halte"><div id="stopSearchResults" class="halte-zoek-resultaten hidden" role="listbox" aria-label="Zoekresultaten"></div></div>
     <datalist id="stopSearchOptions"></datalist>
     <div id="stopSearchMessage" class="halte-zoek-melding" role="status" aria-live="polite"></div>
         <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
@@ -517,6 +517,8 @@ function initMap(){
  $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();syncStopNameLayer();drawStopDots();});
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
  $('stopSearch').addEventListener('input',()=>{$('stopSearchMessage').textContent='';updateStopSearchOptions();});
+ $('stopSearch').addEventListener('focus',updateStopSearchOptions);
+ $('stopSearchResults').addEventListener('click',e=>{const button=e.target.closest('[data-stop-id]');if(button)selectStopFromSearch(button.dataset.stopId);});
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  locatieToegestaan().then(ok=>{if(!ok)return;
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -1096,9 +1098,18 @@ function toonLijnenBijKlik(e){
  zetTijdelijkeFocus(routes.map(r=>r.route_id),popup);
 }
 function updateStopSearchOptions(){
- const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');
- const matches=q?mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,30):[];
- $('stopSearchOptions').innerHTML=matches.map(s=>'<option value="'+esc(s.stop_name)+'"></option>').join('');
+ const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE'),results=$('stopSearchResults');
+ if(!q){results.classList.add('hidden');results.innerHTML='';return;}
+ const matches=mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,8);
+ results.innerHTML=matches.map(s=>'<button type="button" class="halte-zoek-resultaat" role="option" data-stop-id="'+esc(s.stop_id)+'"><strong>'+esc(s.stop_name)+'</strong><span>'+(isTramStop(s)?'Tram':'Bus')+(activeReportStopIds.has(String(s.stop_id))?' · melding':'')+'</span></button>').join('')||'<div class="halte-zoek-leeg">Geen haltes gevonden binnen het huidige kaartgebied.</div>';
+ results.classList.remove('hidden');
+}
+function selectStopFromSearch(stopId){
+ const stop=mapStops.find(s=>String(s.stop_id)===String(stopId));if(!stop)return;
+ const coords=[Number(stop.stop_lon),Number(stop.stop_lat)];
+ $('stopSearch').value=stop.stop_name;$('stopSearchResults').classList.add('hidden');$('stopSearchMessage').textContent='';
+ const openStop=()=>{drawStopDots();handleStopDotClick({point:map.project(coords)});};
+ map.once('moveend',openStop);map.flyTo({center:coords,zoom:Math.max(map.getZoom(),14),duration:450});
 }
 function searchMapStop(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE');if(!q)return;
