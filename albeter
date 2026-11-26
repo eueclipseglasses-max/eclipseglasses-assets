@@ -404,6 +404,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  #appScreen .side>section:nth-child(2) h3{font-size:11px}
  #appScreen .maplibregl-ctrl-group button{width:27px;height:27px}
 }
+
 </style>
 </head>
 <body>
