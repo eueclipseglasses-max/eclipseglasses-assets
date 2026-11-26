@@ -314,7 +314,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
 #mapLeftControls{position:absolute;top:18px;left:18px;display:flex;flex-direction:column;align-items:flex-start;gap:9px;pointer-events:auto}
 .map-icon-button,.map-login-button{height:48px;min-width:48px;padding:0 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);box-shadow:0 8px 25px rgba(0,0,0,.22);font:15px Georgia,serif;cursor:pointer}
 .map-icon-button{font-size:23px}
-.map-login-button{width:48px;min-width:48px;padding:0;display:grid;place-items:center}\n .map-login-button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.map-login-button{width:48px;min-width:48px;padding:0;display:flex;align-items:center;justify-content:center;line-height:0}\n .map-login-button img{display:block;flex:0 0 23px;width:23px;height:23px;margin:0;object-fit:contain;pointer-events:none}
 .settings-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center;padding:0;background:rgba(38,31,24,.28);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:auto;touch-action:pan-y}
 .settings-overlay.hidden{display:none}
 .settings-sheet{position:relative;z-index:1;pointer-events:auto;width:min(560px,100%);max-height:92vh;overflow:auto;padding:21px 22px 18px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-bottom:0;border-radius:14px 14px 0 0;box-shadow:0 -12px 45px rgba(45,31,17,.18);text-align:left;overscroll-behavior:contain}
@@ -460,7 +460,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  </div>
  <div id="mapLeftControls">
   <button id="settingsToggle" class="map-icon-button" type="button" aria-expanded="false" aria-label="Instellingen" title="Instellingen"><img src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/noun_Settingbutton_2747966_@700.png?v=20261126-2" alt="" aria-hidden="true"></button>
-  <button id="mapLoginButton" class="map-login-button" type="button" aria-label="Inloggen" title="Inloggen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></button>
+  <button id="mapLoginButton" class="map-login-button" type="button" aria-label="Inloggen" title="Inloggen"><img src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/noun_Human_6355893_@700.png?v=20261126-1" alt="" aria-hidden="true"></button>
   <button id="rankingButton" class="hidden" type="button" onclick="openRanking()">Ranglijst</button>
  </div>
  <div id="settingsOverlay" class="settings-overlay hidden">
@@ -1545,7 +1545,7 @@ async function startPublicApp(){
  if(results[0].status==='rejected')$('reportMessage').textContent='De lijnen konden niet laden. Probeer het opnieuw.';
  if(results[1].status==='rejected')$('reportsList').innerHTML='<div class="empty-state"><strong>Meldingen konden niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="loadReports().catch(()=>{})">Opnieuw proberen</button></div>';
 }
-$('authButton')?.classList.add('hidden');$('mapLoginButton').textContent='Inloggen';
+$('authButton')?.classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 // Melding bij het openen: één keer per versie van de tekst tonen (en opnieuw als de tekst wijzigt).
 const VOORAF_VERSIE='2026-11-26';
