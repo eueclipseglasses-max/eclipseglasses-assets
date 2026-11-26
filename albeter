@@ -459,7 +459,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
   <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="mapSearchMirror" type="search" placeholder="Zoek halte of lijn…" autocomplete="off" aria-label="Zoek halte of lijn"><div id="mapSearchResults" class="halte-zoek-resultaten hidden" role="listbox"></div></div>
  </div>
  <div id="mapLeftControls">
-  <button id="settingsToggle" class="map-icon-button" type="button" aria-expanded="false" aria-label="Instellingen" title="Instellingen"><img src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/noun_Settingbutton_2747966_@700.png?raw=true" alt="" aria-hidden="true"></button>
+  <button id="settingsToggle" class="map-icon-button" type="button" aria-expanded="false" aria-label="Instellingen" title="Instellingen"><img src="https://raw.githubusercontent.com/eueclipseglasses-max/eclipseglasses-assets/main/noun_Settingbutton_2747966_@700.png?v=20261126-2" alt="" aria-hidden="true"></button>
   <button id="mapLoginButton" class="map-login-button" type="button" aria-label="Inloggen" title="Inloggen"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></button>
   <button id="rankingButton" class="hidden" type="button" onclick="openRanking()">Ranglijst</button>
  </div>
