@@ -1249,7 +1249,7 @@ async function startPublicApp(){
 $('authButton').classList.add('hidden');
 $('observed').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
 // Melding bij het openen: één keer per versie van de tekst tonen (en opnieuw als de tekst wijzigt).
-const VOORAF_VERSIE='2026-11-21';
+const VOORAF_VERSIE='2026-11-26';
 (function toonVooraf(){
  let gezien=null;try{gezien=localStorage.getItem('degolem_vooraf');}catch(e){}
  if(gezien===VOORAF_VERSIE)return;
