@@ -299,13 +299,62 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  #appScreen.report-open .heading #reportCta{display:none}
 }
 
+
+/* Minimalistische FreiFahren-achtige bediening */
+#siteHeader{display:none!important}
+#appScreen .heading>div{display:none!important}
+#appScreen .map-tools{display:none!important}
+#appScreen .map-legend{display:none!important}
+#mapUi{position:fixed;inset:0;z-index:70;pointer-events:none}
+#mapSearchDock{position:absolute;top:18px;left:50%;transform:translateX(-50%);width:min(540px,calc(100vw - 150px));pointer-events:auto}
+#mapSearchDock .halte-zoek{width:100%;position:relative}
+#mapSearchDock input{width:100%;height:54px;padding:0 20px 0 48px;border-radius:13px;border:1px solid var(--border);background:var(--panel);color:var(--text);font:17px Georgia,serif;box-shadow:0 8px 28px rgba(0,0,0,.24);backdrop-filter:blur(16px)}
+#mapSearchDock .halte-zoek-icoon{position:absolute;left:17px;top:12px;font-size:25px;z-index:1}
+#mapSearchDock .halte-zoek-resultaten{top:62px;left:0;right:0;max-height:55vh;overflow:auto}
+#mapLeftControls{position:absolute;top:18px;left:18px;display:flex;flex-direction:column;align-items:flex-start;gap:9px;pointer-events:auto}
+.map-icon-button,.map-login-button{height:48px;min-width:48px;padding:0 14px;border:1px solid var(--border);border-radius:11px;background:var(--panel);color:var(--text);box-shadow:0 8px 25px rgba(0,0,0,.22);font:15px Georgia,serif;cursor:pointer}
+.map-icon-button{font-size:23px}
+.map-login-button{min-width:48px;font-size:13px}
+.map-settings-panel{width:220px;padding:12px;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:0 12px 35px rgba(0,0,0,.3);display:grid;gap:9px}
+.map-settings-panel.hidden{display:none}
+.settings-heading{font-size:15px;font-weight:700;color:var(--text)}
+.settings-filters{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+#mapModeDock{position:absolute;top:18px;right:18px;pointer-events:auto}
+.map-mode-toggle{display:flex;padding:4px;gap:3px;border:1px solid var(--border);border-radius:12px;background:var(--panel);box-shadow:0 8px 25px rgba(0,0,0,.22)}
+.map-mode-toggle button{min-width:86px;padding:11px 15px;border:0;border-radius:8px;background:transparent;color:var(--muted);font:600 14px Georgia,serif;cursor:pointer}
+.map-mode-toggle button.active{background:var(--orange);color:#fff}
+#appScreen .heading #reportCta{right:20px;left:auto;bottom:20px;width:auto;min-width:174px;min-height:60px;padding:14px 22px;border-radius:12px;font:700 18px Georgia,serif;letter-spacing:1px}
+#appScreen .heading #reportCta span{font-size:24px;margin-left:8px;vertical-align:-1px}
+#appScreen .side>section:nth-child(2){position:fixed;z-index:35;left:18px;bottom:18px;width:min(350px,calc(100vw - 390px));max-height:210px;overflow:auto;margin:0;padding:13px 15px;background:color-mix(in srgb,var(--panel) 96%,transparent);backdrop-filter:blur(14px);border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);pointer-events:auto}
+#appScreen .side>section:nth-child(2) h3{font-size:15px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.6px}
+#appScreen .side>section:nth-child(2) .report{padding:8px;margin:0 0 6px}
+#appScreen .side>section:nth-child(2) .report-actions{display:none}
+#appScreen .side>#reportForm{top:85px;right:18px}
+#appScreen .maplibregl-ctrl-top-right{top:auto;right:18px;bottom:100px}
+#appScreen.report-open #mapUi{display:none}
+@media(max-width:700px){
+ #mapSearchDock{top:12px;width:calc(100vw - 150px);min-width:170px}
+ #mapSearchDock input{height:47px;font-size:15px;padding-left:40px}
+ #mapSearchDock .halte-zoek-icoon{left:13px;top:9px}
+ #mapLeftControls{top:12px;left:10px;gap:7px}
+ .map-icon-button,.map-login-button{height:43px;min-width:43px;padding:0 10px}
+ .map-login-button{font-size:11px}
+ .map-settings-panel{width:190px}
+ #mapModeDock{top:12px;right:10px}
+ .map-mode-toggle{padding:3px}
+ .map-mode-toggle button{min-width:58px;padding:10px 8px;font-size:12px}
+ #appScreen .heading #reportCta{right:10px;bottom:calc(12px + env(safe-area-inset-bottom));min-width:145px;min-height:53px;padding:11px 14px;font-size:15px}
+ #appScreen .side>section:nth-child(2){left:10px;bottom:calc(12px + env(safe-area-inset-bottom));width:min(220px,calc(100vw - 180px));max-height:150px;padding:10px}
+ #appScreen .side>section:nth-child(2) h3{font-size:12px}
+ #appScreen .side>section:nth-child(2) .report-meta{display:none}
+ #appScreen .side>#reportForm{top:70px;left:9px;right:9px;bottom:calc(75px + env(safe-area-inset-bottom));width:auto}
+ #appScreen .maplibregl-ctrl-top-right{right:9px;bottom:170px}
+}
+
 </style>
 </head>
 <body>
-<header>
- <div class="brand"><img class="logo" id="brandLogo" src="https://github.com/eueclipseglasses-max/eclipseglasses-assets/blob/main/DEGOLEMLICHT-Photoroom.png?raw=true" alt="De Golem-logo"><div><div class="brand-name">De Golem</div><small>OOSTENDE</small></div></div>
- <div class="header-right"><button id="rankingButton" class="secondary hidden" type="button" onclick="openRanking()">Ranglijst</button><button id="themeButton" class="theme-toggle" type="button" onclick="toggleTheme()" aria-label="Schakel naar donkere modus" title="Donkere modus">☾</button><button id="authButton" class="secondary hidden" onclick="authAction()">Inloggen</button></div>
-</header>
+<header id="siteHeader" aria-hidden="true"></header>
 
 <div class="vooraf hidden" id="vooraf" role="dialog" aria-modal="true" aria-labelledby="voorafTitel"><div class="vooraf-kaart">
  <div class="eyebrow">EVEN DIT VOORAF</div>
@@ -341,7 +390,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
 <main id="appScreen" class="hidden">
  <div class="heading">
   <div><div class="eyebrow">DE GOLEM / LIVE NETWERK</div><h1>Controlebeeld</h1><p class="muted">Actuele reizigersmeldingen op het De Lijn-netwerk.</p></div>
-  <button id="reportCta" onclick="openReportForm()">＋ Melding toevoegen</button>
+  <button id="reportCta" onclick="openReportForm()">CONTROLE <span aria-hidden="true">＋</span></button>
  </div>
  <div class="stats">
   <div class="stat"><span>Actieve meldingen</span><strong id="countActive">0</strong></div>
@@ -349,11 +398,28 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
   <div class="stat"><span>Account</span><strong id="userRole" style="font-size:17px">Gebruiker</strong></div>
  </div>
  <p id="latestReportStatus" class="latest-status hidden" aria-live="polite"></p>
+<div id="mapUi">
+ <div id="mapSearchDock" class="map-search-dock">
+  <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="mapSearchMirror" type="search" placeholder="Zoek halte of lijn…" autocomplete="off" aria-label="Zoek halte of lijn"><div id="mapSearchResults" class="halte-zoek-resultaten hidden" role="listbox"></div></div>
+ </div>
+ <div id="mapLeftControls">
+  <button id="settingsToggle" class="map-icon-button" type="button" aria-expanded="false" aria-label="Instellingen" title="Instellingen">⚙</button>
+  <button id="mapLoginButton" class="map-login-button" type="button" onclick="authAction()">Inloggen</button>
+  <div id="settingsPanel" class="map-settings-panel hidden">
+   <div class="settings-heading">Instellingen</div>
+   <button id="themeButton" class="secondary full" type="button" onclick="toggleTheme()">Weergave wisselen</button>
+   <div class="settings-filters"><button type="button" class="secondary filter-active" id="filterBusButton" aria-pressed="true">Bus</button><button type="button" class="secondary filter-active" id="filterTramButton" aria-pressed="true">Tram</button></div>
+   <button type="button" class="secondary full" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
+   <button id="rankingButton" class="secondary full hidden" type="button" onclick="openRanking()">Ranglijst</button>
+  </div>
+ </div>
+ <div id="mapModeDock"><div class="map-mode-toggle" role="group" aria-label="Kaartweergave"><button id="linesModeButton" type="button" class="active" aria-pressed="true">Lijnen</button><button id="riskModeButton" type="button" aria-pressed="false">Risico</button></div></div>
+</div>
  <div class="layout">
   <section class="panel map-panel">
    <div class="panel-title"><div><h3>Kaart</h3><span class="muted">Meldingen op het De Lijn-netwerk</span></div></div>
    <div class="map-tools">
-    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek een halte…" autocomplete="off" aria-label="Zoek een halte"><div id="stopSearchResults" class="halte-zoek-resultaten hidden" role="listbox" aria-label="Zoekresultaten"></div></div>
+    <div class="halte-zoek"><span class="halte-zoek-icoon" aria-hidden="true">⌕</span><input id="stopSearch" type="search" placeholder="Zoek halte of lijn…" autocomplete="off" aria-label="Zoek een halte of lijn"><div id="stopSearchResults" class="halte-zoek-resultaten hidden" role="listbox" aria-label="Zoekresultaten"></div></div>
     <datalist id="stopSearchOptions"></datalist>
     <div id="stopSearchMessage" class="halte-zoek-melding" role="status" aria-live="polite"></div>
         <button type="button" class="secondary" id="toggleReportedButton" aria-pressed="false">Alleen meldingen</button>
@@ -381,7 +447,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
     </form>
    </section>
    <section class="panel">
-    <h3>Recente controles</h3>
+    <h3>Huidige rapporten</h3>
     <div id="reportsList"><p class="muted"><span class="skeleton-line"></span><span class="skeleton-line short"></span></p></div>
    </section>
    <section class="panel hidden" id="adminPanel">
@@ -392,7 +458,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
    </section>
   </aside>
  </div>
- <div id="mapCommunityPill" aria-live="polite"><strong id="mapCommunityCount">Oostende</strong><span> live netwerk</span></div>
+
  <section class="how-it-works panel"><h3>Hoe werkt het?</h3><div class="how-steps"><div><strong>01 · Kies een halte</strong><p>Zoek een halte of tik op een halte op de kaart.</p></div><div><strong>02 · Meld de controle</strong><p>Kies de lijn en het tijdstip. Een account is niet nodig.</p></div><div><strong>03 · Help de melding controleren</strong><p>Andere reizigers kunnen aangeven of de melding nog klopt.</p></div></div></section>
  <footer class="site-footer"><a href="/over">Over</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/voorwaarden">Voorwaarden</a><a href="/misbruik">Misbruik melden</a><span>DE GOLEM · VLAANDEREN · 2026</span></footer>
 </main>
@@ -485,7 +551,7 @@ $('authForm').addEventListener('submit',async e=>{
  }catch(err){$('authMessage').textContent=err.message;}
 });
 async function logout(){try{await api('/api/auth/logout',{method:'POST',body:'{}'});}catch{} await startPublicApp();}
-function authAction(){if($('authButton').textContent.trim()==='Uitloggen')logout();else openAuth();}
+function authAction(){if($('authButton').textContent.trim()==='Uitloggen'||$('mapLoginButton').textContent.trim()==='Uitloggen')logout();else openAuth();}
 function openAuth(){$('appScreen').classList.add('hidden');$('authScreen').classList.remove('hidden');$('authButton').classList.add('hidden');setMode('login');}
 function showPublicDashboard(){startPublicApp();}
 function showMapError(error){const el=$('map');if(!el||el.querySelector('.map-error'))return;el.insertAdjacentHTML('beforeend','<div class="map-error" style="position:absolute;inset:0;z-index:20;display:grid;place-content:center;text-align:center;padding:24px;background:var(--panel);color:var(--text)"><strong>Kon de kaart niet laden.</strong><p>Controleer je verbinding en probeer opnieuw.</p><button type="button" onclick="location.reload()">Opnieuw proberen</button></div>');console.error('Kaart:',error);}
@@ -553,9 +619,16 @@ function initMap(){
  $('filterBusButton').addEventListener('click',()=>{showBusStops=!showBusStops;updateTransportFilterButtons();syncStopNameLayer();drawStopDots();});
  $('filterTramButton').addEventListener('click',()=>{showTramStops=!showTramStops;updateTransportFilterButtons();syncStopNameLayer();drawStopDots();});
  $('stopSearch').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();searchMapStop();}});
+ $('mapSearchMirror').addEventListener('input',()=>{$('stopSearch').value=$('mapSearchMirror').value;updateStopSearchOptions();$('mapSearchResults').innerHTML=$('stopSearchResults').innerHTML;$('mapSearchResults').classList.toggle('hidden',$('stopSearchResults').classList.contains('hidden'));});
+ $('mapSearchMirror').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('stopSearch').value=$('mapSearchMirror').value;searchMapStop();}});
+ $('mapSearchResults').addEventListener('click',e=>{const b=e.target.closest('[data-stop-id],[data-route-id]');if(!b)return;const original=$('stopSearchResults').querySelector('[data-stop-id="'+b.dataset.stopId+'"],[data-route-id="'+b.dataset.routeId+'"]');if(original)original.click();$('mapSearchResults').classList.add('hidden');});
+ $('settingsToggle').addEventListener('click',()=>{const p=$('settingsPanel'),open=p.classList.toggle('hidden')===false;$('settingsToggle').setAttribute('aria-expanded',String(open));});
+ $('linesModeButton').addEventListener('click',()=>setMapDisplayMode('lines'));
+ $('riskModeButton').addEventListener('click',()=>setMapDisplayMode('risk'));
+ $('mapLoginButton').addEventListener('click',()=>authAction());
  $('stopSearch').addEventListener('input',()=>{$('stopSearchMessage').textContent='';updateStopSearchOptions();});
  $('stopSearch').addEventListener('focus',updateStopSearchOptions);
- $('stopSearchResults').addEventListener('click',e=>{const button=e.target.closest('[data-stop-id]');if(button)selectStopFromSearch(button.dataset.stopId);});
+ $('stopSearchResults').addEventListener('click',e=>{const button=e.target.closest('[data-stop-id],[data-route-id]');if(!button)return;if(button.dataset.stopId)selectStopFromSearch(button.dataset.stopId);else if(button.dataset.routeId){$('stopSearch').value='Lijn '+(routeById.get(button.dataset.routeId)?.route_short_name||'');$('stopSearchResults').classList.add('hidden');$('routeSelect').value=button.dataset.routeId;$('routeSelect').dispatchEvent(new Event('change'));}});
  map.on('error',e=>console.error('Kaartfout:',e.error||e));
  locatieToegestaan().then(ok=>{if(!ok)return;
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -782,6 +855,15 @@ function openLijnKiezer(){
  const h=toonPaneel(node,$('lijnKiezer'));
  lijst.addEventListener('click',e=>{const b=e.target.closest('.lijn-keuze');if(!b)return;const s=$('routeSelect');s.value=b.dataset.route;s.dispatchEvent(new Event('change'));h.remove();$('lijnKiezer').focus();});
  if(!isGsm())zoek.focus();
+}
+let mapDisplayMode='lines';
+function setMapDisplayMode(next){
+ mapDisplayMode=next==='risk'?'risk':'lines';
+ $('linesModeButton').classList.toggle('active',mapDisplayMode==='lines');$('riskModeButton').classList.toggle('active',mapDisplayMode==='risk');
+ $('linesModeButton').setAttribute('aria-pressed',String(mapDisplayMode==='lines'));$('riskModeButton').setAttribute('aria-pressed',String(mapDisplayMode==='risk'));
+ if(map&&map.getLayer('golem-lijnen')){map.setPaintProperty('golem-lijnen','line-color',mapDisplayMode==='risk'?'#38a66a':['get','kleur']);map.setPaintProperty('golem-lijn-namen','text-color',mapDisplayMode==='risk'?'#38a66a':['get','kleur']);}
+ if(map&&map.getLayer('golem-melding')){map.setPaintProperty('golem-melding','line-color',['match',['get','soort'],'rood',mapDisplayMode==='risk'?'#e12626':'#e53935','geel',mapDisplayMode==='risk'?'#f2b632':'#f5c400','#929292']);}
+ if(map&&map.getLayer('golem-melding-gloed'))map.setPaintProperty('golem-melding-gloed','line-color',mapDisplayMode==='risk'?'#f08b82':'#e53935');
 }
 function addRouteLinesToMap(){clearTimeout(lijnTimer);lijnTimer=setTimeout(()=>{tekenLijnen().catch(err=>console.warn('Lijntrajecten:',err));},150);}
 // Welke lijnen krijgen kleur? Standaard geen enkele (rustig grijs net). Kleur verschijnt voor:
@@ -1147,8 +1229,9 @@ function toonLijnenBijKlik(e){
 function updateStopSearchOptions(){
  const q=$('stopSearch').value.trim().toLocaleLowerCase('nl-BE'),results=$('stopSearchResults');
  if(!q){results.classList.add('hidden');results.innerHTML='';return;}
- const matches=mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,8);
- results.innerHTML=matches.map(s=>'<button type="button" class="halte-zoek-resultaat" role="option" data-stop-id="'+esc(s.stop_id)+'"><strong>'+esc(s.stop_name)+'</strong><span>'+(isTramStop(s)?'Tram':'Bus')+(activeReportStopIds.has(String(s.stop_id))?' · melding':'')+'</span></button>').join('')||'<div class="halte-zoek-leeg">Geen haltes gevonden binnen het huidige kaartgebied.</div>';
+ const stops=mapStops.filter(s=>stopMatchesTransportFilter(s)&&(!onlyReportedStops||activeReportStopIds.has(String(s.stop_id)))&&String(s.stop_name).toLocaleLowerCase('nl-BE').includes(q)).slice(0,6);
+ const routes=allRoutes.filter(r=>String(r.route_short_name||'').toLocaleLowerCase('nl-BE').includes(q)||String(r.route_long_name||'').toLocaleLowerCase('nl-BE').includes(q)).sort(opLijnnummer).slice(0,5);
+ results.innerHTML=stops.map(s=>'<button type="button" class="halte-zoek-resultaat" role="option" data-stop-id="'+esc(s.stop_id)+'"><strong>'+esc(s.stop_name)+'</strong><span>'+(isTramStop(s)?'Tram':'Bus')+(activeReportStopIds.has(String(s.stop_id))?' · melding':'')+'</span></button>').join('')+routes.map(r=>'<button type="button" class="halte-zoek-resultaat" role="option" data-route-id="'+esc(r.route_id)+'"><strong>Lijn '+esc(r.route_short_name||'')+'</strong><span>'+esc(r.route_long_name||'')+'</span></button>').join('')||'<div class="halte-zoek-leeg">Geen haltes of lijnen gevonden.</div>';
  results.classList.remove('hidden');
 }
 function selectStopFromSearch(stopId){
