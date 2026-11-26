@@ -1375,11 +1375,10 @@ async function recordPageView(request,env,path){
   if(!env.DB)return {};
   await ensureAnalyticsTables(env);
   let visitor=analyticsCookieValue(request,"golem_visitor");
-  let session=analyticsCookieValue(request,"golem_session");
   const newVisitor=!/^[a-f0-9-]{36}$/i.test(visitor);
-  const newSession=!/^[a-f0-9-]{36}$/i.test(session);
   if(newVisitor)visitor=crypto.randomUUID();
-  if(newSession)session=crypto.randomUUID();
+  // Een sessie is een periode van 30 minuten; er wordt geen apart sessie-ID-cookie geplaatst.
+  const session=visitor+":"+Math.floor(Date.now()/1800000);
   const ua=request.headers.get("User-Agent")||"";
   const agent=analyticsAgent(ua);
   let referrer="";
@@ -1394,12 +1393,7 @@ async function recordPageView(request,env,path){
       referrer.slice(0,160),agent.device,agent.browser,agent.os
     ).run();
   await env.DB.prepare("DELETE FROM analytics_events WHERE created_at < ?").bind(new Date(Date.now()-400*86400000).toISOString()).run();
-  return {
-    "Set-Cookie":[
-      ...(newVisitor?[cookie("golem_visitor",visitor,365*86400)]:[]),
-      cookie("golem_session",session,1800)
-    ].join(", ")
-  };
+  return {"Set-Cookie":cookie("golem_visitor",visitor,365*86400)};
 }
 function adminAnalyticsHTML(){
  return \`<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#FBEED8"><title>Beheer · De Golem</title><style>
@@ -1937,7 +1931,7 @@ async function handleApi(request, env) {
     const where="created_at>=?";
     const bind=since;
     const summary=await env.DB.prepare(\`SELECT COUNT(*) AS pageviews,COUNT(DISTINCT visitor_key) AS visitors,COUNT(DISTINCT session_key) AS sessions FROM analytics_events WHERE \${where}\`).bind(bind).first();
-    const returning=await env.DB.prepare(\`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE \${where} GROUP BY visitor_key HAVING COUNT(*)>1)\`).bind(bind).first();
+    const returning=await env.DB.prepare(\`SELECT COUNT(*) AS n FROM (SELECT visitor_key FROM analytics_events WHERE \${where} GROUP BY visitor_key HAVING COUNT(DISTINCT session_key)>1)\`).bind(bind).first();
     const daily=await env.DB.prepare(\`SELECT substr(created_at,1,10) AS day,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY day ORDER BY day\`).bind(bind).all();
     const group=async column=>{const allowed=["country","city","referrer","path","device","browser","os"];if(!allowed.includes(column))return [];const result=await env.DB.prepare(\`SELECT \${column} AS name,COUNT(*) AS count FROM analytics_events WHERE \${where} GROUP BY \${column} ORDER BY count DESC LIMIT 10\`).bind(bind).all();return result.results||[];};
     const countries=await group("country"),cities=await group("city"),sources=await group("referrer"),pages=await group("path"),devices=await group("device");
@@ -2127,8 +2121,7 @@ export default {
       if(url.pathname==="/admin"){
         const admin=await currentUser(request,env).catch(()=>null);
         if(!admin||admin.role!=="admin")return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Geen toegang · De Golem</title><body style="font:16px Georgia;background:#f1e2c6;color:#3c2c20;min-height:100vh;display:grid;place-items:center;text-align:center"><main><h1>Beheerderslogin vereist</h1><p>Log eerst in met je beheerdersaccount.</p><a href="/">Naar De Golem en inloggen</a><p><a href="/admin">Daarna terug naar het beheerpaneel</a></p></main></body></html>',{status:403,headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}});
-        return new Response(adminAnalyticsHTML(),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow","Referrer-Policy":"same-origin","Set-Cookie":analytics["Set-Cookie"]||"",
-          "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"}});
+        return new Response(adminAnalyticsHTML(),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow","Referrer-Policy":"same-origin","Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'"}});
       }
       if (!["/","/index.html","/over","/contact","/privacy","/voorwaarden","/misbruik"].includes(url.pathname)) {
         return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pagina niet gevonden · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:16px Georgia,serif;min-height:100vh;display:grid;place-items:center;text-align:center"><main style="padding:32px"><h1>Deze pagina bestaat niet.</h1><p>Misschien is de link verouderd.</p><a href="/" style="color:#925b35">Terug naar De Golem</a></main></body></html>',{status:404,headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
@@ -2190,6 +2183,7 @@ export default {
           "Cache-Control":"no-store",
           "X-Content-Type-Options":"nosniff",
           "Referrer-Policy":"strict-origin-when-cross-origin",
+          "Set-Cookie":analytics["Set-Cookie"]||"",
           "Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; connect-src 'self' https://tiles.openfreemap.org; font-src 'self' data: https://tiles.openfreemap.org; worker-src blob:;"
         }
       });
