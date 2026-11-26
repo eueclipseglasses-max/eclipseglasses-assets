@@ -405,7 +405,8 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  #appScreen .maplibregl-ctrl-group button{width:27px;height:27px}
 }
 
-.map-icon-button img{display:block;width:23px;height:23px;object-fit:contain;pointer-events:none}
+.map-icon-button{display:flex;align-items:center;justify-content:center;line-height:0}
+.map-icon-button img{display:block;flex:0 0 23px;width:23px;height:23px;margin:0;object-fit:contain;pointer-events:none}
 </style>
 </head>
 <body>
