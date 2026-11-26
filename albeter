@@ -385,7 +385,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
   <li>De Golem is een onafhankelijk initiatief en is <strong>niet verbonden aan De Lijn</strong>.</li>
   <li>Respecteer controleurs en chauffeurs: hinder hen niet en fotografeer geen gezichten of andere herkenbare personen.</li>
  </ul>
- <p class="vooraf-klein">Door verder te gaan, ga je akkoord met de <a href="/voorwaarden" target="_blank" rel="noopener">voorwaarden</a> en het <a href="/privacy" target="_blank" rel="noopener">privacybeleid</a>.</p>
+ <p class="vooraf-klein">Door verder te gaan, ga je akkoord met de <a href="/in-ontwikkeling" target="_blank" rel="noopener">voorwaarden</a> en het <a href="/in-ontwikkeling" target="_blank" rel="noopener">privacybeleid</a>.</p>
  <button type="button" id="voorafAkkoord" class="full">Ik begrijp het</button>
 </div></div>
 <!-- Stadselectie verwijderd: De Golem is momenteel uitsluitend beschikbaar voor Oostende. -->
@@ -429,21 +429,21 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
  </div>
  <div id="settingsOverlay" class="settings-overlay hidden">
   <section id="settingsPanel" class="settings-sheet" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-   <div class="settings-sheet-head"><h2 id="settingsTitle" data-setting-i18n="title">Instellingen</h2><button id="settingsClose" class="settings-close" type="button" aria-label="Sluiten" title="Sluiten">×</button></div>
+   <div class="settings-sheet-head"><h2 id="settingsTitle" data-setting-i18n="title">Instellingen</h2><button id="settingsClose" class="settings-close" type="button" aria-label="Sluiten" title="Sluiten" onclick="closeSettings()">×</button></div>
    <p class="settings-disclaimer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16v10H4z"/><path d="M7 10l2 2-2 2m10-4-2 2 2 2"/></svg><span data-setting-i18n="disclaimer">De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.</span></p>
    <div class="settings-row">
     <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4 5 6 6m-2-8 2 8M3 9h8M5 19l4-8 4 8m-6-3h4m4-8h7m-3-3 3 3-3 3m0 4h3m-3-3 3 3-3 3"/></svg>
     <span class="settings-row-label" data-setting-i18n="language">Taal</span>
-    <span class="settings-row-value"><select id="settingsLanguage" aria-label="Taal"><option value="auto">Auto</option><option value="nl">Nederlands</option><option value="fr">Français</option><option value="en">English</option></select><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
+    <span class="settings-row-value"><select id="settingsLanguage" aria-label="Taal"><option value="nl">Nederlands</option><option value="fr">Français</option><option value="en">English</option></select><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
    </div>
    <div class="settings-row">
     <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>
-    <span class="settings-row-label" data-setting-i18n="city">Stad</span><span class="settings-row-value">Oostende</span>
+    <span class="settings-row-label" data-setting-i18n="city">Locatie</span><span class="settings-row-value"><select id="settingsCity" aria-label="Locatie"><option value="oostende">Oostende</option><option value="brugge">Brugge</option><option value="gent">Gent</option><option value="antwerpen">Antwerpen</option></select><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></span>
    </div>
-   <a class="settings-row" href="/over">
+   <a class="settings-row" href="/in-ontwikkeling">
     <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l1 14H4L5 7Z"/><path d="M9 7V5a3 3 0 0 1 6 0v2m-4 5h2"/></svg><span class="settings-row-label" data-setting-i18n="mission">Missie</span><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
    </a>
-   <a class="settings-row" href="/contact">
+   <a class="settings-row" href="/in-ontwikkeling">
     <svg class="settings-row-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg><span class="settings-row-label" data-setting-i18n="contact">Contact</span><svg class="settings-chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
    </a>
    <a class="settings-row" href="/contact">
@@ -451,7 +451,7 @@ header{position:fixed;top:14px;left:16px;right:16px;width:auto;height:66px;paddi
    </a>
    <a class="settings-action" href="/contact"><span aria-hidden="true">♡</span><span data-setting-i18n="contribute">Bijdragen</span></a>
    <div class="settings-follow"><div class="settings-follow-title" data-setting-i18n="follow">VOLGEN</div><div class="settings-social" data-setting-i18n="followNote">De Golem · Oostende</div></div>
-   <nav class="settings-footer" aria-label="Informatie"><a href="/over" data-setting-i18n="mission">Missie</a><a href="/contact" data-setting-i18n="imprint">Colofon</a><a href="/privacy" data-setting-i18n="privacy">Privacy</a><a href="/voorwaarden" data-setting-i18n="terms">Gebruiksvoorwaarden</a><a href="/admin" data-setting-i18n="analytics">Analytics</a></nav>
+   <nav class="settings-footer" aria-label="Informatie"><a href="/over" data-setting-i18n="mission">Missie</a><a href="/contact" data-setting-i18n="imprint">Colofon</a><a href="/privacy" data-setting-i18n="privacy">Privacy</a><a href="/voorwaarden" data-setting-i18n="terms">Gebruiksvoorwaarden</a><a href="/in-ontwikkeling" data-setting-i18n="analytics">Analytics</a></nav>
   </section>
  </div>
  <div id="mapModeDock"><div class="map-mode-toggle" role="group" aria-label="Kaartweergave"><button id="linesModeButton" type="button" class="active" aria-pressed="true">Lijnen</button><button id="riskModeButton" type="button" aria-pressed="false">Risico</button></div></div>
@@ -663,25 +663,27 @@ function initMap(){
  $('mapSearchMirror').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('stopSearch').value=$('mapSearchMirror').value;searchMapStop();}});
  $('mapSearchResults').addEventListener('click',e=>{const b=e.target.closest('[data-stop-id],[data-route-id]');if(!b)return;const original=$('stopSearchResults').querySelector('[data-stop-id="'+b.dataset.stopId+'"],[data-route-id="'+b.dataset.routeId+'"]');if(original)original.click();$('mapSearchResults').classList.add('hidden');});
  const settingsTranslations={
-  nl:{title:'Instellingen',disclaimer:'De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.',language:'Taal',city:'Stad',mission:'Missie',contact:'Contact',feedback:'Feedback sturen',contribute:'Bijdragen',follow:'VOLGEN',followNote:'De Golem · Oostende',imprint:'Colofon',privacy:'Privacy',terms:'Gebruiksvoorwaarden',analytics:'Analytics',close:'Sluiten'},
-  fr:{title:'Paramètres',disclaimer:'De Golem ne remplace pas un titre de transport. Un titre valable reste toujours obligatoire.',language:'Langue',city:'Ville',mission:'Mission',contact:'Contact',feedback:'Envoyer un avis',contribute:'Contribuer',follow:'SUIVRE',followNote:'De Golem · Ostende',imprint:'Mentions légales',privacy:'Vie privée',terms:'Conditions d’utilisation',analytics:'Statistiques',close:'Fermer'},
-  en:{title:'Settings',disclaimer:'De Golem does not replace a ticket. A valid ticket is always required.',language:'Language',city:'City',mission:'Mission',contact:'Contact us',feedback:'Send feedback',contribute:'Contribute',follow:'FOLLOW',followNote:'De Golem · Ostend',imprint:'Imprint',privacy:'Privacy',terms:'Terms of Use',analytics:'Analytics',close:'Close'}
+  nl:{title:'Instellingen',disclaimer:'De Golem vervangt geen vervoerbewijs. Een geldig vervoerbewijs blijft altijd verplicht.',language:'Taal',city:'Locatie',mission:'Missie',contact:'Contact',feedback:'Feedback sturen',contribute:'Bijdragen',follow:'VOLGEN',followNote:'De Golem · Oostende',imprint:'Colofon',privacy:'Privacy',terms:'Gebruiksvoorwaarden',analytics:'Analytics',close:'Sluiten'},
+  fr:{title:'Paramètres',disclaimer:'De Golem ne remplace pas un titre de transport. Un titre valable reste toujours obligatoire.',language:'Langue',city:'Lieu',mission:'Mission',contact:'Contact',feedback:'Envoyer un avis',contribute:'Contribuer',follow:'SUIVRE',followNote:'De Golem · Ostende',imprint:'Mentions légales',privacy:'Vie privée',terms:'Conditions d’utilisation',analytics:'Statistiques',close:'Fermer'},
+  en:{title:'Settings',disclaimer:'De Golem does not replace a ticket. A valid ticket is always required.',language:'Language',city:'Location',mission:'Mission',contact:'Contact us',feedback:'Send feedback',contribute:'Contribute',follow:'FOLLOW',followNote:'De Golem · Ostend',imprint:'Imprint',privacy:'Privacy',terms:'Terms of Use',analytics:'Analytics',close:'Close'}
  };
- function applySettingsLanguage(choice){
-  let lang=choice;
-  if(lang==='auto'){const browser=(navigator.language||'nl').slice(0,2).toLowerCase();lang=['fr','en'].includes(browser)?browser:'nl';}
+ function applySettingsLanguage(lang){
   const t=settingsTranslations[lang]||settingsTranslations.nl;
   document.querySelectorAll('[data-setting-i18n]').forEach(el=>{const key=el.dataset.settingI18n;if(t[key])el.textContent=t[key];});
   $('settingsClose').setAttribute('aria-label',t.close);$('settingsClose').title=t.close;
-  $('settingsLanguage').value=choice;
-  try{localStorage.setItem('golem-language',choice);}catch(e){}
+  $('settingsLanguage').value=lang;
+  try{localStorage.setItem('golem-language',lang);}catch(e){}
  }
- let initialSettingsLanguage='auto';try{initialSettingsLanguage=localStorage.getItem('golem-language')||'auto';}catch(e){}
+ let initialSettingsLanguage='nl';try{initialSettingsLanguage=localStorage.getItem('golem-language')||'nl';}catch(e){}
+ if(!['nl','fr','en'].includes(initialSettingsLanguage))initialSettingsLanguage='nl';
  $('settingsLanguage').value=initialSettingsLanguage;applySettingsLanguage(initialSettingsLanguage);
  $('settingsLanguage').addEventListener('change',e=>applySettingsLanguage(e.target.value));
- function closeSettings(){ $('settingsOverlay').classList.add('hidden');$('settingsToggle').setAttribute('aria-expanded','false'); }
+ $('settingsCity').addEventListener('change',e=>{if(e.target.value!=='oostende'){location.href='/in-ontwikkeling?onderdeel=locatie';return;}try{localStorage.setItem('degolem_city','oostende');}catch(e){}});
+ function closeSettings(){ $('settingsOverlay').classList.add('hidden');$('settingsToggle').setAttribute('aria-expanded','false');$('settingsToggle').focus(); }
+ window.closeSettings=closeSettings;
  $('settingsToggle').addEventListener('click',()=>{ $('settingsOverlay').classList.remove('hidden');$('settingsToggle').setAttribute('aria-expanded','true');$('settingsClose').focus(); });
- $('settingsClose').addEventListener('click',closeSettings);
+ $('settingsClose').onclick=closeSettings;
+ $('settingsClose').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();closeSettings();});
  $('settingsOverlay').addEventListener('click',e=>{if(e.target===$('settingsOverlay'))closeSettings();});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('settingsOverlay').classList.contains('hidden'))closeSettings();});
  $('linesModeButton').addEventListener('click',()=>setMapDisplayMode('lines'));
@@ -2416,12 +2418,13 @@ export default {
         if(!admin||admin.role!=="admin")return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Geen toegang · De Golem</title><body style="font:16px Georgia;background:#f1e2c6;color:#3c2c20;min-height:100vh;display:grid;place-items:center;text-align:center"><main><h1>Beheerderslogin vereist</h1><p>Log eerst in met je beheerdersaccount.</p><a href="/">Naar De Golem en inloggen</a><p><a href="/admin">Daarna terug naar het beheerpaneel</a></p></main></body></html>',{status:403,headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Robots-Tag":"noindex, nofollow"}});
         return new Response(adminAnalyticsHTML(),{headers:{"Content-Type":"text/html; charset=utf-8","Cache-Control":"no-store","X-Content-Type-Options":"nosniff","X-Robots-Tag":"noindex, nofollow","Referrer-Policy":"same-origin","Content-Security-Policy":"default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: blob: https:; connect-src 'self' https://tiles.openfreemap.org https://cdn.jsdelivr.net; font-src 'self' data: https://fonts.gstatic.com; worker-src blob:;"}});
       }
-      if (!["/","/index.html","/over","/contact","/privacy","/voorwaarden","/misbruik"].includes(url.pathname)) {
+      if (!["/","/index.html","/over","/contact","/privacy","/voorwaarden","/misbruik","/in-ontwikkeling"].includes(url.pathname)) {
         return new Response('<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pagina niet gevonden · De Golem</title><body style="margin:0;background:#f1e2c6;color:#3c2c20;font:16px Georgia,serif;min-height:100vh;display:grid;place-items:center;text-align:center"><main style="padding:32px"><h1>Deze pagina bestaat niet.</h1><p>Misschien is de link verouderd.</p><a href="/" style="color:#925b35">Terug naar De Golem</a></main></body></html>',{status:404,headers:{"Content-Type":"text/html; charset=utf-8","X-Content-Type-Options":"nosniff"}});
       }
       // Info- en juridische pagina's. Vul CONTACT_EMAIL in (verplicht onder de GDPR: wie is verantwoordelijk en hoe bereik je die).
       const contact=CONTACT_EMAIL?'<a href="mailto:'+CONTACT_EMAIL+'">'+CONTACT_EMAIL+'</a>':'het contactadres dat hier binnenkort komt';
       const infoPages={
+        "/in-ontwikkeling":["Wordt aan gewerkt","<p>Deze functie is nog in ontwikkeling. We werken eraan om dit onderdeel binnenkort beschikbaar te maken.</p>"],
         "/over":["Over De Golem",
           '<p>De Golem is een onafhankelijk initiatief van reizigers. Op een kaart zie je meldingen van andere reizigers over controles ("controles") op het net van De Lijn, en je kunt er zelf een melden.</p>'+
           '<p><strong>De Golem is louter informatief.</strong> Een geldig vervoerbewijs blijft altijd verplicht. De Golem moedigt zwartrijden op geen enkele manier aan.</p>'+
